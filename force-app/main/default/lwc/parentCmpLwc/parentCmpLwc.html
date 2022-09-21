@@ -1,0 +1,39 @@
+<template>
+    <lightning-card>
+        
+        <h2 slot="title">
+            <lightning-icon icon-name="standard:trailhead_alt" size="small"></lightning-icon> Teacher Components         
+        </h2>
+
+        <div class="slds-m-bottom--medium">
+            <c-display-contacts-on-account-id onmyeventdemo={handleChangeAction}></c-display-contacts-on-account-id>
+        </div>
+
+        <br/><br/>
+
+            <lightning-icon icon-name="standard:trailhead" size="small"></lightning-icon> <b>student Components</b>         
+        
+         
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" border="4" cellspacing="4" cellpadding="4" bordercolor="#ADFF2F" style="border-collapse:collapse;">
+           <thead>
+               <tr>
+                   <th>Name</th>
+                   <th>gender</th>
+                   <th>marks</th>
+                   <th>results</th>
+               </tr>
+           </thead> 
+            <template for:each={records} for:item='conItem'>
+                <tr key={conItem.Id}>
+                    <td>{conItem.Name}</td>
+                    <td>{conItem.gender__c}</td>
+                    <td>{conItem.marks__c}</td>
+                    <td>{conItem.results__c}</td>
+                </tr>
+            </template>
+        </table>
+
+        
+    </lightning-card>
+   
+</template>

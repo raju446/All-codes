@@ -1,0 +1,9 @@
+<template>
+    <lightning-card variant="Narrow" title="edit record popup" icon-name="action:edit_groups">
+        <p class="slds-p-horizontal_small">
+            <lightning-datatable if:true={student2__c.data} key-field="id" data={student2__c.data}
+                show-row-number-column hide-checkbox-column columns={opportunityCols} onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </p>
+    </lightning-card>
+</template>

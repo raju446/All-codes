@@ -1,0 +1,30 @@
+<template>
+    <template if:true={accList}>
+        <lightning-datatable data={accList} columns={columns} key-field="Id">
+        </lightning-datatable>
+    </template>
+    <template if:true={error}>
+        {error}
+    </template>
+    <br>
+    <lightning-button label="New" title="Non-primary action" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+        <div>
+            <template if:true={Form}>
+            <lightning-record-edit-form object-api-name={accountObject} onsuccess={handleAccountCreated}>
+                <lightning-messages></lightning-messages>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input-field field-name={nameField}></lightning-input-field>
+                        <lightning-input-field field-name={CloseDateField}></lightning-input-field>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input-field field-name={StageField}></lightning-input-field>
+                        <lightning-input-field field-name={AccountField}></lightning-input-field>
+                    </div>
+                 </div>
+                <lightning-button type="submit" variant="brand" label="Create Account"></lightning-button>
+            </lightning-record-edit-form>
+        </template>
+    </div>
+    <lightning-button label="Create Contact1" variant="brand" onclick={createRecordWithDefaultValues}></lightning-button>
+</template>

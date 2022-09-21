@@ -1,0 +1,50 @@
+<template>
+  <lightning-card>
+        <lightning-button label="Show Modal" onclick={showModal} style="left: 972px; position:relative"> </lightning-button>  
+<template if:true={openModal}>  
+    <div class="slds-modal slds-fade-in-open slds-backdrop">  
+      <div class="slds-modal__container">  
+        <div class="slds-modal__header">  
+          <lightning-button-icon icon-name="utility:close" alternative-text="Close this window" size="large"  
+            variant="bare-inverse" onclick={closeModal} class="slds-modal__close">  
+          </lightning-button-icon>  
+          <h2>Create Product</h2>  
+        </div>  
+        <div class="slds-modal__content slds-p-around_medium">  
+          <div class="slds-wrap slds-grid">
+            <lightning-record-edit-form 
+            object-api-name="oppo_product__c" 
+            onsuccess={handleSuccess}
+            onsubmit={handleSubmit} >
+            <lightning-input-field variant="label-stacked" field-name="Name" required="true" style="width: 454px;margin-left:36px;">
+            </lightning-input-field>
+            <lightning-input-field variant="label-stacked" field-name="Opportunity__c" required="true" style="width: 454px;margin-left:36px;">
+            </lightning-input-field>
+            <lightning-input-field variant="label-stacked" field-name="Description__c" style="width: 454px;margin-left:36px;">
+            </lightning-input-field>
+            <lightning-input-field variant="label-stacked" field-name="price__c" style="width: 454px;margin-left:36px;">
+            </lightning-input-field>
+            <lightning-input-field variant="label-stacked" field-name="Quantity__c" style="width: 454px;margin-left:36px;">
+            </lightning-input-field>
+            </lightning-record-edit-form>
+          </div>
+        <div class="slds-modal__footer" style="color:#ffff;"> 
+          <lightning-button icon-name="utility:close" variant="destructive-text" label="Close" title="close" onclick={closeModal} class="slds-m-left_x-small"></lightning-button>
+          <lightning-button icon-name="utility:save" variant="success" label="Save" title="Save" onclick={handleSubmit} class="slds-m-left_x-small"></lightning-button>
+        </div>  
+</div>  
+        </div>  
+    </div>  
+  </template>  
+    <h1 style="font-weight:900px;">Hello</h1>
+    <template if:true={accList}>
+        <lightning-datatable data={accList} columns={columns} key-field="Id"
+        show-row-number-column="true"  
+        onrowaction={callRowAction}>
+        </lightning-datatable>
+    </template>
+    <template if:true={error}>
+        {error}
+    </template>
+   </lightning-card>
+</template>

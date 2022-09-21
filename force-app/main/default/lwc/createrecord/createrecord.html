@@ -1,0 +1,34 @@
+<template>
+    <lightning-card>
+      <div slot="title">
+        <h3> 
+            <lightning-icon icon-name="standard:student2__c" size="small"></lightning-icon> Create a student record           
+         </h3>
+      </div>    
+  
+     <p class="slds-p-horizontal_small">
+       <lightning-input type="text" label="Name" value={getstudent2__c.Name} onchange={nameInpChange}></lightning-input>
+      </p>
+  
+      <p class="slds-p-horizontal_small">
+       <lightning-input type="text" label="gender" value={getstudent2__c.gender__c} onchange={genderInpChange}></lightning-input>
+      </p>
+  
+      <p class="slds-p-horizontal_small">
+        <lightning-input type="text" label="fees" value={gestudent2__c.fees__c} onchange={feesInpChange}></lightning-input>
+       </p>
+   
+       <p class="slds-p-horizontal_small">
+        <lightning-input type="text" label="results" value={getstudent2__c.results__c} onchange={resultsInpChange}></lightning-input>
+       </p>
+       <p class="slds-p-horizontal_small">
+        <lightning-input type="text" label="marks" value={getstudent2__c.marks__c} onchange={marksInpChange}></lightning-input>       
+       </p> 
+       <div slot="footer">
+        <lightning-button label="Submit" onclick={savestudent2__c} variant="brand"></lightning-button>
+      </div>
+    <br/><br/>
+      <p><img src="https://www.w3web.net/wp-content/uploads/2021/05/thumbsUpLike.png" width="25" height="25" style="vertical-align:top; margin-right:10px;"/> <strong> <span style="font-size:15px; font-style:italic; display:inline-block; margin-right:5px;">Don't forget to check out:-</span> <a href="https://www.w3web.net/" target="_blank" style="text-decoration:none;" rel="noopener noreferrer">An easy way to learn step-by-step online free tutorial, To know more Click  <span style="color:#ff8000; font-size:18px;">Here..</span></a></strong></p>
+  
+   </lightning-card>
+  </template>

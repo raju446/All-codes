@@ -1,0 +1,22 @@
+<template>
+    <button class="button" type="button" onclick={handleClick}>Click</button>
+    <template if:true={showloadingtions}>
+        <div class="slds-p-around--medium">        
+
+            <div class="slds-col slds-size_9-of-12 slds-m-bottom--medium">
+            <lightning-progress-bar value={progress}></lightning-progress-bar>
+        </div>
+        <div class="slds-col slds-size_9-of-12 slds-text-align_center slds-m-top_large">
+            <div class="buttons">
+            <lightning-button variant="Neutral" label={computedLabel} onclick={actionToggleBar} class="slds-m-top_medium"></lightning-button>
+            </div>
+         </div>
+         <template if:true={actionToggleBar}>
+            <div class="bg">
+                <p class="text">I am John Wick</p>
+                <img src="pic_trulli.jpg" alt="Trulli" width="500" height="333">
+                </div>
+         </template>
+        </div>
+    </template>
+</template>

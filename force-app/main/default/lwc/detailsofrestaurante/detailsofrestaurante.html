@@ -1,0 +1,9 @@
+<template>
+    <lightning-card variant="Narrow" title="edit restaurant record popup" icon-name="action:record">
+        <p class="slds-p-horizontal_small">
+            <lightning-datatable if:true={restaurant__c.data} key-field="id" data={restaurant__c.data}
+                show-row-number-column hide-checkbox-column columns={opportunityCols} onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </p>
+    </lightning-card>
+</template>

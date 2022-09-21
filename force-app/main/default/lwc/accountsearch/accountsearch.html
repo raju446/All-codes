@@ -1,0 +1,34 @@
+<template>
+    <lightning-card>
+        <h3 slot="title">
+            <lightning-icon icon-name="standard:search" size="small"></lightning-icon> Account Search.          
+        </h3>
+        <p class="slds-p-horizontal_x-small">
+         <lightning-input  type="search" placeholder="Global Account Search..." class="slds-m-bottom_small" label="Search Account Name" onchange={searchAccountAction} value={accountName}></lightning-input>
+         </p>
+         <div class="slds-p-around--medium">
+            <table border="1" bordercolor="#ddd" cellpadding="5" cellspacing="0" style="border-collapse:collapse;" class="slds-table slds-table_cell-buffer slds-table_bordered">    
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Website</th>
+                    <th>Industry</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <template for:each={accountList} for:item="accObj" for:index="index">                
+                    <tr class="slds-hint-parent" key={accObj.Id}>
+                       <td>{accObj.Name}</td>
+                       <td>{accObj.Phone}</td>
+                       <td>{accObj.Website}</td>
+                       <td>{accObj.Industry}</td>
+                       <td>{accObj.Description}</td>
+                    </tr>            
+                </template>
+            </tbody>          
+            </table> 
+         </div>  
+</lightning-card>
+</template>

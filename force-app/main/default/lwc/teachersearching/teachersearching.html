@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="the student based on Teacher Name" custom-icon="custom:custom39">
+        <div class="slds slds-p-horizontal--medium">
+         <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_4-of-12 slds-m-bottom--medium">
+                <lightning-Input type="search" placeholder="Search..." value={AccountName} name="TeacherName" class="AccountName" onchange={handleChangeAccName}></lightning-input>                 
+             </div>
+             <div class="slds-col slds-size_6-of-12 slds-m-top--medium" style="margin-top: 19px; margin-left: 10px;">                 
+                    <lightning-button label="Search Teacher Name" size="small" variant="brand" onclick={handleAccountSearch} icon-name="utility:record_lookup" icon-position="right"></lightning-button>
+             </div>
+         </div>
+          
+         <h2>Teacher Name :- <span><strong>{currentAccountName}</strong></span></h2><br/> 
+         <h3><strong><span style="color:brown;">{dataNotFound}</span></strong></h3><br/>
+
+           <h2 class="slds-m-bottom--x-small" style="color:rgb(14, 129, 133); font-weight:bold;">Displaying student Records based on Teacher Name</h2>
+           <table class="slds-table slds-table_cell-buffer slds-table_bordered" border="2" cellspacing="2" cellpadding="2" bordercolor="#200649" style="border-collapse:collapse;">
+               <thead>
+                   <tr>
+                       <th>Name</th>
+                       <th>gender</th>
+                       <th>fees</th>
+                       <th>results</th>
+                       <th>marks</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   <template for:each={records} for:item="conItem">
+                       <tr key={conItem.Id}>
+                           <td>{conItem.Name}</td>
+                           <td>{conItem.gender__c}</td>
+                           <td>{conItem.fees__c}</td>
+                           <td>{conItem.results__c}</td>
+                           <td>{conItem.marks__c}</td>
+                       </tr>
+                   </template>
+               </tbody>
+           </table>
+        </div>
+
+<br/><br/>
+    </lightning-card>
+</template>

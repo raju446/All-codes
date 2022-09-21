@@ -1,0 +1,20 @@
+<template>
+    <lightning-card>
+        <div class="slds-m-around_medium">
+        <h2 class="slds-text-heading_medium"><lightning-icon icon-name="custom:custom18" size="small"></lightning-icon> <strong style="color:#c9490e; font-size:18px; margin:right 10px;px;"> Record edits </strong></h2>
+        <br/><br/>
+        <template if:true={accObj.data}>
+            <lightning-datatable key-field="Id" 
+            data={accObj.data} 
+            columns={columns} 
+            onsave={saveHandleAction}
+            draft-values={fldsItemValues} 
+            hide-checkbox-column 
+            show-row-number-column>
+           </lightning-datatable>
+        </template>
+        <br/><br/>
+        <p data-aura-rendered-by="435:0"><img src="https://www.w3web.net/wp-content/uploads/2021/05/thumbsUpLike.png" width="25" height="25" style="vertical-align:top; margin-right:10px;" data-aura-rendered-by="436:0"><strong data-aura-rendered-by="437:0"><span style="font-size:15px; font-style:italic; display:inline-block; margin-right:5px;" data-aura-rendered-by="438:0">Don't forget to check out:-</span><a href="https://www.w3web.net/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;" data-aura-rendered-by="440:0">An easy way to learn step-by-step online free Salesforce tutorial, To know more Click  <span style="color:#ff8000; font-size:18px;" data-aura-rendered-by="442:0">Here..</span></a></strong></p>
+    </div>
+    </lightning-card>
+</template>
