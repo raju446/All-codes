@@ -1,0 +1,38 @@
+<aura:component   implements="flexipage:availableForAllPageTypes">
+    <aura:handler name="myEvent" event="c:myComponentEvent" action="{!c.parentEventAction}"/>
+        <lightning:notificationsLibrary aura:id="notifyId"/>
+    <aura:attribute name="modalFade" type="String" default="slds-hide"/>  
+    <div class="slds-m-around_medium">
+        <c:childComponentEvent />
+        <div class="{!v.modalFade}" aura:id="modalPopupId">
+            <section class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick="{!c.cancelPopup }" title="Close">
+                            <lightning:icon iconName="utility:close" alternativeText="Approved" />
+                        </button>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                       <lightning:recordEditForm aura:id="recordEditForm"
+                           objectApiName="Opportunity">
+        <lightning:messages />
+        <lightning:inputField fieldName="Name" />
+         <lightning:inputField fieldName="CloseDate" />
+         <lightning:inputField fieldName="StageName" />
+        <lightning:button class="slds-m-top_small" type="submit" label="Submit" onclick="{!c.showSuccess}"  />
+    </lightning:recordEditForm>                       </div>
+                    <footer class="slds-modal__footer">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-size_10-of-12 slds-text-align--left">
+                            </div>
+                            <div class="slds-col slds-size_2-of-12"><lightning:button class="slds-button slds-button_destructive" label="Cancel" title="Cancel" onclick="{! c.cancelPopup}"/></div>
+                        </div>
+                        
+                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </div>
+</aura:component>

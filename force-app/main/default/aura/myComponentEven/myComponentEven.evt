@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Learn component event from w3web.net tutorial">
+   <aura:attribute name="popFadeEvnt" type="String" default="slds-hide" />
+</aura:event>

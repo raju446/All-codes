@@ -1,0 +1,28 @@
+<aura:component controller="Getteacher2Andstudent2">
+    <aura:attribute name="teacher2" type="teacher2__c[]"/>
+    <aura:attribute name="student2" type="student2__c[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div>
+        <div style="text-align:center;font-size:25px">
+            teacher2
+        </div>
+
+        <aura:iteration items="{!v.teacher2}" var="teacher2">
+        <div class="slds-truncate" title="Adam Choi" >
+            <a href="javascript:void(0);" onclick="{!c.Clicked}" data-value="{!teacher2.Id}">
+                {!teacher2.Name}
+            </a>
+        </div>
+    </aura:iteration>
+    </div>
+    <div>
+        <div style="text-align:center;font-size:25px">
+            student2
+        </div>
+        <aura:iteration items="{!vstudent2}" var="student2">
+        <div class="slds-truncate" title="Adam Choi" >
+                {!student2.Name}
+        </div>
+    </aura:iteration>
+    </div>
+</aura:component>

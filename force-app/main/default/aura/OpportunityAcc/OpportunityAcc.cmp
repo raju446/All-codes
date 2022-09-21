@@ -1,0 +1,23 @@
+<aura:component controller="OpportunityAcc" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+        <aura:attribute name="isModalOpen" type="boolean" default="true"/>
+    <aura:attribute type="Opportunity[]" name="acctList"/>
+    <aura:attribute name="mycolumns" type="List"/>
+      
+    <aura:handler name="init" value="{!this}" action="{!c.OppoAcc}"/>
+    <lightning:datatable data="{! v.acctList }"
+                         columns="{! v.mycolumns }"
+                         keyField="id"
+                         hideCheckboxColumn="true"/>
+    
+  <lightning:button variant="Nature" label="New Opportunity" title="Brand action" onclick="{!c.openModel}"/>
+      <aura:attribute name="fields" type="String[]" default="['Name','CloseDate','StageName','Account__c']"/>
+         <aura:attribute name="recordId" type="String"/>
+        <aura:if isTrue="{!v.isModalOpen}">
+            <lightning:notificationsLibrary aura:id="notifLib"/>
+            <lightning:card class="slds-size_1-of-3">        
+            <div class="slds-box slds-box_x-large slds-m-around_x-large">
+            <lightning:recordForm objectApiName="Opportunity" fields="{!v.fields}" onsuccess="{!c.handleSuccess}"/>
+            </div>
+                </lightning:card>
+        </aura:if>
+</aura:component>

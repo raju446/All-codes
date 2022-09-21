@@ -1,0 +1,8 @@
+<aura:component>
+    <lightning:recordViewForm recordId="a0C5g000002EiJpEAK" objectApiName="student2__c">
+        <div class="slds-box">
+            <lightning:outputField fieldName="Name" />
+            <lightning:outputField fieldName="gender__c" />
+        </div>
+    </lightning:recordViewForm>
+</aura:component>
