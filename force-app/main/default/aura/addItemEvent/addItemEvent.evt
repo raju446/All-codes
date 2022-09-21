@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event used when an Item is added.">
+    <aura:attribute name="item" type="Camping_item__c"/>
+</aura:event>

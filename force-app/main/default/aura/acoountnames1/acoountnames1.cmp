@@ -1,0 +1,7 @@
+<aura:component >
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="keywords" type="List" default="[{value:''},{value:''},{value:''},{value:''}]" />
+    <aura:iteration items="{!v.keywords}" var="item" indexVar="i">
+    <lightning:input label="Keyword" value="{!item.value}" />
+</aura:iteration>
+</aura:component>

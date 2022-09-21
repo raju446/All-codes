@@ -1,0 +1,43 @@
+<aura:component controller = "Auraclass"
+implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="OpportunityList" type="Opportunity[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+        <aura:if isTrue="{!not(empty(v.OpportunityList))}">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="OpportunityName">OpportunityName</div>
+                        </th>
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="CloseDate">CloseDate</div>
+                        </th>
+                         <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="StageName">StageName</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration  items="{!v.OpportunityList}" var="con">
+                        <tr class="slds-hint-parent">
+                            <td data-label="Opportunity Name">
+                                <div class="slds-truncate" title="Opportunity Name">{!con.Name}</div>  
+                            </td>
+                            <td data-label="Close Date">
+                                <div class="slds-truncate" title="Close Date">{!con.CloseDate}</div>  
+                            </td>
+                             <td data-label="Stage Name">
+                                <div class="slds-truncate" title="Stage Name">{!con.StageName}</div>  
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <aura:set attribute="else">
+                <div Style="text-align : center"> " There are no related Opportunitys "</div>
+            </aura:set>
+        </aura:if>
+    <br></br>
+    <lightning:button label="New" variant="Nature" aura:id="button" onclick="{!c.doPerform}"></lightning:button>
+</aura:component>

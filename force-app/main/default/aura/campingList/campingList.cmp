@@ -1,0 +1,21 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" controller="CampingListController" access="global">
+    <aura:attribute name="items" type="Camping_item__c[]"/>
+    <aura:handler name="addItem" event="c:addItemEvent" action="{!c.handleAddItem}"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+
+    <div class="slds-col slds-col--padded slds-p-top--large">
+        <c:campingListForm />
+        <div class="slds-card slds-p-top--medium">
+            <header class="slds-card__header">
+                <h3 class="slds-text-heading--small">Items</h3>
+            </header>
+            <section class="slds-card__body">
+                <div id="list" class="row">
+                    <aura:iteration items="{!v.items}" var="item">
+                        <c:campingListItem item="{!item}"/>
+                    </aura:iteration>
+                </div>
+            </section>
+        </div>
+    </div>
+</aura:component>
