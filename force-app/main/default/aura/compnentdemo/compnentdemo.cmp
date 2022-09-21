@@ -1,0 +1,29 @@
+<aura:component controller="apex8">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>   
+    <aura:attribute name="userList" type="List" />
+    <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer slds-table_fixed-layout">
+            <thead>
+              <tr class="slds-text-heading_label">
+                <th scope="col"><div class="slds-truncate" title="ID">ID</div></th>
+                <th scope="col"><div class="slds-truncate" title="Name">Name</div></th>
+                <th scope="col"><div class="slds-truncate" title="Type">Aadhar_number_del__c</div></th>
+                  <th scope="col"><div class="slds-truncate" title="Type">class_no__c</div></th>
+                  <th scope="col"><div class="slds-truncate" title="Type">fees__c</div></th>
+                   <th scope="col"><div class="slds-truncate" title="Type">Email_id__c</div></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Use the Apex model and controller to fetch server side data -->
+              <aura:iteration items="{!v.userList}" var="usr">
+                  <tr>
+                      <th scope="row"><div class="slds-truncate" title="{!usr.Id}">{!usr.Id}</div></th>
+                      <td><div class="slds-truncate" title="{!usr.Name}">{!usr.Name}}</div></td>
+                      <td><div class="slds-truncate" title="{!usr.Aadhar}">{!usr.Aadhar_number_del__c}</div></td>
+                      <td><div class="slds-truncate" title="{!usr.classno}">{!usr.class_no__c}</div></td>
+                      <td><div class="slds-truncate" title="{!usr.fees}">{!usr.fees__c}</div></td>
+                      <td><div class="slds-truncate" title="{!usr.Email}">{!usr.Email_id__c}</div></td>
+                  </tr>
+              </aura:iteration>
+            </tbody>
+    </table>   
+</aura:component>

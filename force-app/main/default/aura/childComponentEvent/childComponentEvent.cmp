@@ -1,0 +1,67 @@
+<aura:component controller="Opportunitys" 
+implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ContactList" type="Contact[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+    <lightning:card iconName="standard:work_capacity_usage" title="Related Contacts">
+        <aura:if isTrue="{!not(empty(v.ContactList))}">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="First Name">FirstName</div>
+                        </th>
+                        <th class="slds-text-title_caps" scope="col">
+                            <div class="slds-truncate" title="last Name">LastName</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration  items="{!v.ContactList}" var="con">
+                        <tr class="slds-hint-parent">
+                            <td data-label="File Name">
+                                <div class="slds-truncate" title="File Name">{!con.FirstName}</div>  
+                            </td>
+                            <td data-label="File Name">
+                                <div class="slds-truncate" title="File Name">{!con.LastName}</div>  
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <aura:set attribute="else">
+                <div Style="text-align : center"> " There are no related contacts "</div>
+            </aura:set>
+        </aura:if>
+    </lightning:card>
+     <!--<table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
+	 	<thead>
+		    <tr class="slds-text-title_caps">
+		      <th scope="col">
+		        <div class="slds-truncate" title="Opportunity Name">Opportunity Name</div>
+		      </th>
+		      <th scope="col">
+		        <div class="slds-truncate" title="Close Date">Close Date</div>
+		      </th>
+		      <th scope="col">
+		        <div class="slds-truncate" title="Stage">Stage</div>
+		      </th>
+		      </tr>
+            
+  		</thead>
+        
+
+  	<tbody>
+        <tr data="{! v.acctList }" columns="{! v.mycolumns }">111
+                      
+                </tr>
+        </tbody>
+    </table>-->
+     <aura:registerEvent name="myEvent" type="c:myComponentEvent" />
+               
+<lightning:button label="New Oppo" variant="brand" onclick="{!c.childEvntAction}"/>
+   
+    
+
+  
+</aura:component >
