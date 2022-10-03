@@ -1,0 +1,53 @@
+.bg{
+
+    background-color:#000;
+}
+.service{
+    color:white;
+    font-size: 300%;
+    padding: 3%;
+}
+.input{
+    padding: 1%;
+    text-align: center;
+    width: 88%;
+    height: 41px;
+    border-radius: 26px;
+    border-color: 324.88deg, #B89553 10.65%, #D3AB5E 104.25%;
+}
+.search{
+    text-align: center;
+}
+.custom-box {
+    background-color: grey;
+    color: white;
+    font-size: 20px;
+        border-radius: 10px;
+  text-align: left;
+}
+.container{
+    filter: blur(1px);
+    color: white;
+   background-image: url(https://cdn-icons-png.flaticon.com/512/5066/5066871.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 23px;
+    border-radius: 10px;
+    text-align: left;
+}
+.cantainer{
+    background-color: gray;
+    color: white;
+    border-radius: 20px;
+    text-align: left;
+}
+.text{
+    margin-left: 80px;
+    font-size: 20px;
+}
+.Go{
+    text-align: right;
+}
+.Go1{
+    text-align: right;
+}

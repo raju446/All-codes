@@ -1,0 +1,188 @@
+<!--
+  @description       : 
+  @author            : Jayanta Karmakar
+  @group             : 
+  @last modified on  : 02-01-2021
+  @last modified by  : Jayanta Karmakar
+  Modifications Log 
+  Ver   Date         Author             Modification
+  1.0   01-16-2021   Jayanta Karmakar   Initial Version
+-->
+<template>
+    <div if:true={isLoaded} class="slds-is-relative">
+        <div class="spinner">
+            <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+        </div>
+    </div>
+    
+    <lightning-card title="Merge Contacts" icon-name="standard:contact">
+        <lightning-layout multiple-rows="true" vertical-align="end">
+            <lightning-layout-item size="4" padding="around-small">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="text" name="inpFName" label="First Name" onchange={handleInpVal} ></lightning-input>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="around-small">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="text" name="inpLName" label="Last Name" onchange={handleInpVal} ></lightning-input>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="around-small">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="text" name="inpEmail" label="Email" onchange={handleInpVal} ></lightning-input>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="around-small">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="text" name="inpPassport" label="Passport No" onchange={handleInpVal} ></lightning-input>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="around-small">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="text" name="inpNationality" label="Nationality" onchange={handleInpVal} ></lightning-input>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="4" alignment-bump="right" padding="horizontal-small">
+                <div style="float: right;"><lightning-button label="Search" variant="brand" icon-name="utility:search" icon-position="right" onclick={handleSearch}></lightning-button></div>
+                <div style="float: right; padding-right:10px"><lightning-button label="Clear" variant="brand" icon-name="utility:clear" icon-position="right" onclick={handleClear}></lightning-button></div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <br/>
+        
+        <div style="margin-left: 10px; margin-bottom: 20px">
+            <p style="color: red;">
+                <b>Note:</b> <br/>
+                1. Using the merge operation, field values on the master record always supersede the corresponding field values on the records to be merged.<br/>
+                2. After merging, the merge record is deleted and only master record remains in the database and all related records are moved to master related records. <br/>
+                3. Maximum 10 records can be merge at a time. <br/>
+                4. Search on FirstName, LastName and Email field will only work with exact match due to the constraints of encryption on these fields.
+            </p>
+        </div>
+        <div if:true={searchData}>
+            <lightning-layout multiple-rows="true" vertical-align="end">
+                <lightning-layout-item size="12" alignment-bump="right" padding="around-small">
+                    <div style="float: right;"><lightning-button label="Merge" variant="brand" icon-name="utility:merge" icon-position="right" onclick={openModal}></lightning-button></div>
+                </lightning-layout-item>
+            </lightning-layout>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped" role="grid">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" style="width: 7%;" scope="col">
+                            <div class="slds-truncate" title="Amount">Contacts To Merge</div>
+                        </th>
+                        <th class="" style="width: 7%;" scope="col">
+                            <div class="slds-truncate" title="Contact">Master Record</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Opportunity Name">Name</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Account Name">Email</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Close Date">Passport Number</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Stage">Nationality</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Stage">Recordtype</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Stage">Entity</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Stage">Entity Recordtype</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={searchData} for:item="con" for:index="index">
+                        <tr class="slds-hint-parent" key={con.Id}>
+                            <td data-label="Account Name">
+                                <lightning-input type="checkbox" value={con.Id} data-id={con.Id} onclick={handleCheckbox}></lightning-input>
+                            </td>
+                            <td data-label="Close Date" role="gridcell">
+                                <span class="slds-radio">
+                                    <input type="radio" id={con.Id} value={con.Id} name="radio" tabindex="-1" data-rowindex={index} onclick={handleRadio} aria-labelledby="radio-button-label-01 column-group-header" />
+                                    <label class="slds-radio__label" for={con.Id} id={con.Id}>
+                                    <span class="slds-radio_faux"></span>
+                                    <span class="slds-form-element__label slds-assistive-text">Select item 1</span>
+                                    </label>
+                                </span>
+                            </td>
+                            <td data-label="Prospecting">
+                                <div class="slds-truncate" title="Prospecting"><a href={con.link} target="_blank" tabindex="-1">{con.Name}</a></div>
+                            </td>
+                            <td data-label="Confidence">
+                                <div class="slds-truncate" title="jrogers@cloudhub.com">{con.Email}</div>
+                            </td>
+                            <td data-label="Amount">
+                                <div class="slds-truncate" title="$25k">{con.Passport_No__c}</div>
+                            </td>
+                            <td data-label="Contact">
+                                <div class="slds-truncate" title="$25k">{con.Nationality__c}</div>
+                            </td>
+                            <td data-label="Contact">
+                                <div class="slds-truncate" title="Prospecting">{con.RecordType.Name}</div> 
+                            </td>
+                            <td data-label="Contact">
+                                <div class="slds-truncate" title="Prospecting" if:true={con.Account}>{con.Account.Name}</div>
+                            </td>
+                            <td data-label="Contact">
+                                <div class="slds-truncate" title="Prospecting" if:true={con.Account}>{con.Account.RecordType.Name}</div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            
+            <lightning-layout multiple-rows="true" vertical-align="end">
+                <lightning-layout-item size="12" alignment-bump="right" padding="around-small">
+                    <div style="float: right;"><lightning-button label="Merge" variant="brand" icon-name="utility:merge" icon-position="right" onclick={openModal}></lightning-button></div>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </lightning-card>
+    
+    
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Merge Contacts</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p><b>Are you sure, you want con merge the contacts.
+                    </b></p>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={mergeRecords} title="OK">OK</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

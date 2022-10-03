@@ -1,0 +1,229 @@
+<apex:page id="PhotoUploadPage" standardController="HexaBPM__Service_Request__c" extensions="SRPictureController">
+    <apex:stylesheet value="{!URLFOR($Resource.ImageCropper,'Cropper/cropper.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.ADGMStaticResources, 'ADGMStaticResources/js/jquery.min.js')}"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+    <style>
+        .btn-group .fa, .btn-group .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            vertical-align: middle
+        } 
+        .docs-tooltip >.icon {
+            margin: 0 -3px;
+            vertical-align: top;
+        }        
+        .icon-crop {
+            background-position: -30px 0;
+        }        
+        .btn-primary {
+            border-color: #0066bf;
+            background-color: #0074d9;
+        }
+        .docs-tooltip {
+            display: block;
+        } 
+        /*
+        .cropper-view-box{
+            border-radius: 50%;
+        }   
+        */    
+        .btn-group {margin-bottom: 5px;}
+        .btn-group button { background: none; background-color: #002A3A !important; color: #fff;}
+        .message table td {padding: inherit;}
+        
+        #DivNoBorder .bPageBlock {
+            border:none !important;
+            margin-top:10px;
+        }
+        .content{
+            margin-top:20px;
+            margin-bottom:10px;
+        }
+        #DefaultImage
+        {
+            width: 100%;
+        }
+        #DefaultImage {
+            border-radius: unset !important;
+        }
+    </style>
+    <!-- <div class="content" >
+        <h4>UPLOAD PROFILE PICTURE</h4>
+    </div>
+    <label >The ideal size for the image is <b>352x352 pixles</b>, but you can zoom your image in and out using your mouse or keyboard to make it fit.</label> -->
+    <!--<div class="pageTopic">UPLOAD PROFILE PICTURE</div>-->
+    <!-- The ideal size for the image is <b>352x352 pixles</b>, but you can zoom your image in and out using your mouse or keyboard to make it fit. -->
+    <!--<div class="pageDesc">
+        The ideal profile picture size is <b>352x352 pixels</b>, you can adjust your image by dragging or zooming the picture.
+    </div>-->
+    <apex:form id="filefrm">
+         <apex:actionstatus id="PleaseWait">
+            <apex:facet name="start">
+                <c:ADGM_Loading_Component />
+            </apex:facet>
+        </apex:actionstatus>
+        <apex:inputHidden value="{!strCroppedData}" id="imgvalhdn"/>
+        <apex:actionFunction name="CroppeImage" action="{!SaveCroppedImage}" status="PleaseWait"/>
+        <apex:pageMessages id="showmsg" escape="false"/>
+        <div id="DivNoBorder">
+            <apex:pageBlock >
+                <apex:pageBlockButtons >
+                    <apex:commandButton OnClick="CanvastoString();return false;" value="Save" style="float:right;"/>
+                    <apex:commandButton value="Cancel" action="{!Cancel}" status="PleaseWait" style="float:right;"/>
+                </apex:pageBlockButtons>
+                <table style="width:100%;table-layout: fixed">
+                    <tr>
+                        <td width="20%" style="text-align:right;padding-right:5px;"><b><apex:outputLabel value="Browse" for="file"/></b></td>
+                        <td><input type="file" id="imageLoader" name="imageLoader"/></td>
+                        
+                    </tr>
+                </table> <br></br>
+                <table style="width:100%;table-layout: fixed">
+                   <!-- <tr>
+                        
+                        <td width="20%" style="text-align:right;padding-right:5px;"><apex:outputLabel value="Image Preview" for="Picture"/></td><td>&nbsp;</td></tr> -->
+                        
+                        <tr><td style="padding-left:20%">
+                        <div style="width: 250px; height: 318px">
+                            <canvas id="imageCanvas" style="display: none"></canvas>
+                            <apex:outputPanel rendered="{!ProfilePictureId != null}" layout="none" >  
+                                <img id="DefaultImage" style="display:block;" src="{!$Site.Prefix}/servlet/servlet.FileDownload?file={!ProfilePictureId }"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!ProfilePictureId = null}" layout="none">  
+                                <img id="DefaultImage" style="display:block;" src="{!$Site.Prefix}/profilephoto/005/F"/>
+                            </apex:outputPanel>
+                            <img id="imgCropper" style="display: none" src="data:image/bmp;"/>
+                            <div class="btn-group" style="display: none">
+                                <button class="btn btn-primary" data-method="zoom" data-option="0.1" type="button" onclick="$j('#imgCropper').cropper('zoom', 0.1)" title="Zoom In">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-search-plus fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="zoom" data-option="-0.1" type="button" onclick="$j('#imgCropper').cropper('zoom', -0.1)" title="Zoom Out">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-search-minus fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="rotate" data-option="-45" type="button" onclick="$j('#imgCropper').cropper('rotate', -45)" title="Rotate Left">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-undo fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="rotate" data-option="45" type="button" onclick="$j('#imgCropper').cropper('rotate', 45)" title="Rotate Right">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <!--<span class="icon icon-rotate-right"></span>-->
+                                    <i class="fa fa-repeat fa-lg"></i>                      
+                                  </span>
+                                </button>
+                            </div>              
+                        </div>
+                        </td>
+                        
+                        <td ><!-- style="padding-left:20%" -->
+                            <ul>
+                                <b>To enable acceptance of personal photographs via the Federal Authority for Identity and Citizenship (ICA) smart systems, the following specifications must be met:</b><br/>
+                                <br/>
+                                <li>Image: high quality, recent, colored, not older than 6 months.</li>
+                                <li>Background: clear, preferably white.</li>
+                                <li>Features: natural facial expressions. </li>
+                                <li>Head position: straight, not tilted, parallel to the photographic lens.</li>
+                                <li>Eyes: open towards the camera and without the use of colored lenses.</li>
+                                <li>Glasses: acceptable as long as they do not obscure the eyes and do not reflect light.</li>
+                                <li>Resolution (pixels): at least 600 dpi without ink traces or shrinkage.</li>
+                                <br/><br/>
+                                <b style="color:red;">To view the Federal Authority for Identity and Citizenship (ICA) photo specifications guide, please <a href="{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.PhotoSpecificationURL}" target="_blank" style="color:red">Click here</a></b>
+                            </ul>
+                            
+                        </td>
+                        </tr>
+                        
+                        <!-- <tr>
+                        <td style="padding-left:20%"><b style="color:red;font-size:120%">For applicant's personal photo specifications, please <a href="{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.PhotoSpecificationURL}" target="_blank" style="color:red">Click here</a></b></td>
+                        <td></td>
+                    </tr> -->
+                </table>    
+            </apex:pageBlock>
+        </div>
+        <script type="text/javascript">
+            var $j = jQuery.noConflict();
+            if(typeof(jQuery) == "undefined")
+                document.write('\x3Cscript type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">\x3C/script>');
+        </script>    
+        <script src="{!URLFOR($Resource.ImageCropper,'Cropper/cropper.js')}"></script>
+        <script type="text/javascript">
+            $j('body').removeClass('homeTab');
+            var imageLoader = document.getElementById('imageLoader');
+            imageLoader.addEventListener('change', handleImage, false);
+            var canvas = document.getElementById('imageCanvas');
+            var ctx = canvas.getContext('2d');
+            var isUploadable = false;
+            function handleImage(e){
+                document.getElementById('DefaultImage').style.display = 'none';
+                var reader = new FileReader();
+                reader.onload = function(event){
+                    var img = new Image();
+                    img.onload = function(){
+                        //canvas.width = img.width;
+                        //canvas.height = img.height;
+                        ctx.drawImage(img,0,0);
+                        console.log(this.naturalWidth);
+                        console.log(this.naturalHeight);
+                        img.width= this.naturalWidth;
+                        img.height=this.naturalHeight;
+                        //if((this.naturalWidth < 600 || this.naturalWidth > 1200)|| (this.naturalHeight < 600 || this.naturalHeight >1200)){
+                           // $j('#imgCropper').cropper('destroy');
+                           // $j('.btn-group').css('display', 'none');
+                           // alert("Error: Photo must be in square ratio with minimum 600x600 pixels and maximum 1200x1200 pixels in dimension.");
+                            //document.getElementById('DefaultImage').style.display = 'block';
+                            //return false;
+                        //}
+                        //else{
+                            isUploadable = true;
+                        //}
+                    }
+                    img.src = event.target.result;
+                    console.log('src'+img.src);
+                    if($j('.cropper-container').length > 0){            
+                        $j('#imgCropper').cropper('destroy');
+                        $j('.btn-group').css('display', 'none');
+                    }
+                    $j('.btn-group').css('display', 'block');
+                    $j('#imgCropper').attr('src', img.src);
+                    $j('#imgCropper').cropper({
+                        aspectRatio: 1/1,
+                        autoCropArea: 1,
+                        strict: false,
+                        guides: true,
+                        highlight: true,
+                        dragCrop: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                        built: function () {
+                            //$j('#imgCropper').cropper('method', argument1, , argument2, ..., argumentN);
+                        }
+                    }); 
+                }
+                reader.readAsDataURL(e.target.files[0]);     
+            }
+            function CanvastoString(){
+               // if(isUploadable){
+                    var imagestr=  $j('#imgCropper').cropper('getCroppedCanvas',{width:600,height:600}).toDataURL('image/jpeg');
+                    /*
+                    var  can = $j('#imgCropper').cropper('getCroppedCanvas',{width: 311,height: 311})
+                    var imagestr = can.toDataURL();
+                    */
+                    //window.alert('imagestr '+imagestr);
+                    //console.log(imagestr);
+                    document.getElementById('PhotoUploadPage:filefrm:imgvalhdn').value=imagestr;
+                    CroppeImage();
+                //}
+                //else{
+                   // alert("Error: Photo must be in square ratio with minimum 600x600 pixels and maximum 1200x1200 pixels in dimension.");
+                   // false;
+                //}
+            }
+        </script>
+    </apex:form>
+</apex:page>

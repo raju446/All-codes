@@ -1,0 +1,426 @@
+<!-- Lex_CreditMemo -->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,lightning:isUrlAddressable" access="global" controller = "CreditMemoController" >
+	 <!-- attrinutes list -->
+    <lightning:workspaceAPI aura:id="workspace"/>
+	<aura:attribute name="Name" type="String"/>
+    <aura:attribute name="dynamicName" type="String" default="Submit To Finance"/>
+    <aura:attribute name="sourceSystemNames" type="List" default="['RA', 'FSRA', 'ADGM Courts', 'Academy','Catalyst','AccessADGM','ADGM Arbitration Center','Bridge Property']"/>
+  	<aura:attribute name="ouList" type="List" default="" />
+    <aura:attribute name="sourceSystemList" type="List" default="" />
+    <aura:attribute name="scenarioList" type="List" default="['Invoice Fully Paid', 'Invoice Not Paid / Partially Paid']"/>
+    <aura:attribute name="PaymentCurrencyPicklist" type="List" default="['AED', 'USD']"/>
+    <aura:attribute name="selectedPaymentCurrency" type="String"/>
+    <aura:attribute name="selectedScenario" type="String"/>
+    <aura:attribute name="selectedOU" type="String"/>
+    <aura:attribute name="sourceSystem" type="String"/>
+	<aura:attribute name="unitSelected" type="Boolean" default="false"/>    
+    <aura:attribute name="selectedEntityId" type="String"/>
+    <aura:attribute name="inAmount" type="Integer" default="0"/>
+    <aura:attribute name="isRecordEdit" type="Boolean" default="false"/>
+    <aura:attribute name="onLoadStart" type="Boolean" default="false"/>
+    <aura:attribute name="showInvoiceSelection" type="Boolean" default="false"/>
+    <aura:attribute name="recordId" type="Id" default=""/>
+    <aura:attribute name="oldLineId" type="object[]"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.onEntityChange}"/>
+    <aura:attribute name="selectedInvoiceLookUp" type="sObject" default="{}"/>
+    <aura:handler name="change" value="{!v.selectedInvoiceLookUp}" action="{!c.doShowInvoice}"/>
+    <aura:attribute name="selectedInvoice" type="integer" default="-1"/>
+    <aura:attribute name="currencySelected" type="string" />
+    <aura:attribute name="invoiceTypePicklist" type="object[]" />
+    <aura:attribute name="invoiceLineItems" type="object[]" />
+    <aura:attribute name="invoiceTypes" type="string[]" />
+    <aura:attribute name="defaultInvoiceType" type="string" default="Credit Memo" />
+    <aura:attribute name="accountDetails" type="Account" default="{'sobjectType' : 'Account'}" />
+    <aura:attribute name="creditMemo" type="Invoice__c" default="{'sobjectType': 'Invoice__c',
+                                                              'Oracle_Invoice_Type__c': '',
+                                                              'Status__c': 'Draft',
+                                                              'Entity__c': '',
+                                                              'Payment_Currency__c' : '',
+                                                              'Description__c' : ''
+                                                              }"/>
+    <aura:attribute name="creditMemoLineItem" type="Invoice_Line_Item__c[]" />
+    <aura:handler name="change" value="{!v.creditMemo}" action="{!c.onCreditMemoRefund}"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:attribute name="showInvoiceSelectionTable" type="Boolean" default="false"/>
+    <aura:attribute name="checkBoxValue" type="Boolean" default="false"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    <aura:attribute name="showPushToOracle" type="boolean" default="false"/>
+	<aura:attribute name="isReload" type="Boolean" default="false" />
+    <aura:attribute name="isReview" type="Boolean" default="false" />
+    <aura:attribute name="isSourceNotSelected" type="Boolean" default="true" />
+    <aura:attribute name="isEntityNotSelected" type="Boolean" default="true" />
+    <aura:attribute name="isInvoiceTypeNotSelected" type="Boolean" default="true" />
+	<aura:attribute name="isOUDisabled" type="Boolean" default="false" />
+    <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.handleEntityChange}"/>
+    <!--<aura:attribute name="customerFilter" type="string" default="{!'AND Oracle_Party_Id__c != null AND Oracle_Party_Id__c !=\''+'\' AND Oracle_Site_Id__c =\'' + v.selectedOU+ '\''}" />-->
+    <aura:attribute name="customerFilter" type="string" default="{!'AND Oracle_Site_Id__c =\'' + v.selectedOU+ '\''}" />
+    <lightning:navigation aura:id="navId"/>
+    
+    <aura:attribute name="defaultSource" type="String" default="" />
+    
+     <!-- loading spinner component -->
+    <aura:if isTrue="{!v.Spinner}">
+    <div aura:id="spinnerId" class="slds-spinner_container">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+ 	</aura:if>
+    
+    <!--- lightning card start -->
+    <lightning:card variant="Narrow" title="Credit Memo">
+        <aura:set attribute="title">
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                  <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                      <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                            <lightning:icon iconName="standard:partner_fund_request" size="large"/>
+                          <span class="slds-assistive-text">Credit Memo</span>
+                        </span>
+                      </div>
+                      <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                          <div class="slds-page-header__name-title">
+                            <h1>
+                              <span class="slds-page-header__title slds-truncate" title="Rohde Corp - 80,000 Widgets">Credit Memo</span>
+                            </h1>
+                          </div>
+                        </div>
+                        <p class="slds-page-header__name-meta">Create Credit Memo for Invoices</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </aura:set>
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem padding="around-small" size="6">
+                <lightning:select aura:id="invType" disabled="{!or(v.isReview, v.isRecordEdit)}" name="invType" label="Scenario" required="true" value="{!v.selectedScenario}"  onchange="{!c.onScenarioChange}" >
+                    
+                    <aura:iteration items="{!v.scenarioList}" var="groupVal">
+                        <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == v.selectedScenario}"/> 
+                    </aura:iteration>                    
+                </lightning:select> 
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6"></lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                   <!-- <aura:If isTrue="{!v.isRecordEdit}"> 
+                        	<lightning:input name="input5" disabled="true" value="{!v.selectedOU}" label="From Operating Unit" />
+                    </aura:If>
+                    <aura:If isTrue="{!!v.isRecordEdit}"> -->
+                         <lightning:select onchange="{!c.onUnitChange}" aura:id="curVal" name="curVal" 
+                                           disabled="{! or(v.isReview, v.isOUDisabled) }" label="From Operating Unit" 
+                                           required="true" value="{!v.selectedOU}"  
+                                           messageWhenValueMissing="Complete this field">
+                             <option text="--None--" value=""></option>    
+                             <aura:iteration var="sysName" items="{!v.ouList}" >
+                                 <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.selectedOU}"></option>
+                             </aura:iteration>
+                             
+                          </lightning:select> 
+                        
+                      
+                   <!-- </aura:If> --> 
+                    
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <!--<aura:If isTrue="{!v.isRecordEdit}"> 
+                        <lightning:input name="input5" disabled="true" value="{!v.sourceSystem}" label="From OU" />
+                    </aura:If>
+                    <aura:If isTrue="{!!v.isRecordEdit}"> -->
+                       
+                        
+                        <lightning:select onchange="{!c.onSourceChange}" aura:id="curVal" name="curVal" 
+                                          disabled="{!or(v.isReview, if(v.defaultSource == 'BM - Arbitration',true,false) ,if(v.selectedOU != '101',true,false))}" label="From Source System" 
+                                          required="true" value="{!v.sourceSystem}"  
+                                          messageWhenValueMissing="Complete this field">
+                            <option text="--None--" value=""></option>   
+                            
+                            <aura:if isTrue="{! if(v.selectedOU == '101',true,false)}">
+                                <option text="BM - Arbitration" value="BM - Arbitration" selected="{! v.sourceSystem == 'BM - Arbitration'}"></option>
+                                <option text="BM - ADGM" value="BM - ADGM" selected="{! v.sourceSystem == 'BM - ADGM'}"></option>
+                            </aura:if> 
+                            <aura:if isTrue="{! if(v.selectedOU != '101',true,false)}">
+                                <option text="BM" value="BM" selected="{! v.sourceSystem == 'BM'}"></option>
+                            </aura:if>
+                            <!--<aura:iteration var="sysName" items="{!v.sourceSystemList}" >
+                                <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.sourceSystem}"></option>
+                            </aura:iteration>-->
+                            
+                        </lightning:select> 
+                   <!-- </aura:If>  -->
+                    
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                   <!-- <aura:If isTrue="{!v.isRecordEdit}">
+                        <lightning:input name="input5" disabled="true" value="{!v.selectedLookUpRecord.Name}" label="* Customer" />
+                    </aura:If>
+                    <aura:If isTrue="{!!v.isRecordEdit}"> -->
+                        <c:customLookupPublic SearchField="Lookup_Search_Field__c" isDisabled="{! or(v.isReview, v.isSourceNotSelected)}" aura:id="customer" filter="{!v.customerFilter}"  label = "* Customer" objectAPIName="account" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecord}" isClear="{!v.isReload}" />
+                   <!-- </aura:If> -->
+                </div>
+            </lightning:layoutItem>
+            <aura:If isTrue="{! v.selectedScenario == 'Invoice Fully Paid' }">
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <c:LEX_CreateInvoice aura:id="invoiceCreateComp" objCreditMemo="{!v.creditMemo}" objcreditMemoLineItem="{!v.creditMemoLineItem}"/> 
+                        <!--<c:LEX_CreateInvoice aura:id="invoiceCreateComp" objCreditMemo="{!v.creditMemo}" objcreditMemoLineItem="{!v.creditMemoLineItem}"/> -->
+                    	<!-- <lightning:input type="number" aura:id="inAmt" required="true" label = "Amount" disabled="{!v.isReview}"  value="{!v.inAmount}"></lightning:input> -->
+                    </div>
+                </lightning:layoutItem>
+                 
+                &nbsp;&nbsp;&nbsp;&nbsp;<lightning:button variant="brand" label="Add / Update Memo Detail" iconName="utility:record_create" iconPosition="right"  class="mergeButton" onclick="{!c.onInitializeInvoice}" /><br/>
+             <br/><br/>
+            </aura:If>
+            
+            <aura:If isTrue="{! and(v.showInvoiceSelection, v.selectedScenario == 'Invoice Not Paid / Partially Paid')}">
+                
+                
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        
+                        <lightning:select aura:id="invType" disabled="true" name="invType" label="Credit Memo Type" required="true" value="{!v.creditMemo.Oracle_Invoice_Type__c}"  messageWhenValueMissing="Complete this field" onchange="{!c.onTypeChange}" >
+                           
+                            <aura:iteration items="{!v.invoiceTypes}" var="groupVal">
+                                <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == v.creditMemo.Oracle_Invoice_Type__c}"/> 
+                            </aura:iteration>
+                            
+                        </lightning:select> 
+                    </div>
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem padding="around-small" size="6">
+                    <!--<c:reUsableMultiSelectLookup objectAPIName="Invoice__c"
+                                                 filter="{!'AND Invoice_Balance__c > 0 AND Invoice_Type__c != \''+v.defaultInvoiceType+'\' AND Oracle_Invoice_Id__c != null AND Entity__c=\''+v.selectedLookUpRecord.Id+'\''}"
+                                                 IconName="standard:account"
+                                                 lstSelectedRecords="{!v.selectedInvoiceLookUp}"
+                                                 label="Related Invoice"  isDisabled="{! or(v.isReview)}"
+                                                 isClear="{!v.isReload}"/> -->
+                    <c:customLookupPublic isDisabled="{! or(v.isReview, v.isSourceNotSelected)}" 
+                                            aura:id="relatedInvoice" 
+                                            filter="{!'AND Invoice_Balance__c > 0 AND Invoice_Type__c != \''+v.defaultInvoiceType+'\' AND Journal_Created__c = true AND Entity__c=\''+v.selectedLookUpRecord.Id+'\''}"  
+                                            label = "* Related Invoice" 
+                                            objectAPIName="Invoice__c" 
+                                            IconName="standard:account" 
+                                            selectedRecord="{!v.selectedInvoiceLookUp}" 
+                                            SearchField = "Invoice_Search_Text__c"
+                                            isClear="{!v.isReload}" />
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:textarea disabled="{!v.isReview}" label="Description" name="desc" value="{!v.creditMemo.Description__c}" aura:id="desc" required="false" messageWhenValueMissing="Complete this field"/> 
+                    </div>
+                </lightning:layoutItem>
+
+                
+                
+                <lightning:layoutItem padding="around-small" size="6">
+                    <lightning:button variant="brand" label="Select Credit Memo Lines" title="Select Credit Memo Lines" onclick="{! c.doShowInvoiceLine }"/> 
+                </lightning:layoutItem>
+            </aura:If>            
+        </lightning:layout>
+        <aura:If isTrue="{!and(v.showInvoiceSelectionTable, v.showInvoiceSelection)}">
+            <lightning:layout>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col"><div class="slds-truncate" title="Action">Action</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Transaction Reference">Name</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Invoice Balance">Invoice Balance</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Total Amount">Total Amount</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Total Tax Amount">Total Tax Amount</div></th>
+                            
+                            <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                <th scope="col"><div class="slds-truncate" title="In Progress Credit Memo Amount">In Progress CM Amount</div></th>
+                            </aura:If>
+
+                            <th scope="col"><div class="slds-truncate" title="Payment Currency">Payment Currency</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Credit Memo Type">Credit Memo Type</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.invoiceLineItems}" var="objInvoiceWrapper" indexVar="tableIndex">
+                            <tr class="slds-text-title--caps">
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Action" >
+                                        <lightning:button name="{!tableIndex}" variant="base" label="Show Invoice Lines" title="Lines" onclick="{!c.onShowInvoiceLine}" />
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Transaction Reference">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Name}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Invoice Balance">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Invoice_Balance__c}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Total Amount">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Total_Lines_Non_Taxable_Amount__c}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Total Tax Amount">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Total_Lines_Taxable_Amount__c}"/>
+                                    </div>
+                                </td>
+                                <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                    <td scope="col" width="20%">
+                                        <div class="slds-truncate" title="In Progress Credit Memo Amount">
+                                            <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Applied_Credit_Memo_Amount__c}"/>
+                                        </div>
+                                    </td>    
+                                </aura:If>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Payment Currency">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Payment_Currency__c}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Credit Memo Type">
+                                        <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Oracle_Invoice_Type__c}"/>
+                                    </div>
+                                </td>
+                            </tr> 
+                            
+                            <tr class="slds-text-title--caps">                                
+                                <aura:If isTrue="{!and(not(empty(objInvoiceWrapper.listInvoiceLineRec )), v.selectedInvoice == tableIndex)}"> 
+                                    <td colspan="10" style="border-top:none; background-color:rgb(243, 242, 242); padding-top:10px; padding-bottom:10px">
+                                        <!--<h3 class="slds-section-title-|-divider headerCss">Create Invoices Line Item</h3>-->                                       
+                                        
+                                        <table class="tbl-custom" style="width:90%; float:right">
+                                            <thead>
+                                                <tr class="slds-text-title--caps">       
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title=""></div></th>
+                                                    <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                                    	<th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Amount">Amount To Apply</div></th>
+                                                    </aura:If>
+                                                    
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Line Amount">Amount</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Line Tax Amount">Tax Amount</div></th>
+                                                    <!--<aura:If isTrue="{! v.selectedScenario != 'Invoice Fully Paid' }">
+                                                    	<th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Tax Amount">Credit Memo Applied Amount</div></th>
+                                                    </aura:If>
+                                                    -->
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Item Description">Item Description</div></th>
+                                                    <!--<th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Discount Tax Amount">Discount Tax Amount</div></th>  -->
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Item Reference">Item Reference</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Description">Description</div></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!objInvoiceWrapper.listInvoiceLineRec}" var="objInvoiceLineItemWrapper" indexVar="tableIndexLine">
+                                                    <tr class="slds-text-title--caps">
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                                                <div class="slds-truncate" title="Description">                               
+                                                                    <lightning:input name="{!tableIndexLine}" disabled="{!v.isReview}" type="checkbox" checked="{!objInvoiceLineItemWrapper.isSelected}" value="{!objInvoiceLineItemWrapper.isSelected}" onchange="{!c.onCheck}"/>
+                                                                </div>
+                                                            </aura:If>
+                                                        </td>
+                                                        <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                                            <td data-label="Amount">
+                                                                <lightning:input type="number" step="0.01" aura:id="lineAmt" class="amountCss" required="true" disabled="{!v.isReview}" variant = "label-hidden" value="{!objInvoiceLineItemWrapper.dAmount}"></lightning:input>
+                                                            </td>
+                                                        </aura:If>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Line Amount">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Line_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Line Tax Amount">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Line_Tax_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                       <!-- <aura:If isTrue="{! v.selectedScenario != 'Invoice Fully Paid' }">
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Credit_Memo_Applied_Amount__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </aura:If>
+                                                        -->
+
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Item_Description">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Item_Description__c}"/>
+                                                            </div>
+                                                        </td>
+<!--
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Taxable_Discount_Amount">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Taxable_Discount_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+ -->                                                       
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Item_Reference">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Item_Reference__c}"/>
+                                                            </div>
+                                                        </td>
+
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <aura:If isTrue="{! v.selectedScenario != 'Invoice Not Paid / Partially Paid'}">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:textarea label="" name="desc" value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Line_Description__c}" aura:id="desc" 
+                                                                        disabled="true" required="false" messageWhenValueMissing="Complete this field"/> 
+                                                                </div>
+                                                            </aura:If>
+                                                            <aura:If isTrue="{! v.selectedScenario == 'Invoice Not Paid / Partially Paid'}">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:textarea label="" name="desc" value="{!objInvoiceLineItemWrapper.InvoiceLineRec.Line_Description__c}" aura:id="desc" 
+                                                                        disabled="{!v.isReview}" required="false" messageWhenValueMissing="Complete this field"/> 
+                                                                </div>
+                                                            </aura:If>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </td>    
+                                </aura:If>
+                                
+                            </tr>
+                            
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                
+            </lightning:layout>
+        </aura:If>
+        <aura:set attribute="footer">
+            
+            <aura:If isTrue="{!!v.isRecordEdit}"> 
+            	<lightning:button iconName="utility:clear" variant="brand" label="Clear" title="clear" onclick="{!c.onReloadClick}"/>
+            </aura:If>
+            
+            <aura:If isTrue="{! !or(v.showPushToOracle,v.selectedScenario != 'Invoice Not Paid / Partially Paid' )}">
+                <lightning:button iconName="utility:save" variant="brand" label="Save" title="Save" onclick="{!c.saveAction}"/>
+            </aura:If>
+            <aura:If isTrue="{!v.showPushToOracle}">
+                <lightning:button iconName="utility:save" variant="brand" label="Submit To Finance" title="Save" onclick="{!c.pushToOracle}"/>
+                <lightning:button iconName="utility:save" variant="brand" label="Cancel" title="Cancel" onclick="{!c.onMemoCancellation}"/>
+            </aura:If>
+            
+            <aura:If isTrue="{!v.creditMemo.Id != null}">
+                <lightning:button iconName="utility:save" variant="brand" label="View Documents" title="Save" onclick="{!c.viewDocuments}"/>
+            </aura:If>
+
+        </aura:set>
+		
+    </lightning:card>
+</aura:component>

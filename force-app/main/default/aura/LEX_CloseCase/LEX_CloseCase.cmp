@@ -1,0 +1,65 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="CloseCase">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" /> 
+    <aura:attribute name="hasAccess" type= "boolean"/>
+    <aura:attribute name="caseMessage" type= "String" />
+    <aura:attribute name="caseResolution" type="String" />
+    <aura:attribute name="options" type="List"/>
+    <div class="slds">
+        <aura:html tag="style">
+            .cuf-content {
+            padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+            padding: 0rem !important;
+            }       
+            .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+            }
+        </aura:html>
+        <div class="modal-header slds-modal__header slds-size_1-of-1">
+            <h4 class="title slds-text-heading--medium" >Close Case</h4>
+        </div>
+        
+        <!-- MODAL BODY / INPUT FORM -->    
+        <div class="slds-modal__content slds-p-around_large  slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+            <form class="slds-form--stacked">
+                <aura:if isTrue="{!v.hasAccess}">
+                    
+                    <label >
+                        <abbr class="slds-required" title="required">* </abbr>Enter The Case Resolution</label>
+                    <div class="slds-truncate" >
+                        <lightning:select value="{!v.caseResolution}" aura:id="resolution">
+                            <option text="--None--" value=""/>
+                            <aura:iteration items="{!v.options}" var="option">
+                                <option text="{!option.Name}" value="{!option.Message}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <lightning:textarea aura:id="resolutionValue" name="caseResolution" value="{!v.caseResolution}" class="tallTextArea" messageWhenValueMissing="This field is required."/>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-text-heading_small slds-text-color_weak slds-text-align_center ">
+                            <aura:iteration items="{!v.caseMessage}" var="cus" indexVar="key">
+                                <div class="slds-text-heading_small slds-text-color_weak slds-text-align_center ">{!cus.value}</div>
+                            </aura:iteration>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </form> 
+            
+        </div>   <!-- End of Modal Content -->  
+        
+        <!-- MODAL FOOTER -->
+        <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+            <div class="forceChangeRecordTypeFooter">
+                <ui:button class="slds-button slds-button_neutral" label="Cancel" press="{! c.closeAction}" /> 
+                <aura:if isTrue="{!v.hasAccess}" > 
+                    <ui:button class="slds-button slds-button--brand"
+                               label="Save" press="{!c.getHelper}"/>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+</aura:component>

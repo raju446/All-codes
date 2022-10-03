@@ -1,0 +1,26 @@
+.content{
+    font-size: 20px;
+    font-weight: 900;
+}
+.google{
+    color:white;
+    background-color: black;
+    height: 50px;
+    border-radius: 10px;
+    margin-top : 400px;
+    width:270px;
+    font-weight: 700;
+    margin-left: 20px;
+}
+.google1{
+    background-color: black;
+    height: 50px;
+    border-radius:10px; 
+    width:270px;
+    font-weight: 700;
+    color: white;
+    margin-left: 20px;
+}
+.subtext{
+    font-weight: 600;
+}

@@ -1,0 +1,30 @@
+<apex:component controller="PriceItemRollupController" access="global">
+<apex:attribute type="string" name="ServiceRequestId" assignTo="{!SRID}" required="false" description="Service Request Id to Calculate the Rollup"/>
+
+        <STYLE type="text/css">
+          TH {font-size: 11px; font-face: arial;background: #CCCCCC;
+               border-width: 1;  text-align: center } 
+          TD  {font-size: 11px; font-face: verdana } 
+          TABLE {border: solid #CCCCCC; border-width: 1}
+          TR {border: solid #CCCCCC; border-width: 1}
+        </STYLE>
+      
+          <table border="0" >
+            <tr > 
+               <th>Service(s) Required</th>
+               <th>Service Category</th>
+               <th>Fees in AED</th>
+              
+            </tr>
+           
+             
+              
+                            
+          </table>
+          
+        
+ 
+
+
+<apex:outputText value="{!TotalAmount}"/>
+</apex:component>

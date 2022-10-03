@@ -1,0 +1,135 @@
+<apex:page >
+ <style>
+    #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+        width: 40px;
+        height: 40px;
+        background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+        background-size: contain;
+        -ms-interpolation-mode: bicubic;
+    }
+    #adgmload .sp_loader, #modal-adgmload .sp_loader {
+        padding-left: 5%;
+        padding-right: 5%;
+        padding-bottom: 1%;
+        padding-top: 1%;
+        background-color: #fff;
+        position: absolute;
+        border-radius: 8px;
+        top: 40%;
+        left: 43%;
+    }
+    #adgmload, #modal-adgmload {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: 9999;
+        background: rgba(0,0,0,0.25);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type=text]{
+        width:62% !important;
+    }
+    textarea{
+        width:62% !important;
+    }
+    .dateOnlyInput input{
+        width:35%;
+    }
+    .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+        border-color: #fff;
+    }
+    .margin-bottom-bl{
+        margin-bottom: 30px;
+    }
+    .vfHelpText a            {position:relative;}
+    .vfHelpText a span       {display: none;}
+    .vfHelpText a:hover span {display: block;
+                              position:absolute;
+                              top:1.25em;
+                              padding:5px 5px;
+                              /*left:-15em; width:16em;*/
+                              left:-10em; width:10%;
+                              z-index:100; min-width:11em;
+                              border:1px solid orange;
+                              background-color:#FEFDB9;
+                              color:black;
+                             }
+</style>
+   
+<div class="menu-services">
+    <apex:outputPanel layout="none">
+        <img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.RAK_Logo}'  width="100" height="60"/>
+    </apex:outputPanel>
+    <br/>
+    <div class="pageDesc">
+        <h5 style="color:black;">
+            <b style="font-size: large;">About RAKBANK</b>
+        </h5><br/><br/>
+        <p>RAKBANK is a proud member of the UAE Banking Federation (UBF) and as such, abides by the UBF stipulated Customer Charter for all member banks. 
+        We concur with the Customer Charter to promote trust and best practices across financial services industry, providing customers with clear 
+        guidelines about the standard of service they can expect from their banks. </p>
+
+        <p>RAKBANK have been a consistent banker / lender to SMEs even when other financiers would pull out of the segment basis market swings. 
+        Our tariffs continue to be competitive, and we are constantly evolving our offering with the key objective to offer convenience 
+        to SMEs (such as TRADEASSIST, Express Services, Cash Management etc.). </p>
+        <p>
+        The Bank offers a wide range business banking services throughout its branch network in the emirates and its portfolio of most advanced 
+        self-service channels electronic banking solutions, which include Digital Banking, Dedicated Mobile App for Business, Contact center, 
+        Webchat and IVR. Our digital platforms are user friendly and easy to use.</p>
+    </div>
+    
+    <div id="container">
+        <apex:outputPanel id="thePanel" layout="none">                   
+            <apex:form id="theForm">
+                <apex:pageBlock >
+                    <apex:pageBlockbuttons location="bottom">
+                        <apex:commandbutton value="Click here to apply online"  onclick="window.open('{!$Label.RAK_URL}','_blank')" reRender="theForm"/>
+                    </apex:pageBlockbuttons>
+                
+            <div style="font-size: 14px;">
+                <h5>About the product: </h5>
+                <p><br/>We understand that all businesses start with an account and therefore we have Business accounts for every stage of your 
+                    business - available in both Conventional and Islamic variants.
+                </p><br/><br/>
+                <h5>RAKstarter - For Startups and Entrepreneurs:</h5>
+                <ul><br/>
+                    <li>Zero balance account</li>
+                    <li>Free remittances &amp; preferential forex rates</li>
+                    <li>Free accounting package &amp; business insurance</li>
+                </ul><br/>
+                <h5>Current Account - For Growing Businesses:</h5>
+                <ul><br/>
+                    <li>Interest earning Account with low minimum balance</li>
+                    <li>Preferential transaction fees</li>
+                    <li>Dedicated Relationship Manager</li>
+                </ul><br/>
+
+                <h5>Business Elite - For Established Businesses:</h5>
+                <ul><br/>
+                    <li>Select free services</li>
+                    <li>Host of lifestyle benefits</li>
+                    <li>Priority servicing &amp; Dedicated Relationship Manager</li>
+                </ul><br/>
+                
+                
+
+                <h5>Introducing Quick Apply - Online Business Account Opening:</h5>
+                <p><br/>At RAKBANK, it is our constant endeavor to enhance our products and processes to provide more convenience and save time for our customers.</p>
+                <ul><br/>
+                
+                    <li>Apply digitally for an account in minutes</li>
+                    <li>Get an account number instantly<b>*</b></li>
+                    <li>Track application status online</li>
+                </ul><br/>
+
+                <p style="color:red;"><b >*</b><i>Account will be activated post internal approval.</i></p><br/>
+
+                </div>
+                </apex:pageBlock>
+           </apex:form>    
+        </apex:outputPanel> 
+    </div>
+  </div>
+</apex:page>

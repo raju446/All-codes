@@ -1,0 +1,66 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" controller="ChartController" action="{!prepareVisaChart}" >
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+    <div id="columnchart"></div>
+</body>
+<script>
+    //Invoke the draw chart to plot the points...
+    function drawChart() {
+        drawColumnChart();
+    }
+    function drawColumnChart()
+      {
+        var colorValues = [];
+        var month = new Array();
+        month[0] = "-";
+        month[1] = "Jan";
+        month[2] = "Feb";
+        month[3] = "Mar";
+        month[4] = "Apr";
+        month[5] = "May";
+        month[6] = "Jun";
+        month[7] = "Jul";
+        month[8] = "Aug";
+        month[9] = "Sep";
+        month[10] = "Oct";
+        month[11] = "Nov";
+        month[12] = "Dec";
+        colorValues.push('#FFC526'); //Open Status Color
+        colorValues.push('#ADCCCF'); //Closed Status Color
+
+        var rows = new Array();
+        var visaChartDataJSONString = '{!monthDataJSON}' ;//'{"1":{"iOpen":2,"iClose":0},"12":{"iOpen":6,"iClose":0}}';//'{!monthDataJSON}';
+        if(visaChartDataJSONString){
+          var visaChartDataJSON = JSON.parse(visaChartDataJSONString);
+          var iOpen = 0;
+          console.log(visaChartDataJSON);
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'Month');
+          data.addColumn('number', 'Open');
+          data.addColumn('number', 'Closed');
+          for(var key in visaChartDataJSON){
+            if (visaChartDataJSON.hasOwnProperty(key)) {
+              iOpen = iOpen + visaChartDataJSON[key].iOpen; //Gets the total open SR from previous month and add it to the current.
+              rows.push([month[key], iOpen, visaChartDataJSON[key].iClose]);
+            }
+          }
+          data.addRows(rows);
+          var options = {
+            legend: { position: 'bottom', alignment: 'start' },
+            'height':'250',
+            colors: colorValues
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('columnchart'));
+
+          chart.draw(data, options);
+        }
+      }
+      google.charts.setOnLoadCallback(drawChart);
+      
+</script>
+</apex:page>

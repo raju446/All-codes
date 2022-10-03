@@ -1,0 +1,6 @@
+.image{
+    object-fit: cover;
+    object-position: 53% 0;
+    height: 650px;
+    background: url(https://www.sectorlight.com/media/2433/3-island-shot-hr-v2.jpg?width=1920&upscale=false&quality=90);
+}

@@ -1,0 +1,542 @@
+<apex:page contentType="text/javascript" sideBar="false" showHeader="false" controller="PortalMainJSController">
+   var $ = jQuery.noConflict();
+   (function($){
+   
+       if ($("body.detailPage").length > 0) {
+            if ($(".bPageBlock .pbHeader .pbTitle h2:contains('Service Request')").length > 0) { //If the page is Service Request detail page
+                console.log(window.location.pathname);
+                var url = window.location.pathname;
+                var srID = url.substr(url.lastIndexOf('/') + 1); //Gets last value in URL path string which is service request id 
+                $.get("{!$Site.Prefix}/apex/ServiceRequestView?Id="+srID,function(data,status){
+                    if(data){
+                        var isAccessible = JSON.parse(data);
+                        console.log(isAccessible);
+                    
+                        if(isAccessible == 'false'){
+                            console.log('in error');
+                            location.href = "{!$Site.Prefix}/apex/SrNotAccessible";
+                        }
+                    }
+                });
+            }
+    
+            if ($(".bPageBlock .pbHeader .pbTitle h2:contains('Receipt')").length > 0) {
+                var url = window.location.pathname;
+                console.log(url);
+                var receiptID = url.substr(url.lastIndexOf('/') + 1); //Gets last value in URL path string which is service request id 
+                $.get("{!$Site.Prefix}/apex/ReceiptView?Id="+receiptID,function(data,status){
+                    if(data){
+                        var isAccessible = JSON.parse(data);
+                        console.log(isAccessible);
+                        if(isAccessible == 'false'){
+                            location.href = "{!$Site.Prefix}/apex/ReceiptNotAccessible";
+                        }
+                    }
+                });
+            }
+        }
+   
+        if($(".pageDescription").text()) { //Hides the Home text all the pages
+            if($(".pageDescription").text().trim().toLowerCase() == 'home'){
+               $(".pageDescription").css({"display":"none"}); 
+            }
+        }
+        //Replace the printable view with javascript print 
+        $('a[title="Printable View (New Window)"]').attr("href","javascript:window.print();");
+        $('a[title="Printable View (New Window)"]').attr('target','_blank');
+        
+        //Resizes the iframe for all related lists.
+        resizeIframe();
+        
+        //Translates the field values to Arabic on the SR Page.
+        translate_field();
+        
+        //Override default JS alert with bootstrap modal.
+        proxy_alert();
+        
+        //Populate calendar years
+        populate_Calendar_Years();
+        
+        //Remove the Edit column from global search
+        /*
+        $("#HexaBPM__Service_Request__c .list td:first-child").remove();
+         $("#HexaBPM__Service_Request__c .list th:first-child").remove();
+        */
+        //Setting the sidebar for knowledge
+        
+        if(window.location.href.indexOf("KnowledgeHome") > -1 || window.location.href.indexOf("UnifiedSearchResults") > -1) { 
+            $("table.outerNoSidebar tr:first").prepend('<td id="sidebarCell" class="customKSideBar sidebarCell"><div class="sidebar fixed" id="sidebarDiv"><iframe frameborder="no" height="1090px" width="100%" scrolling="no"></iframe></div></td>');
+            $(".customKSideBar iframe").attr("src",'{!$Site.Prefix}/PortalSidebar');
+        }
+        
+        //Hiding the Save &amp; New Button from the standard pages.
+        $("input[value='Save &amp; New']").hide();
+
+        //Setting the Profile Pic on the header
+        var profilePicId = '{!profilePicId}';
+        if(profilePicId != 'no-icon'){
+            $(".icon-profile-pic").removeClass("icon-adgm-profile"); 
+            var img_Profile_Pic_Tag = '<img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!profilePicId}' />';
+            $(".icon-profile-pic").append(img_Profile_Pic_Tag);
+        }
+        //Populating the Service Request Page Title
+        if(document.getElementById("save_new_url")){
+            var saveurl = document.getElementById("save_new_url").value;
+            var pageTitle = getParameterByName("service_request_title",saveurl); 
+            if(pageTitle){
+                $(".pageDescription").css({"display":"block"});
+                $(".pageDescription").text(pageTitle);
+            }
+        }
+        //Populating the Customer Name on SR Pages
+        var strAccountName = '{!JSENCODE(accountName)}';
+        $(".companylabel .li-val").text(strAccountName); //Setting the account name on the header
+        $("#{!$Label.Customer_Element_Id}").val(strAccountName);
+        $("#{!$Label.Customer_Element_Id}_lkold").val(strAccountName);
+        $("#{!$Label.Customer_Element_Id}_lkid").val('{!accId}');
+        $("#{!$Label.Customer_Element_Id}").prop('disabled', true);
+        $("#{!$Label.Customer_Element_Id}").addClass("grayout");
+        //$("#{!$Label.Customer_Element_Id}").prop('readonly', true);
+        
+        //Populating the EntityName on Account Statement
+        $("#{!$Label.EntityName_Account_Statement_Field}").val(strAccountName);
+        $("#{!$Label.EntityName_Account_Statement_Field}_lkold").val(strAccountName);
+        $("#{!$Label.EntityName_Account_Statement_Field}_lkid").val('{!accId}');
+        $("#{!$Label.EntityName_Account_Statement_Field}").prop('disabled', true);
+        
+        //Populating "Transfer To" field on Visa Transfer
+        $("#{!$Label.Transferring_To}").val(strAccountName);
+        $("#{!$Label.Transferring_To}").prop('readonly', true);
+        $("#{!$Label.Transferring_To}").addClass("grayout");
+        
+        
+        
+        //Populating the Contact Email and Phone
+        $("#{!$Label.Contact_Email_Element_Id}").val('{!ContactEmail}');
+        if(!$("#{!$Label.Contact_Mobile_Element_Id}").val())
+            $("#{!$Label.Contact_Mobile_Element_Id}").val('{!ContactPhone}');
+        
+        
+        //Populating the License Number on SR Pages.
+        var entityNumber = '{!entityNumber}';
+        if(entityNumber) {
+            $("#{!$Label.License_Field_Id}").val(entityNumber);
+            $("#{!$Label.License_Field_Id}").prop('readonly', true);
+            $("#{!$Label.License_Field_Id}").addClass("grayout");
+        }
+        //Populating EChannel Details
+        var EChannelAccountNumber = '{!EChannelAccountNumber}';
+        if(EChannelAccountNumber) {
+            $("#{!$Label.EChannel_Account_Number_Id}").val(EChannelAccountNumber);
+            $("#{!$Label.EChannel_Account_Number_Id}").prop('readonly', true);
+            $("#{!$Label.EChannel_Account_Number_Id}").addClass("grayout");
+        }
+        var EChannelExpiryDate = '{!EChannelExpiryDate}';
+        if(EChannelExpiryDate) {
+            $("#{!$Label.EChannel_Expiry_Date_id}").val(EChannelExpiryDate);
+            $("#{!$Label.EChannel_Expiry_Date_id}").prop('readonly', true);
+            $("#{!$Label.EChannel_Expiry_Date_id}").addClass("grayout");
+            $("#{!$Label.EChannel_Expiry_Date_id}").prop( "onfocus", null );
+            $("#{!$Label.EChannel_Expiry_Date_id}").next().css({"display":"none"});
+        }
+        var estCardNumber = '{!estCardNumber}';
+        if(estCardNumber) {
+            $("#{!$Label.Establishment_Card_Number_id}").val(estCardNumber);
+            $("#{!$Label.Establishment_Card_Number_id}").prop('readonly', true);
+            $("#{!$Label.Establishment_Card_Number_id}").addClass("grayout");
+        }
+        var estExpiryDate = '{!estExpiryDate}';
+        if(estExpiryDate) {
+            $("#{!$Label.Establishment_Card_Expiry_Date_Field_Id}").val(estExpiryDate);
+            $("#{!$Label.Establishment_Card_Expiry_Date_Field_Id}").prop('readonly', true);
+            $("#{!$Label.Establishment_Card_Expiry_Date_Field_Id}").addClass("grayout");
+            $("#{!$Label.Establishment_Card_Expiry_Date_Field_Id}").prop( "onfocus", null );
+            $("#{!$Label.Establishment_Card_Expiry_Date_Field_Id}").next().css({"display":"none"});
+        }
+        var estIssueDate = '{!estIssueDate}';
+        if(estIssueDate) {
+            $("#{!$Label.Est_Card_Issue_Date_Field_Id}").val(estIssueDate);
+            $("#{!$Label.Est_Card_Issue_Date_Field_Id}").prop('readonly', true);
+            $("#{!$Label.Est_Card_Issue_Date_Field_Id}").addClass("grayout");
+            $("#{!$Label.Est_Card_Issue_Date_Field_Id}").prop( "onfocus", null );
+            $("#{!$Label.Est_Card_Issue_Date_Field_Id}").next().css({"display":"none"});
+        }
+        
+        //Setting the Help text for Echannels 
+        sfdcPage.setHelp('{!$Label.Echannel_Help_Label}', '{!$Label.Echannel_Help_Text}');
+        
+        //Hides the Edit action link on the SR Pages.
+        $('.actionColumn').css({"display":"none"});
+        $('.actionColumn').empty();
+        
+        //Removing the hyperlinks for the standard links.
+        $('.pbSubsection .detailList a[id*="lookup"]').replaceWith(function() { 
+            return $('<label/>', {
+                html: this.innerHTML
+            });
+        });
+
+        //Setting the mobile responsive ham menu
+        //Mobile sidebar panel -- Copies the menus to the side panel
+        $("#portalbody ul#tabBar > li").each(function(){
+            
+                //mobile sidepanel
+                var sidepanel_tab = $(this).clone();
+                $("#mob-side-panel ul").append(sidepanel_tab);
+            
+                
+        });
+        //Populate the Bundle Information
+        $("#{!$Label.POBoxBundle_Label_Id}").after('<a class="viewBundleLink" onclick="openPOBoxBundleInfo();return false;" >P.O. Box Bundle Description</a>');
+        
+        //Removes the "edit" text on all New record creation page 
+        if($('.mainTitle:contains("Edit")').length > 0)
+            $('.mainTitle').html($('.mainTitle').text().replace(/Edit/g,''));
+            
+        if($('.pageType:contains("Edit")').length > 0)
+            $('.pageType').html($('.pageType').text().replace(/Edit:/g,''));
+        
+        
+        //Setting the href url for online registry solution
+        $(".wt-Online-Registry-Solution a").attr('href','{!$Label.Online_Registration_Solution_URL}');
+        $(".wt-Online-Registry-Solution a").attr('target','_blank');
+        
+        //Adding the close button to the sidepanel
+        var closeBtn = '<a href='javascript:void(0)' class='closebtn' onclick='closeNav()'>&times;</a>';
+        $("#mob-side-panel ul").prepend(closeBtn);
+
+        //Adds the hamburger menu to the li on smaller devices
+        var hamMenu = '<li><a onclick='openNav()'>☰</a></li>';
+        $("#portalbody ul#tabBar").prepend(hamMenu);
+        
+        //Hides Page Type Name from all the standard service request page
+        if ($(".bPageBlock .pbHeader .pbTitle h2:contains('Service Request')").length > 0) {
+            $("body .bPageTitle .ptBody .pageType").hide();
+        }
+        //Hides the edit button and submit request button if the request is already submitted.
+        if ($("body.detailPage").length > 0) {
+             
+            if ($(".bPageBlock .pbHeader .pbTitle h2:contains('Service Request')").length > 0) { //If the page is Service Request detail page
+                $(".bPageBlock.bDetailBlock .pbBottomButtons").hide(); //Remove the bottom buttons for all the SR detail pages
+                if(typeof sforce != 'undefined') {
+                    var url = window.location.pathname;
+                    var srID = url.substr(url.lastIndexOf('/') + 1); //Gets last value in URL path string which is service request id 
+                    $.get("{!$Site.Prefix}/apex/SRRelatedInfo?srId="+srID,function(data,status){
+                        if(data){
+                            var srData = JSON.parse(data);
+                            //console.log(srData);
+                            if(srData.length>0){
+                                var srSubmittedDateTime = srData[0].srSubmittedDateTime;
+                                if(srSubmittedDateTime){ //If sr is submitted, remove the below action buttons
+                                    $("input[name='edit']").remove();
+                                    $("input[name='submit_request']").remove();
+                                    //$('input[title="List of Participants"]').remove();
+                                }
+                                console.log(srData[0].disclaimerText);
+                                if(srData[0].disclaimerText)
+                                    $( "[id^='{!$Label.I_Agree_Field_Id}']" ).closest("tr").before('<tr><td class="last labelCol ">Declaration, Authorization and Privacy Statement</td><td class="last data2Col priv_stat_val" colspan="3">'+srData[0].disclaimerText+'</td></tr>');
+                            }
+                        }
+                    }); 
+                }
+                
+                //Removing all the hyperlink for SR Documents in the SR page - Solution: Created VF Page SRDocuments and loaded the data
+                $("[id$='{!$Label.SRDocument_Body}']").load('{!$Site.Prefix}/SRDocuments?id='+srID+' .pList');
+                
+                //Removing all the hyperlink for SR Steps in the SR page - Solution: Created VF Page SRSteps and loaded the data
+                $("[id$='{!$Label.Action_Item_Body}_body']").load('{!$Site.Prefix}/SRSteps?id='+srID+' .stepList');
+                
+                //Populate the SR Items on the Service Request Detail Page
+                $("[id$='{!$Label.PriceItem_Body}_body']").load('{!$Site.Prefix}/SRPriceItem?id='+srID+' .priceList');
+                
+
+            }
+            if ($(".bPageBlock .pbHeader .pbTitle h2:contains('Case')").length > 0) { //Case Page
+                $(".bPageBlock.bDetailBlock .pbBottomButtons").hide(); //Remove the bottom buttons for all the detail pages
+            }
+        }
+        else{ //Edit page
+                //IF SR Edit Page
+                if ($(".bPageBlock .pbHeader .pbTitle h2").text().indexOf('Service Request') != -1 &amp;&amp; $(".bEditBlock")) {
+                    console.log('Edit');
+                        //Page is in edit mode, remove the top buttons
+                    $(".bPageBlock.bEditBlock .pbButton").hide();
+                    
+                    //Get the SR Id from the hidden field of standard page.
+                    if(document.getElementById("id")){
+                        var srID = document.getElementById("id").value;
+                        $.get("{!$Site.Prefix}/apex/SRRelatedInfo?srID="+srID,function(data,status){
+                            if(data){
+                                var srTemplateData = JSON.parse(data);
+                                console.log(srTemplateData);
+                                if(srTemplateData.length > 0) {
+                                    disclaimer_statement = srTemplateData[0].disclaimerText;
+                                    console.log(disclaimer_statement );
+                                    if(disclaimer_statement)
+                                        $( "[id^='{!$Label.I_Agree_Field_Id}']" ).closest("tr").before('<tr><td class="last labelCol">Declaration, Authorization and Privacy Statement</td><td class="last data2Col priv_stat_val" colspan="3">'+disclaimer_statement +'</td></tr>');
+                                } 
+                                //Populate the POBox Type for PO Box renewal.
+                                var srTemplateName = srTemplateData[0].srTemplateName;
+                                if(srTemplateName){ 
+                                    var poboxType = '{!poboxType}';
+                                    if( srTemplateName == 'P_O_Box_Renewal'){
+                                        $("#{!$Label.P_O_Box_Bundle_Type_Field}").val(poboxType);
+                                    }
+                                    else if(srTemplateName == 'P_O_Box_Cancellation'){
+                                        
+                                        
+                                        $("#{!$Label.P_O_Box_Bundle_Type_Field}").replaceWith('<input type="text" name="{!$Label.P_O_Box_Bundle_Type_Field}" id="{!$Label.P_O_Box_Bundle_Type_Field}" />');
+                                        $("#{!$Label.P_O_Box_Bundle_Type_Field}").val(poboxType);
+                                        $("#{!$Label.P_O_Box_Bundle_Type_Field}").prop('readonly', true);
+                                        $("#{!$Label.P_O_Box_Bundle_Type_Field}").addClass("grayout");
+                                        
+                                    }
+                                }
+                            }
+                        }); 
+                    }
+                    //Adding the disclaimer statement on new SR Page
+                    var disclaimer_statement;
+                    if(typeof sforce != 'undefined') {
+                        var url;
+                        if(document.getElementById("save_new_url"))
+                            url = document.getElementById("save_new_url").value;
+                        var srType = getParameterByName("type",url);  
+                        //console.log('srType '+srType ); 
+                        if(srType){
+                            $.get("{!$Site.Prefix}/apex/SRRelatedInfo?srType="+srType,function(data,status){
+                                if(data){
+                                    var srTemplateData = JSON.parse(data);
+                                    //console.log(srTemplateData);
+                                    if(srTemplateData.length > 0) {
+                                        disclaimer_statement = srTemplateData[0].disclaimerText;
+                                        if(disclaimer_statement)
+                                            $( "[id^='{!$Label.I_Agree_Field_Id}']" ).closest("tr").before('<tr><td class="last labelCol">Declaration, Authorization and Privacy Statement</td><td class="last data2Col priv_stat_val" colspan="3">'+disclaimer_statement +'</td></tr>');
+                                    } 
+                                }
+                            }); 
+                        } 
+                    }
+                    
+                }
+        }
+       
+        //Populating the SR Description on the Standard SR Page
+        if($("body.editPage, body.detailPage").length > 0) {
+            if(document.getElementById("save_new_url")){
+                var saveurl = document.getElementById("save_new_url").value;
+                var srType = getParameterByName("type",saveurl);  
+                if(srType)
+                    load_SRDescription(srType);
+            }
+        }
+
+        //Adding the Home Icon for the tab menus
+        
+        $('.wt-Home a').html('&amp;nbsp;');
+        $('.wt-Home a').addClass("icon-adgm-house-black-building-shape");
+        
+        //Renaming the Knowledge Tab
+        $("#Knowledge_Tab a").text('Knowledge centre');
+        //Global search for the portal
+        $("#span-search-btn").click(function(){
+            document.getElementById("searchform").submit();
+        });
+        
+        //Setting the mobile view - listing services - Load the Portal sidebar for mobile - Services will appear in the ham menu
+        if (window.matchMedia("(max-width:1210px)").matches) {
+            $(".mob-side-services iframe").attr("src","{!$Site.Prefix}/PortalSidebar");
+        }
+        
+        
+    }(this.jQuery));
+    function load_SRDescription(record_type){
+        $.get("{!$Site.Prefix}/apex/SRRelatedInfo?srType="+record_type,function(data,status){
+            if(data){
+                var srTemplateData = JSON.parse(data);
+                console.log(srTemplateData);
+                if(srTemplateData.length > 0) {
+                    var description_text = srTemplateData[0].srTemplateDescription;
+                    if(description_text != null &amp;&amp; description_text.length > 0)
+                        jQuery(".bPageTitle .content").append(jQuery('<div class="description" >' + description_text +'</div>'));
+                }
+            }
+        });
+        
+    }
+    function getParameterByName(name,url) {
+        
+        //Defult url page url
+        if(typeof(url)==='undefined')
+            url = location.search;
+
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&amp;]" + name + "=([^&amp;#]*)"),
+            results = regex.exec(url);
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+    function proxy_alert(){
+        clearModalContent(); 
+        document.getElementById('modal-adgmload').style.visibility="hidden"; 
+        window.alert = function() {
+            $("#modalBox .modal-title").text('Alert');
+            $("#modalBox .modal-main-content").html('<div class="modal-body alert-message-text">'+arguments[0]+'</div>');
+            $("#modalBox").modal();
+        };
+    }
+    function populate_Calendar_Years(){
+        var startYear=(new Date()).getFullYear() - 90;
+        var endYear=(new Date()).getFullYear() + 90;
+        var htmlStr='';
+        if(startYear &lt; endYear){
+            for(i=startYear;i&lt;endYear+1;i++){
+                            htmlStr += '<option value="'+i+'">'+i+'</option>';
+            }
+            $('#calYearPicker').html(htmlStr);
+        }
+    }
+    function openPOBoxBundleInfo(){
+        clearModalContent();  
+        $("#modalBox").modal();
+        document.getElementById('modal-adgmload').style.visibility="hidden";
+        var str_Statement = '<table> \
+        <tr> \
+        <td class="tdDivider"> \
+        <div class="poinfo" ><b style="font-size: initial;">PO Box Corporate - 995 AED per year</b></div> \
+        <div class="poinfo" >Physical PO Box at one of our Emirates Post locations (mail volume is limited to 1 mailbag)</div> \
+        <div class="poinfo" >1 additional agent for the 1st year</div> \
+        <div class="poinfo" >"you got mail" regular notifications</div> \
+        <div class="poinfo" >SMS notifications (eShaar)</div> \
+        <div class="poinfo" >Online mail history portal</div> \
+        <div class="poinfo" >Secure storage of oversized items</div> \
+        <div class="poinfo" >Access to all digital services</div> \
+        <div class="poinfo" >Complimentary On-Demand delivery* (2x for the 1st year)</div> \
+        <div class="poinfo" >Online mail history portalComplimentary Domestic Express* service (2x for the 1st year)</div> \
+        <div class="poinfo" >Complimentary registered digital communications* services (4x for the 1st year)</div> \
+        </td> \
+        <td class="tdDivider last">\
+        <div class="poinfo" ><b style="font-size: initial;">EziMail Bronze - 2500 AED per year</b></div>\
+        <div class="poinfo" >Weekly scheduled delivery and collection of mail</div>\
+        <div class="poinfo" >Mailbag service to manage and store large mail volumes</div>\
+        <div class="poinfo" >1 additional agent for the 1st year</div>\
+        <div class="poinfo" >SMS notifications (eShaar)</div>\
+        <div class="poinfo" >Online mail history portal</div>\
+        <div class="poinfo" >Secure storage and handling</div>\
+        <div class="poinfo" >Access to all digital services</div>\
+        <div class="poinfo" >Complimentary Domestic Express* service (6x for the 1st year)</div>\
+        <div class="poinfo" >Complimentary registered digital communications* services (6x for the 1st year)</div>\
+        </td>\
+        </tr>\
+        <tr>\
+        <td class="tdDivider">\
+        <div class="poinfo" ><b style="font-size: initial;">EziMail Gold Features - 12000 AED per year</b></div>\
+        <div class="poinfo" >All of the EziMail Bronze features</div>\
+        <div class="poinfo" >Including 6 x per week delivery and collection of mail and 12 x use of registered digital communications</div>\
+        <div class="poinfo" ></div>\
+        </td>\
+        </tr>\
+        <tr>\
+        <td class="tdDivider">\
+        <div class="poinfo" ></div>\
+        <div class="poinfo" ></div>\
+        </td>\
+        </tr>\
+        </table>';
+        $("#modalBox .modal-title").html("P.O. Box Bundle Description");
+        $("#modalBox .modal-main-content").html('<div class="stat_block">'+str_Statement +'</div>');
+    }
+    function clearModalContent()
+    {
+        //Hides iframe for contactinfo since we are showing on the same div
+        $("#modalBox .modal-iframe").css({"display":"none"});
+        $("#modalBox .modal-title").html("&nbsp;");
+        $("#modalBox .modal-main-content").html("");
+    }
+    function openStatement(){
+        clearModalContent();  
+         $("#modalBox").modal();
+        document.getElementById('modal-adgmload').style.visibility="hidden";
+        var str_Statement = 'You accept that ADGM Registration Authority may disclose information relating to you or the \
+                             individuals mentioned in the application submitted by you or relating to your relationships \
+                             with ADGM or ADGM Registration Authority including, but not limited to, your name, email address, \
+                             contact numbers, the names, email addresses and contact numbers of the individuals mentioned in the \
+                             application submitted by you or the details of any applications submitted by you in ADGM to: \
+                            <ol type="a" > \
+                                <li><span>ADGM Financial Services Regulatory Authority;</span></li> \
+                                <li><span>ADGM Courts;</span></li> \
+                                <li><span>Professional advisors and service providers who are under a duty of confidentiality with ADGM, ADGM Registration Authority, ADGM Financial Services Regulatory Authority or ADGM Courts;</span></li> \
+                                <li><span>Professional advisors and service providers to the extent that they need access to such information for the purpose of or in connection with processing your application(s) or facilitating or issuing your ADGM permit(s);</span></li> \
+                                <li><span>Any court or tribunal or regulatory, supervisory, governmental or quasigovernmental authority.</span></li> \
+                                <li>Any person to whom information is required or requested to be disclosed by any governmental, taxation or other regulatory authority or similar body or pursuant to any applicable law or regulation.</li> \
+                            </ol>';
+        $("#modalBox .modal-title").html("Statement");
+        $("#modalBox .modal-main-content").html('<div class="stat_block">'+str_Statement +'</div>');
+    }
+    function openContactInfo(){
+        clearModalContent();
+        
+        //Setting the href for contact Info in the settings
+        $("#modalBox").modal();
+        document.getElementById('modal-adgmload').style.visibility="visible";
+        $("#modalBox .modal-title").html("Edit Contact Information");
+        $("#modalBox .modal-iframe").css({"display":"block"});
+        $("#modalBox .modal-iframe").attr("src","{!$Site.Prefix}/_ui/core/userprofile/ContactInfoEditPage?u={!$User.Id}");
+        
+        //Loads the css file for the iframe --applying styles to Iframe contact info
+        $('#modalBox .modal-iframe').load( function() {
+            $('#modalBox .modal-iframe').contents().find("head")
+            .append('<link rel="stylesheet" href="/apex/PortalIframeCss" type="text/css" />');
+            document.getElementById('modal-adgmload').style.visibility="hidden";
+            $('#modalBox .modal-iframe').contents().find("body").append('<script>function closeDialog(refreshParent) {$("#modalBox", window.parent.document).modal("hide"); } </script>');
+            
+        });
+       
+    }
+    /*Gets the source field values(from custom settings) and performs the Arabic translation.*/
+     function translate_field(){
+        var dict = {};
+        var JSONTranslateFields = JSON.parse('{!jsonTranslateFields}');
+        for(var i = 0; i &lt; JSONTranslateFields.length; i++){
+            dict[JSONTranslateFields[i].Source__c] = JSONTranslateFields[i].Destination__c;
+        }
+        
+        for (var key in dict) {
+            var identifier = key;
+            //console.log('identifier'+identifier);
+            if(document.getElementById(identifier)){
+                document.getElementById(identifier).addEventListener('keyup', function(event){
+                    var sourceElement = event.target || event.srcElement;
+                    $.getJSON('https://www.googleapis.com/language/translate/v2/',{key:'{!$Label.Google_API}',source:'en', target:'ar', q: $(this).val()})
+                        .done(function(response){
+                            var translated_val = response["data"].translations[0].translatedText;
+                            var destinationFieldId = dict[sourceElement.id];
+                            document.getElementById(destinationFieldId).value = translated_val;
+                        })
+                        .fail(function(error){
+                            console.log('Google Translation error: '+error);
+                        });                   
+                });
+            }
+        }
+
+    }
+    function openNav() //Mobile View - Opens the sidebar nav
+    {
+        document.getElementById("mob-side-panel").style.width = "250px";
+        document.body.style.overflow='hidden';
+        $('body').css('position','fixed');
+    }
+    function closeNav() { //Mobile View - Closes the sidebar nav
+
+        document.getElementById("mob-side-panel").style.width = "0";
+        document.body.style.overflow='auto';
+        $('body').css('position','relative');
+    }
+    function resizeIframe() { //Resizes the iframe for all the related list - no scroll effect
+        $(".detailList iframe").each(function() {
+            $(this).load(function() {
+                this.style.height = this.contentWindow.document.body.scrollHeight+ 'px';
+            });
+        });
+      }
+</apex:page>

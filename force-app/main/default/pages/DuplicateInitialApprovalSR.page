@@ -1,0 +1,7 @@
+<apex:page standardController="HexaBPM__Service_Request__c" extensions="DuplicateInitialApprovalSRController" sidebar="false" showHeader="false">
+    <apex:form >
+        <br/>
+        <apex:outputLabel style="font-weight:bold;" value="There are duplicate Initial Approval Service requests raised. The latest service request is {!latestOpenCIDSR}. In order to view and cancel the duplicate requests go to the Entity." rendered="{!hasMultiple}"/>
+        <apex:outputLabel style="font-weight:bold;" value="The are no duplicate Initial Approval service request." rendered="{!NOT(hasMultiple)}"/>
+    </apex:form>
+</apex:page>

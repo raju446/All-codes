@@ -1,0 +1,274 @@
+<!--***********************************************************************************************
+* Name               : TicketDetails                                                              *
+* Description        : This page to display ticket details page. Has below function.              *
+*                       - Displays all the selected ticket's details.                             *
+*                       - Related Comments.                                                       *
+*                       - Related Files.                                                          *
+*                       - Related History.                                                        *
+*                       - Add Files to the ticket.                                                *
+*                       - Add Comments to the ticket.                                             *
+*                       - Update assigned to and status of the tickets.                           *
+* Created Date       : 09/01/2017                                                                 *
+* Created By         : NSI                                                                        *
+* Last Modified Date : 09/01/2017                                                                 *
+* Last Modified By   :                                                                            *
+* ----------------------------------------------------------------------------------------------- *
+* VERSION     AUTHOR      DATE              COMMENTS                                              *
+* 1.0         NSI         09/01/2017        Initial Draft                                         *
+*************************************************************************************************-->
+<apex:page docType="html-5.0" controller="TicketDetailsController" title="{!selectedBugRecord.Name}" tabStyle="Issue__c">
+    <input id="hiddenElementId" type="hidden" />
+	<style>
+        .popupBackground {
+            /* Background color */
+            background-color: black;
+            opacity: 0.2;
+            /* Generic for Major browsers */
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)"; 
+            /* IE 5-7 */
+            filter: alpha(opacity = 20);
+            /* Netscape */
+            -moz-opacity: 0.6;
+            /* Safari 1.x */
+            -khtml-opacity: 0.6;
+            /* Dimensions */
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1051;
+            position: fixed;
+        }
+        
+        .overlay {
+            /* Background color */
+            background-color: black;
+            opacity: 0.2;
+            /* Generic for Major browsers */
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)"; 
+            /* IE 5-7 */
+            filter: alpha(opacity = 20);
+            /* Netscape */
+            -moz-opacity: 0.6;
+            /* Safari 1.x */
+            -khtml-opacity: 0.6;
+            /* Dimensions */
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1051;
+            position: fixed;
+        }
+  
+        /* This is for the message DIV */
+        .PopupPanel {
+            /* Background color */
+            /* border: solid 2px #00205B;
+               background-color: white; */
+            /* Dimensions */
+            left: 45%;
+            width: 100px; //
+            margin-left: -100px;
+            top: 50%;
+            height: 100px;
+            z-index: 999;
+            position: fixed;
+        }
+    
+        /* This is for the message DIV */
+        .contentDiv {
+            position: absolute;
+            z-index: 100;
+            width: 50%;
+            background-color: white;
+            border: 1px solid #01426A;
+            border-radius: 5px;
+            margin-left: 12%;
+        }
+        
+        .data2Col{
+        	border-bottom: 2px solid #ececec !important;
+        }
+    </style>
+    <script type="text/javascript">
+    	function resetTextArea(){
+    		var rtId = document.getElementsByClassName('cke_1')[0].id;
+    		if(rtId.indexOf('cke_') >= 0){
+    			var subrtId = rtId.substring('cke_'.length, rtId.length);
+    			CKEDITOR.instances[subrtId].setData('');
+    		}
+    	}
+    	window.onload = function setFocus(){
+            document.getElementById("hiddenElementId").focus();
+        }
+	</script>
+    <!-- <apex:actionStatus id="status">
+        <apex:facet name="start">
+            <div>
+                <div class="popupBackground"></div>
+                <div class="PopupPanel">
+                   <img src="{!$Resource.dsfs__PleaseWait}"/>
+                </div>
+            </div>
+        </apex:facet>
+    </apex:actionStatus> -->
+    <apex:actionstatus id="status">
+        <apex:facet name="start">
+            <div class="waitingSearchDiv" id="el_loading" style="background-color: #000000; height: 100%;opacity:0.65;width:100%; z-index: 102; zIndex: 102;"> 
+                <div class="waitingHolder" style="width: 150px; border: 1px solid grey; padding: 10px; border-radius: 5px; background-color: #fbfbfb; margin-top: 10%;">
+                    <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                    <span class="waitingDescription">Please Wait...</span>
+                </div>
+            </div>
+        </apex:facet> 
+    </apex:actionstatus>
+    <apex:pageMessages id="errorBlock"/>
+    <apex:outputPanel id="ticketDetails"> 
+	    <apex:pageBlock title="Ticket Details" rendered="{!showDetails}" id="ticketDetailSection">
+	    	<apex:pageBlockSection columns="2">
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Ticket Number" for="sb_ticketnumber" />
+	    			<apex:outputField value="{!selectedBugRecord.Name}" id="sb_ticketnumber"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Created By" for="sb_createdBy" />
+	    			<apex:outputField value="{!selectedBugRecord.CreatedBy.Name}" id="sb_createdBy"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Assigned To" for="sb_assignedTo" />
+	    			<apex:outputField value="{!selectedBugRecord.Assigned_To__c}" id="sb_assignedTo"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Status" for="sb_status" />
+	    			<apex:outputField value="{!selectedBugRecord.Status__c}" id="sb_status"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Severity" for="sb_severity" />
+	    			<apex:outputField value="{!selectedBugRecord.Severity__c}" id="sb_severity"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Created Date" for="sb_createdDate" />
+	    			<apex:outputField value="{!selectedBugRecord.CreatedDate}" id="sb_createdDate"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Milestone" for="sb_milestone" />
+	    			<apex:outputField value="{!selectedBugRecord.Milestone__c}" id="sb_milestone"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Expected End Date" for="sb_expectedEndDate" />
+	    			<apex:outputField value="{!selectedBugRecord.Expected_End_Date__c}" id="sb_expectedEndDate"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Issue Type" for="sb_issue_type" />
+	    			<apex:outputField value="{!selectedBugRecord.Type__c}" id="sb_issue_type"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Approved by Client" for="sb_ABC" />
+	    			<apex:outputField value="{!selectedBugRecord.Approved_By_Client__c}" id="sb_ABC"/>
+	    		</apex:pageBlockSectionItem>
+	    	</apex:pageBlockSection>
+	    	<apex:pageBlockSection columns="2">
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Issue Summary" for="sb_issue_summary" />
+	    			<apex:outputField value="{!selectedBugRecord.Issue_Summary__c}" id="sb_issue_summary"/>
+	    		</apex:pageBlockSectionItem>
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Issue Description" for="sb_issue_description" />
+	    			<apex:outputField value="{!selectedBugRecord.Issue_Description__c}" id="sb_issue_description"/>
+	    		</apex:pageBlockSectionItem>
+	    	</apex:pageBlockSection>
+<!--     		<apex:pageBlockSection columns="2"> -->
+<!-- 	    		<apex:pageBlockSectionItem > -->
+<!-- 	    			<apex:outputLabel value="Created Date" for="sb_createdDate" /> -->
+<!-- 	    			<apex:outputField value="{!selectedBugRecord.CreatedDate}" id="sb_createdDate"/> -->
+<!-- 	    		</apex:pageBlockSectionItem> -->
+<!-- 	    		<apex:pageBlockSectionItem > -->
+<!-- 	    			<apex:outputLabel value="Expected End Date" for="sb_expectedEndDate" /> -->
+<!-- 	    			<apex:outputField value="{!selectedBugRecord.Expected_End_Date__c}" id="sb_expectedEndDate"/> -->
+<!-- 	    		</apex:pageBlockSectionItem> -->
+<!-- 	    	</apex:pageBlockSection> -->
+	    </apex:pageBlock>
+	    <c:GenericHistoryComponent limit="50" objectName="{!selectedBugRecord}"/>
+	    <apex:outputPanel id="relatedFiles" layout="block" style="background-color: white;"> 
+		    <apex:pageBlock title="Related Files" rendered="{!showFiles}">
+		    	<apex:pageBlockSection columns="1">
+		    		<apex:pageBlockTable value="{!selectedTicketRelatedFiles}" var="thisFile">
+		    			<apex:column headerValue="Action">
+		    				<apex:outputLink value="javascript:void(0);" onClick="window.open('/servlet/servlet.FileDownload?file={!thisFile.Id}');">View</apex:outputLink>
+		    			</apex:column>
+		    			<apex:column value="{!thisFile.Title}" />
+		    			<apex:column value="{!thisFile.CreatedBy.Name}" />
+		    		</apex:pageBlockTable>
+				</apex:pageBlockSection>
+		    </apex:pageBlock>
+	    </apex:outputPanel>
+	    <apex:pageBlock title="Related Comments">
+	    	<apex:outputPanel id="relatednotes" layout="block" style="background-color: white;"> 
+		    	<apex:pageBlockSection columns="1" rendered="{!showNotes}">
+			    	<apex:repeat value="{!selectedBugRelatedNotes}" var="thisNote">
+						<apex:pageBlockSectionItem >
+							<apex:outputPanel >
+						    	<a href="javascript:void(0);" title="{!thisNote.CreatedBy.Name}">
+						        	<img src="/img/icon/profile16.png" alt="{!thisNote.CreatedBy.Name}" />  
+						      	</a>
+						      	<b> 
+				        			<a href="javascript:void(0);" title="{!IF(thisNote.CreatedBy.Name != null, thisNote.CreatedBy.Name, $User.FirstName+' '+$User.LastName)}">
+				        				{!IF(thisNote.CreatedBy.Name != null, thisNote.CreatedBy.Name, $User.FirstName+' '+$User.LastName)}
+				        			</a> — 
+			        			</b>
+			        			<a href="javascript:void(0);" title="{!IF(thisNote.CreatedDate != null, thisNote.CreatedDate, TODAY())}">
+			        				<apex:outputText value="{0, date, dd/MM/yyyy}" style="font-weight: bold;">
+                                   		<apex:param value="{!IF(thisNote.CreatedDate != null, thisNote.CreatedDate, TODAY())}" />
+	                                </apex:outputText>
+	                           	</a>
+	                           	<p>
+						   			<apex:outputField value="{!thisNote.Comment_Description__c}"/>
+						   		</p>
+						    </apex:outputPanel>
+					     </apex:pageBlockSectionItem>
+					</apex:repeat>
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			<apex:form >
+				<apex:pageBlockSection columns="1">
+					<apex:pageBlockSectionItem >
+		    			<apex:inputField value="{!newComment.Comment_Description__c}" id="new_comment" label="New Comment : " styleClass="rtxt"/>
+					</apex:pageBlockSectionItem>
+				</apex:pageBlockSection>
+				<apex:pageBlockSection columns="2">
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Update Status : " for="up_status" />
+						<apex:inputField value="{!selectedBugRecord.Status__c}" id="up_status" />
+					</apex:pageBlockSectionItem>
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Milestone : " for="up_milestone" />
+						<apex:inputField value="{!selectedBugRecord.Milestone__c}" id="up_milestone" />
+					</apex:pageBlockSectionItem>
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Assigned To : " for="up_assignedTo"/>
+						<apex:selectList id="up_assignedTo" value="{!selectedAssinger}" size="1">
+							<apex:selectOptions value="{!assignedTos}"/>
+						</apex:selectList>	
+					</apex:pageBlockSectionItem>
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Expected End Date : " for="up_expectedEndDate" />
+						<apex:inputField value="{!selectedBugRecord.Expected_End_Date__c}" id="up_expectedEndDate" />
+					</apex:pageBlockSectionItem>
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Approved by Client" for="up_ABC" />
+						<apex:inputField value="{!selectedBugRecord.Approved_By_Client__c}" id="up_ABC" />
+					</apex:pageBlockSectionItem>
+		    	</apex:pageBlockSection>
+	    		<apex:actionFunction action="{!saveNote}" name="Save" reRender="relatednotes, errorBlock, ticketDetailSection" status="status" onComplete="resetTextArea();"/>
+	    	</apex:form>
+	    	<apex:pageBlockButtons location="bottom">
+	    		<apex:outputLink styleClass="btn" value="javascript:void(0);" style="padding: 5px; text-decoration: none;"
+	    						 onClick="window.open('/p/attach/NoteAttach?pid={!selectedBugRecord.Id}&parentname={!selectedBugRecord.Name}&retURL=%2Fapex%2FTicketDetails?tid={!selectedBugRecord.Id}', '_self');">
+					Attach a File
+				</apex:outputLink>
+				<apex:outputLink styleClass="btn" value="javascript:void(0);" style="padding: 5px; text-decoration: none;" onClick="Save();">Save</apex:outputLink>
+	    	</apex:pageBlockButtons>
+	    </apex:pageBlock>
+    </apex:outputPanel>	 
+</apex:page>

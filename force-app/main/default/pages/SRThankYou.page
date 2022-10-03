@@ -1,0 +1,43 @@
+<apex:page >
+    <head>
+        <style>
+            .imgContainer {
+                width: 20%;
+                height: 100px;
+            }
+            .main-area-block{
+                text-align: center;
+                padding-top: 10%;
+                background-color: #fff;
+                padding-bottom: 10%;
+                font-size: 1.4em;
+            }
+            .margin-top-spacer{
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-area-block">
+            <img class="imgContainer" src="{!$Resource.tick_icon}" />
+            <div class="margin-top-spacer">
+                Thank you for submitting your request. Your request will be reviewed for approval. 
+            </div>
+            <div class="margin-top-spacer">
+                Kindly click this <a href="/{!$CurrentPage.parameters.srID}">link</a> to go back to the submitted Service Request. 
+            </div>
+        </div>
+    <script>
+        autoredirect();
+        function autoredirect(){
+            window.setTimeout(function(){
+                if(!typeof sforce) 
+                    window.location.href = "/{!$Site.Prefix}/{!$CurrentPage.parameters.srID}"; //Redirection url for community users
+                else
+                    window.location.href = "/{!$CurrentPage.parameters.srID}"; //Redirection url for backend users
+        
+            }, 5000);
+        }
+    </script>
+    </body>
+</apex:page>

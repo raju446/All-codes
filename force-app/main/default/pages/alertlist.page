@@ -1,0 +1,28 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false">
+<head>
+</head>
+<body>
+    <div class="alert-block">
+        <div class="pageTopic">Alerts</div>
+        <div class="pageDescriptionArea">List of Alerts</div>
+        <div class="alert-detail">
+            <div class="close-area">
+                
+            </div>
+            <div class="alert-detail-area">
+                <div class="table-header-block">Alerts</div>
+                <table class="customTbl">
+                    <thead>
+                        <th>Name</th>
+                        <th>Alert Message</th>
+                    </thead>
+                    <tbody>
+                        <td>test</td>
+                        <td>This is to inform you.!</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

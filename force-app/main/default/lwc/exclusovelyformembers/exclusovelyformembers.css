@@ -1,0 +1,19 @@
+.custom-box {
+    background-color:#fff;
+    border-radius: 15px
+}
+
+.container{
+    background-color:#000;
+}
+
+.time{
+    font-size: 30px;
+}
+.greet{
+    color:#fff;
+    font-size: 30px;
+}
+.temp{
+ font-size: 30px;
+}

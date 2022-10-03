@@ -1,0 +1,30 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" controller="BookAppointmentController">
+    <style>
+        .bPageBlock{
+            width: 100% !important;
+        }
+        .close{
+            display:none;
+        }
+    </style>
+    <script>
+        //document.getElementById('adgmload').style.visibility="hidden";
+        window.onload = function() {
+            document.getElementById('modal-adgmload').style.visibility="hidden";
+            clearModalContent(); 
+            //var strURL = "/adgm/apex/createappointment?srId="+srId;
+            $("#modalBox").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            $("#modalBox .modal-title").text('Make An Appointment');
+            $("#modalBox .modal-main-content").load("/apex/createappointment",function(){
+            //$("#modalBox .modal-main-content").load(strURL,function(){
+                // document.getElementById('modal-adgmload').style.visibility="hidden";
+            });
+        }
+    </script>
+    <apex:detail subject="{!srId}" relatedlist="false"/>
+    <apex:form id="frm">
+    </apex:form>
+</apex:page>

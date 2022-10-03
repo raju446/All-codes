@@ -1,0 +1,23 @@
+<template>
+    <div class="container slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" padding="around-small">
+                <p class="greet">{greetingMessage}</P>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" padding="around-small">
+                <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    <h2 class="slds-text-heading_small slds-m-bottom_small">
+                        [Company Name]
+                    </h2>
+                    <h6 class="slds-m-bottom_small">
+                        Fintech
+                    </h6>
+                    <div class="slds-p-around_large">
+                        <lightning-progress-bar value={progressvalue}  size="large"></lightning-progress-bar>
+                    </div>
+
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

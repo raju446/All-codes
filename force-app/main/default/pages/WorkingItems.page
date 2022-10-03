@@ -1,0 +1,43 @@
+<apex:page sidebar="false">
+    <script>
+        window.onload = function() {
+            document.getElementById('adgmload').style.visibility="visible";
+            window.location.replace("/00O0Y000007B0hM");
+            //document.getElementById('adgmload').style.visibility="hidden";
+        }
+    </script>
+    <style>
+        #adgmload{
+            width:100%;
+            height:100%;
+            position:fixed;
+            z-index:0;
+            background: rgba(0,0,0,0.25)
+        }
+        #adgmload img{
+            content:url("{!$Resource.adgm_spinner}");
+        }
+        #adgmload .sp_loader {
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-bottom: 1%;
+            padding-top: 1%;
+            background-color: #fff;
+            position: absolute;
+            border-radius: 8px;
+            top: 40%;
+            left: 43%;
+        }
+        #adgmload .sp_loader .adgm_spinner{
+            width: 40px;
+            height: 40px;
+            background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+            background-size: contain;
+        }
+    </style>
+    <div id="adgmload">
+        <span class="sp_loader">
+            <div class="adgm_spinner"></div> <!--ADGM Loader Image -->
+        </span>
+    </div>   
+</apex:page>

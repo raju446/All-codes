@@ -1,0 +1,47 @@
+.all{
+    background-color: black;
+}
+.service{
+    background-color: black;
+    color:white;
+    font-size: 220%;
+    padding: 2%;
+    margin-left: 15px;
+}
+.search{
+    margin-left:10px;
+    width:95%;
+
+}
+.aa{
+    color:white;
+    padding: 2%;
+}
+.ff{
+    font-size:200%;
+    margin-left: 11px;
+}
+.ff1{
+    font-size:107%;
+    margin-left: 11px;
+}
+.style{
+ padding:2%; 
+}
+.insta{
+    border-radius: 30px;
+}
+.linkdin{
+    border-radius: 15px;
+}
+.Go{
+    text-align: right;
+}
+.cantainer{
+    background-color: gray;
+    color: white;
+    border-radius: 20px;
+    text-align: left;
+    border-color: grey;
+    font-weight: 700;
+}

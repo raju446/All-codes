@@ -1,0 +1,20 @@
+.inner
+{
+  display: inline-block;
+  margin-right: 20px;
+  height: 30px;
+}
+.buttonfooter{
+ float: right;
+ margin-top: -28px;
+ width: -25px;
+}
+.text{
+    color:#002C5E;
+    font-weight:900;
+    margin-left: 389px;
+    font-size: 20px;
+}
+.cll{
+  background-color: hsl(0deg 0% 85%);
+}

@@ -1,0 +1,22 @@
+<!-- SRPriceItem Page for the Service Request Detail Page -->
+<!-- This page is used to override the standard price item page on the Service Request Detail page -->
+<!-- Author: Rajil -->
+<!-- Created on : 13th March 2018 -->
+
+<apex:page applyBodyTag="false" standardStylesheets="false" showHeader="false" readOnly="true" controller="SRPriceItemController">
+<apex:pageBlock >
+      <div class="priceList" >
+          <div class="no-rec-msg {!IF(lstSRPriceItem.size > 0 ,'hide','show')}" > No PriceItems Available.</div>
+          <div class="{!IF(lstSRPriceItem.size > 0 ,'show','hide')}">
+              <apex:pageBlockTable value="{!lstSRPriceItem }" var="srPriceItem" styleClass="{!IF (lstSRPriceItem.size >0  ,'hide','show') }" >
+                 <apex:column value="{!srPriceItem.Name}"/>
+                 <apex:column value="{!srPriceItem.HexaBPM__Product__r.Name}"/>
+                 <apex:column value="{!srPriceItem.Fee__c}"/>
+                 <apex:column value="{!srPriceItem.Tax_Amount__c}"/>
+                 <apex:column value="{!srPriceItem.Total_Amount__c}"/>
+              </apex:pageBlockTable>
+          </div>
+     </div>
+   </apex:pageBlock>
+   
+</apex:page>

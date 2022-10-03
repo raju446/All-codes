@@ -1,0 +1,54 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" controller="AlertsListController">
+<head>
+</head>
+<body>
+    <div class="alert-block">
+        <div class="pageTopic">Alert</div>
+        <div class="pageDescriptionArea">List of Alerts</div>
+        <div class="alert-detail">
+            <div class="close-area">
+                
+            </div>
+            <apex:form id="table-form">
+                <div class="alert-detail-area">
+                    <div class="table-header-block">Alerts</div>
+                    
+                        <table class="customTbl">
+<!--                             <thead> -->
+<!--                                 <th>Detail</th> -->
+<!--                             </thead> -->
+                            <tbody>
+                                <apex:repeat var="a" value="{!Alerts}">
+                                    <tr>
+                                        <td class="td_text"><apex:outputText value="{!a.alertMessage}" escape="false" /></td>
+                                    </tr>
+                                </apex:repeat>
+                                <!-- <td>test</td>
+                                <td>This is to inform you.!</td>-->
+                            </tbody>
+                        </table>
+                    
+                </div> <!--Detail Area Ends here -->
+                <div class="page-footer text-center"> <!---Pagination Area-->
+                    
+                        <span class="first-arrow" disabled="{!!setCon.hasPrevious}"><apex:commandLink styleClass="dec-none" reRender="table-form"  action="{!setCon.first}"  title="First Page"><span class="icon icon-adgm-arrow-left-1"></span><span class="icon icon-adgm-arrow-left-1 double-left-arrow"></span></apex:commandLink></span>
+                        <span class="prev-arrow" disabled="{!!setCon.hasPrevious}"><apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.previous}" title="Previous Page"><span class="icon icon-adgm-arrow-left-1"></span></apex:commandLink></span>
+                        <!-- <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText> -->
+                        <span class="page-num"><apex:outputText >page {!setCon.PageNumber} of {!TotalPages} </apex:outputText></span>
+                        <span class="next-arrow" disabled="{!!setCon.hasNext}"><apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.next}"  title="Next Page"><span class="icon icon-adgm-arrow-right-1"></span></apex:commandLink></span>
+                        <span class="last-arrow" disabled="{!!setCon.hasNext}"><apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.last}"  title="Last Page"><span class="icon icon-adgm-arrow-right-1"></span><span class="icon icon-adgm-arrow-right-1 double-left-arrow"></span></apex:commandLink></span>
+                        
+                        <!-- <apex:commandLink status="fetchStatus" reRender="table-form" value="Refresh" action="{!refresh}" title="Refresh Page"/> -->
+                        <!-- <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                            <apex:actionStatus id="fetchStatus" startText="Fetching..." stopText=""/ >
+                        </apex:outputPanel> -->
+                        <!-- <div id="pagination"></div> -->
+                </div>
+            </apex:form>
+        </div>
+    </div>
+</body>
+<script>
+  
+</script>
+</apex:page>

@@ -1,0 +1,589 @@
+<apex:page showHeader="false" docType="html-5.0" controller="PortalSidebarController" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" action="{!FetchBalanceFromOracle}">
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/main.css')}" />
+    <link href="{!URLFOR($Resource.FZbootstrap, 'bootstrap/css/bootstrap.min.css')}" rel="stylesheet"/>
+    <script>
+ 
+    </script>
+    <style class="sidebarcss"></style>
+    <style type="text/css" media="screen">
+      .bootstrap-switch-handle-off{
+                  color: #fff !important;
+          background: #428bca !important;
+    
+      }
+    .bootstrap-switch.bootstrap-switch-large .bootstrap-switch-handle-on, 
+    .bootstrap-switch.bootstrap-switch-large .bootstrap-switch-handle-off, 
+    .bootstrap-switch.bootstrap-switch-large .bootstrap-switch-label{
+        font-size: 1em;
+        text-shadow: none !important;
+    }      
+    .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, 
+    .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+        background: #428bca !important;
+    }   
+    .bootstrap-switch.bootstrap-switch-large{ margin: 5px auto;}
+        
+      #topup-form input,#topup-form button{border-radius: 4px; font-size: 1.3em;color:#505050;padding-right: 43px;}
+      #topup-form label {line-height: 30px; float: left; color: #505050; font-size:1.2em;}
+      #topup-form .form-group .bootstrap-switch {margin-bottom: 15px;}
+      #topup-form .form-group{text-align: center;}
+        button.btn.topup {
+            background-color: #44939C;
+            padding: 7px 10px !important;
+            padding: 0px;
+            border: 0px;
+            color: #fff;
+            text-transform: inherit;
+            background: #44939;
+            border-radius: 2px;
+            border: 1px solid #44939C;
+            font-size: 13px !important;
+            font-family: Raleway_Bold !important;
+        }
+    .sidebar .serivceBox a{display: block;} 
+     .serivceBox a:hover { text-decoration: initial;}
+     .adgm-box
+     {
+        background-color: #F7F7F7;
+        padding-bottom: 11%;
+        padding-top: 7%;
+        text-align:center;
+        position: relative;
+     }
+     .circle
+     {
+         position: relative;
+     }
+    .circle img {
+        border-radius: 50%;
+        width: 45%;
+    }
+    .circle:hover:after {
+        content: "";
+        display: block;
+        background: rgba(255,255,255,0.5);
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 27%;
+        right: 27%;
+        bottom: 0;
+    }
+    .circle:hover .middle {
+        opacity: 1;
+        z-index: 1;
+        transition: .2s ease;
+    }
+    .middle {
+        transition: .2s ease;
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%)
+    }
+    .text {
+        font-size: 16px;
+        color: #002A3A;
+        font-family: Raleway_Bold;
+    }
+
+    .icon-adgm-company:before {
+        font-size: 110px;
+        position: relative;
+        top: 18%;
+        left: 29%;
+        color: #fff;
+    }
+    .icon-adgm-company
+    {
+        padding-top: 7%;
+    }
+    .adgm-box h4
+    {
+        color: #505050;
+        font-size: 1.8em;
+        font-family: Raleway_Regular;
+    }
+    .center
+    {
+        text-align: center;
+    }
+    .adgm-box .line
+    {
+        border-bottom:1px solid #505050;
+    }
+    .short-margin
+    {
+        margin-left:25%;margin-right:25%
+    }
+     body
+    {
+        font-family: Raleway_Regular;
+    }
+    .sidebar
+    {
+        background-color:#FFFFFF;
+    }
+    #sidebarDiv {
+        padding: 0px;
+    }
+    .serivceBox
+    {
+        padding-left: 5%;
+        padding-right: 5%;
+        padding-top: 1%; /*4% to 1%*/
+    }
+    .company-glance .details,.recharge-balance .form-group
+    {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+    .stripe span
+    {
+        font-size:1.4em;
+        font-family:Raleway_Bold;
+        color:#44939C;
+    }
+    .serivceBox i
+    {
+        float:left;
+        padding-right: 5px;
+    }
+    .serivceBox h6
+    {
+        font-family: Raleway_Bold;
+        color: #505050;
+        font-size:1.2em;
+        text-transform: uppercase;
+    }
+    .sidebar .sidebar-icon
+    {
+        color:#44939C;
+        font-size:30px;
+    }
+    .sidebarBody .table
+    {
+        display:table;
+        margin-bottom: 10px;
+    }
+    .sidebarBody .table-cell
+    {
+        display:table-cell;
+        vertical-align: middle;
+    }
+    .sidebarBody .table-cell.icon-cell
+    {
+        width:20%;
+    }
+    .stripe
+    {
+        text-transform: uppercase;
+        margin-top:10%; /*7% TO 10%*/
+        margin-bottom:3%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    .sidebar .glance-row h6
+    {
+        color: #505050;
+        font-size:1.3em;
+        font-family: Raleway_Bold;
+        margin-bottom: 3px;
+    }
+    .sidebar .glance-row
+    {
+        padding-bottom:5%; /*Change Made*/
+        padding-top: 3%;
+    }
+    .sidebar .glance-row .glance-val
+    {
+        font-size:1.3em;
+        color:#505050;
+        font-family: Raleway_Medium;
+    }
+    input[type="radio"] {
+        display:none;
+    }
+    input[type="radio"] + label {
+        color: #fff;
+        font-family: Raleway_Bold;
+        font-size:12px;
+        margin-right:6%;
+    }
+    input[type="radio"] + label span {
+        display:inline-block;
+        width:12px;/*Change made from 19 to 12*/
+        height:12px;
+        margin:-6px 4px 0 0;
+        vertical-align:middle;
+        cursor:pointer;
+        -moz-border-radius:  50%;
+        border-radius:  50%;
+        border: 2px solid #fff;
+    }
+
+    input[type="radio"] + label span {
+        background-color:#ffffff;
+        border: 1px solid;
+    }
+
+    input[type="radio"]:checked + label span{
+        background-color:#44939C;
+    }
+    #topup-form input
+    {
+        background: transparent;
+    }
+    .btn-primary:hover, .btn:hover
+    {
+        background-color:#335562 !important;
+
+    }
+    .serivceBox:hover
+    {
+        background-color: #335562;
+    }
+    .serivceBox:hover h6,.serivceBox:hover .sidebar-icon{
+        color: #ffffff;
+    }
+    #topup-form button
+    {
+        margin-top: 5%;
+
+    }
+    .sidebar .adgm-box .icon-adgm-profile
+    {
+        font-size: 90px;
+        color: #fff;
+    }
+    .profilepicture
+    {
+        position: relative;
+    }
+    .sidebarBody
+    {
+        height:100%;
+        background-color: #fff;
+       
+    }
+    body{
+         font-size: 100%;
+    }
+    html{
+        100%;
+    }
+    .currency-holder{
+        position: absolute;
+        color: #505050;
+        top: 84px;
+        right: 25px;
+        font-size: 1.3em;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    .form-control{
+        padding: 5px 12px; //Change Added
+    }
+    .profile-line{
+        font-size: 16px;
+        font-weight: bold;
+    }
+    a.text:hover{
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .numberCircle {
+        border-radius: 50%;
+        width: 24px;
+        overflow: hidden;
+        display: inline-block;
+        height: 24px;
+        padding: 4px 2px;
+        background: #ffc525;
+        border: 2px solid #ffc525;
+        color: #414c50;
+        text-align: center;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+        vertical-align: baseline;
+        text-align: center;
+    }
+    .newFlag {
+        background-image: none;
+        margin: 0;
+        margin-left: 2px;
+        padding: 0;
+        position: relative;
+        bottom: 2px;
+        font-weight: bold;
+        font-size:10px;
+        color:red;
+    }
+    </style>
+
+  </head>
+
+
+<body class="sidebarBody">
+    <div class="container-fluid container" style="margin: 0; padding: 0;">
+        <div class="sidebar">
+            <div class="adgm-box">
+                <div class="profilepicture">
+                    <apex:outputPanel styleClass="circle" layout="block">
+                        <apex:outputPanel rendered="{!profilePicId = null}" layout="none" >
+                            <div class="icon icon-adgm-profile"></div>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!profilePicId != null}" layout="none">
+                            <img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!profilePicId}' />
+                        </apex:outputPanel>
+                    
+                        <div class="middle">
+                            <a href="/ProfilePicture" class="text">Edit</a><apex:outputPanel rendered="{!profilePicId!=null}" layout="none" ><span class="profile-line">|</span><a onclick="confirmProceed();return false;"  class="text">Remove</a></apex:outputPanel>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                <div class="center">
+                    <h4>{!$User.FirstName} {!$User.LastName}</h4>
+                </div>
+                <div class="short-margin">
+                    <div class="line"> </div>
+                </div>
+            </div>
+            <div class="sidebar-block">
+                <div class="lservices bottom-space-5">
+                    <div class="stripe">
+                        <span>Services</span>
+                    </div>
+                    <div class="services">
+                        <div class="serivceBox">
+                            <a href="{!$Site.Prefix}/apex/CommunityServices">
+                                <div class="table">
+                                    <div class="table-cell icon-cell"><i class="sidebar-icon icon-adgm-company-profile-sidebar"></i></div>
+                                    <div class="table-cell"><h6>Government Services</h6></div>
+                                </div>
+                            </a>                            
+                        </div>
+                        
+                        <apex:outputpanel rendered="{!!isGuestUser}" layout="none">
+                        
+                        <div class="serivceBox">
+                            <a href="{!$Site.Prefix}/apex/ThirdParty_DisclaimerPage">
+                                <div class="table">
+                                    <div class="table-cell icon-cell"><i class="sidebar-icon icon-adgm-company-profile-sidebar"></i></div>
+                                    <div class="table-cell"><h6>3rd PARTY SERVICES <span class="newFlag">New!</span></h6></div>
+                                </div>
+                            </a>                            
+                        </div>
+                        </apex:outputpanel>
+                    </div>
+                </div>
+                <div class="lrequests">
+                    <div class="stripe">
+                        <span>Requests</span>
+                    </div>
+                    <div class="services bottom-space-5">
+                        <div class="serivceBox">
+                            <a href="/srlistview?view=actionitem&type=pendingactions">
+                                <div class="table">
+                                    <div class="table-cell bubble-cell"><span title="{!pendingRequestCount}" class="numberCircle">{!pendingRequestCount}</span></div>
+                                    <div class="table-cell icon-cell"><i class="sidebar-icon icon-adgm-pending-actions-sidebar"></i></div>
+                                    <div class="table-cell"><h6>Pending Actions</h6></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="serivceBox">
+                            <a href="/srlistview?view=servicerequest&type=savedrequests">
+                                <div class="table">
+                                    <div class="table-cell bubble-cell"><span  title="{!savedRequestCount}" class="numberCircle">{!savedRequestCount}</span></div>
+                                    <div class="table-cell icon-cell"><i class="sidebar-icon icon-adgm-saved-requests-sidebar"></i></div>
+                                    <div class="table-cell"><h6>Saved Requests</h6></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="serivceBox">
+                            <a href="/srlistview?view=servicerequest&type=currentrequests">
+                                <div class="table">
+                                    <div class="table-cell bubble-cell"><span title="{!currentRequestCount}" class="numberCircle">{!currentRequestCount}</span></div>
+                                    <div class="table-cell icon-cell"><i class="sidebar-icon icon-adgm-current-requests-sidebar"></i></div>
+                                    <div class="table-cell"><h6>Current Requests</h6>  </div>
+                                </div>   
+                            </a>                  
+                        </div>
+                    </div>
+                </div>
+                <div class="company-glance bottom-space-5">
+                    <div class="company-overview">
+                        <div class="stripe"><span>Your Company at a Glance</span></div>
+                    </div>
+                    <div class="details">
+                        <div class="glance-row">
+                            <h6>Portal Balance</h6>
+                            <div class="glance-val">
+                                <apex:outputText value="{0, number, ###,##0.00}">
+                                    <apex:param value="{!portalBalance}"/>
+                                </apex:outputText>
+                                <span class="currencyCode">AED</span>
+                            </div>
+                            
+                        </div>
+                        <div class="glance-row">
+                            <h6>Operating Name</h6>
+                            <div class="glance-val">
+                                <span>{!OperatingName}</span>
+                            </div>
+                        </div>
+                        <apex:outputpanel layout="block" styleclass="glance-row" rendered="{!!isGuestUser}">
+                            <h6>Number of Employees</h6>
+                            <div class="glance-val">
+                                <span>{!TotalVisasUsed}</span>
+                            </div>
+                        </apex:outputpanel>
+                        <!--<apex:outputpanel layout="block" styleclass="glance-row" rendered="{!!isGuestUser}">
+                            <h6>Number of Active Licenses</h6>
+                            <div class="glance-val">
+                                <span>{!ActiveLicenses}</span>
+                            </div>
+                        </apex:outputpanel>-->
+                                           
+                    </div>
+                </div>
+                <!--Recharge balance block -->
+                <apex:outputPanel rendered="{!isPaymentServiceEnabled || isGuestUser}" >
+                    <div class="recharge-balance">
+                        <div class="stripe">
+                            <span>Recharge Your Account</span>
+                        </div>      
+                        <form id="topup-form" class="bottom-space-10" style="padding-bottom: 100%;">
+                            <div class="form-group" style="position: relative;padding-top:3%;">
+                                
+                                <label for="balance">Choose from one of the options</label>
+                                <input type="radio" id="radioportal" name="balanceSwitch" value="Online Payment" />
+                                <label for="radioportal"><span></span>Online Payment</label>
+                                <input type="radio" id="radiovisa" name="balanceSwitch" value="Wire Transfer" />
+                                <label for="radiovisa"><span></span>Wire Transfer</label>
+                                
+                                <input type="number" class="form-control" id="balance" placeholder="Enter Amount to Top up"/><span class="currency-holder">AED</span>
+                                <button  class="btn btn-block topup" onclick="Payment();return false;">Top up your balance</button>
+                            </div>
+                            
+                        </form> 
+                    </div>
+                </apex:outputPanel>
+            </div>
+            
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/js/jquery.min.js')}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{!URLFOR($Resource.FZbootstrap, 'bootstrap/js/bootstrap.min.js')}"></script>
+    
+    <script type="text/javascript">
+            
+        $("a").on("click", function(e){
+            e.preventDefault();
+            if($(this).attr('href'))
+                window.top.location.href = $(this).attr('href');
+        });
+         
+        function clearModalContent()
+        {
+            window.parent.$("#modalBox .modal-title").html("");
+            window.parent.$("#modalBox .modal-main-content").html("");
+            //Hides iframe for contactinfo since we are showing on the same div
+            window.parent.$("#modalBox .modal-iframe").css({"display":"none"});
+        }
+        function invalidAlertMsg(msg){
+            clearModalContent();
+            window.parent.document.getElementById('modal-adgmload').style.visibility="hidden";
+            window.parent.$("#modalBox").modal(); 
+            window.parent.$("#modalBox .modal-title").text('Alert');
+            window.parent.$("#modalBox .modal-main-content").html("<div class='modal-body alert-message-text'>"+msg+"</div>");
+            
+        }
+        
+        function confirmProceed(){
+            clearModalContent();  
+            window.parent.document.getElementById('modal-adgmload').style.visibility="visible";
+            window.parent.$("#modalBox").modal();
+            window.parent.$("#modalBox .modal-title").html("Confirm");
+            window.parent.$("#modalBox .modal-main-content").load("{!$Site.prefix}/apex/DeleteProfilePicture", function(){
+                window.parent.document.getElementById('modal-adgmload').style.visibility="hidden";
+            });
+            
+            
+        }
+        
+        function Payment()
+        {
+            //alert('Please note that we are undergoing portal maintenance and this services is not be available at this time.');
+            //return;
+        
+            //if('{!hasPartyId}' == 'true')
+            //{
+                clearModalContent();
+                var Amount = document.getElementById('balance').value;
+                console.log('Amount log'+document.getElementById('balance').value);
+                if(document.querySelector('input[name="balanceSwitch"]:checked')) {
+                    console.log('Amount'+Amount);
+                    if(Amount && validateAmount(Amount)){
+                        var maxAmt = parseInt('{!$Label.Wire_Transfer_Max_Amount}');
+                        console.log('Amount '+Amount + 'Max: ' +maxAmt );
+                        if(Amount <= maxAmt ) {
+                            var topupOption = document.querySelector('input[name="balanceSwitch"]:checked').value;
+                            if(topupOption == 'Online Payment'){
+                                var encodedtopupOption = encodeURIComponent(topupOption);
+                                window.parent.document.getElementById('modal-adgmload').style.visibility="visible";
+                                window.parent.$("#modalBox").modal(); //Confirm Top Up Portal Balance
+                                window.parent.$("#modalBox .modal-title").text('Confirm Top Up Portal Balance');
+                                window.parent.$("#modalBox .modal-main-content").load("{!$Site.prefix}/apex/Paymentform?amount="+Amount+'&rechargeOption='+encodedtopupOption, function(){
+                                    window.parent.document.getElementById('modal-adgmload').style.visibility="hidden";
+                                });
+                                document.getElementById('balance').value = "";
+                            }
+                            else{
+                                window.open('WireTransfer?amount='+Amount,'_blank');
+                                document.getElementById('balance').value = "";
+                            }
+                        }
+                        else
+                            invalidAlertMsg("The maximum allowed amount is {!$Label.Wire_Transfer_Max_Amount}. ");
+                       
+                    }
+                    else{
+                        invalidAlertMsg("Please enter a valid amount.");
+                    }
+                }
+                else{
+                        invalidAlertMsg("Please select one of the recharge options.");
+                }
+            //}
+            //else
+            //{
+                //invalidAlertMsg("You are not allowed to proceed with portal balance top-up.  Please contact ADGM Corporate Relations Team for further assistance.");
+            //}
+        }
+        function validateAmount(amt){
+            var hash = /^(\d*\.)?\d+$/ ; ///^[1-9]\d*$/;
+            if(hash.test(amt))
+                return true;
+            else
+                return false;
+        }
+    </script>
+    
+  </body>
+</html>
+</apex:page>

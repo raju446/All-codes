@@ -1,0 +1,54 @@
+<aura:component controller="ContactPrivateViewController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="isShowData" type="Boolean"/>
+    <aura:attribute name="recordId" type="Id"/>   
+    
+    <!-- Handler Start -->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <h3 class="slds-section__title-action"><b class="customHeading">Personal Information <aura:if isTrue="{!!v.isShowData}"><span class="privateInfoDisclaimer">(Please contact BR&amp;P team to access the below information)</span></aura:if></b></h3>    
+    <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Contact">
+        <div class=" slds-theme_default">
+            <lightning:layout >
+                <lightning:layoutItem padding="around-small" size="6">
+                    <!-- Email -->
+                    <aura:if isTrue="{!!v.isShowData}">
+                        Email: <ui:outputText  aura:id="Email" value="**********" class="slds-form_inline privateTextView" />
+                    </aura:if>
+                    <aura:if isTrue="{!v.isShowData}">
+                        <lightning:outputField fieldName="Email" class="slds-form_inline" />
+                    </aura:if>
+                    <hr class="customHRStyle"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="6" class="customPadding">
+                    <!-- Mobile Phone -->
+                    <aura:if isTrue="{!v.isShowData}">
+                        <lightning:outputField fieldName="MobilePhone" class="slds-form_inline" />
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isShowData}" >
+                        Mobile: <ui:outputText  aura:id="Mobile" class="privateTextView" value="**********" />
+                        
+                    </aura:if>
+                    <hr class="customHRStyle"/>
+                </lightning:layoutItem>     
+            </lightning:layout>
+        </div>
+        <h3 class="slds-section__title-action"><b class="customHeading">System Information</b></h3>    
+        <div class=" slds-theme_default">
+            <lightning:layout >
+                <lightning:layoutItem padding="around-small" size="6">
+                    Created By: <lightning:outputField variant="label-hidden" fieldName="CreatedById" class="slds-form_inline" />, &nbsp; 
+                    <lightning:outputField variant="label-hidden" fieldName="CreatedDate" class="slds-form_inline" />
+                    <hr class="customHRStyle"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="6" class="customPadding">
+                    
+                   Last Modified By: <lightning:outputField variant="label-hidden" fieldName="LastModifiedById" class="slds-form_inline" />, &nbsp; 
+                    <lightning:outputField variant="label-hidden" fieldName="LastModifiedDate" class="slds-form_inline" />
+                    <hr class="customHRStyle"/>
+                </lightning:layoutItem>     
+            </lightning:layout>
+        </div>
+    </lightning:recordViewForm>
+    
+   
+</aura:component>

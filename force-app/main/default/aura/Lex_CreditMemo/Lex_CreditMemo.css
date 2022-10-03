@@ -1,0 +1,6 @@
+.THIS .slds-has-error .slds-input  {
+  border-color : rgb(194, 57, 52) !important;
+}
+.THIS .amountCss {
+    width: 149px;
+}

@@ -1,0 +1,189 @@
+<apex:page showHeader="false" sidebar="false" applyHtmlTag="false" standardStylesheets="false"  applyBodyTag="false" renderAs="pdf"   controller="StatementAccountController" action="{!fetchStatementAccount}">
+
+    <head>
+        <style>
+            body{
+                font-family: sans-serif;
+                font-size: 11px;
+            }
+            @page {
+              size: 14in 8.5in;
+            }
+            .summary-table{
+                width:100%;
+                
+            } 
+            .col-eq{
+                width:33.33%;
+            }  
+            .col-header{
+                background-color: #44939c;
+                color: #fff;
+                padding: 10px;
+            }
+            .left-header{
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            .col-header-val{
+                
+            }
+            .col-header-spacer{
+                width: 20%;
+            }
+            .header-val{
+                text-align:center;
+            }
+            .col-td-val{
+                width:10%;
+            }
+            .tab-values{
+                border: 1px solid black;
+                border-collapse: collapse;
+                margin-top: 20px;
+                width:100%;
+            }
+            .tab-values thead{
+                background-color:#adcccf;
+            }
+            .total-header{
+                background-color: #44939c;
+                color: #fff;
+            }
+            .tab-values th{
+                color: black;
+                border: 1px solid black;
+            }
+            .tab-values td{
+                border: 1px solid black;
+            }
+            .summary-table .left-header td{
+                border: 1px solid black;
+            }
+            .sum-bal{padding-top:10px;text-align:center; font-weight: 700 }
+        </style>
+    </head>
+
+    <body>
+        <table class="summary-table">
+            <tr>
+                <td class="col-eq"> <!--EntityName, License and Statement Issue Date Block -->
+                    <table class="left-header">
+                        <tr>
+                            <td class="col-header col-header-spacer">Entity Name: </td><td class="col-header-spacer col-header-val">{!accountName}</td>
+                        </tr>
+                        <tr>
+                            <td class="col-header col-header-spacer">License Number: </td><td class="col-header-spacer col-header-val">{!licenseNumber}</td>
+                        </tr>
+                        <tr>
+                            <td class="col-header col-header-spacer">Statement issue date:</td><td class="col-header-spacer col-header-val">{!$CurrentPage.parameters.fromDate} till {!$CurrentPage.parameters.toDate}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="col-eq header-val">
+                    <h2>Statement Of Account</h2>
+                </td>
+                <td class="col-eq header-val">
+                    <img src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/ADGM_logo.png')}" />
+                </td>
+            </tr>
+        </table>
+        <table class="tab-values">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Service Type</th>
+                    <!--<th>SR Number</th>-->
+                    <th>Payment Method</th>
+                    <!--<th>Fees</th>-->
+                    <!--<th>Qty</th>-->
+                    <th>Invoice/Receipt Reference Number</th>
+                    <th>Debit in AED</th>
+                    <th>Credit in AED</th>
+                    <!--<th>Balance in AED</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!lstStatementAcct}" var="sAcct">
+                    <tr>
+                        <td class="col-td-val">
+                            <apex:outputText value="{0, date, dd-MM-YYYY}">
+                                <apex:param value="{!sAcct.receiptDate}" /> 
+                            </apex:outputText>
+                        </td>
+                        <td class="col-td-val">{!sAcct.description}</td>
+                        <td class="col-td-val" style="width:20%">{!sAcct.serviceType}</td>
+                        <!--<td class="col-td-val">{!sAcct.SrNumber}</td>-->
+                        <td class="col-td-val">{!sAcct.paymentMethod }</td>
+                        <!--<td class="col-td-val">{!sAcct.fees}</td>-->
+                        <!--<td class="col-td-val">{!sAcct.qty}</td>-->
+                        <td class="col-td-val">{!sAcct.refNumber}</td>
+                        <td class="col-td-val">{!sAcct.debitAmt}</td>
+                        <td class="col-td-val">{!sAcct.creditAmt}</td>
+                        <!--<td class="col-td-val"></td>-->
+                    </tr>
+                </apex:repeat>
+                <tr>
+                    <td colspan="4"></td>
+                    <td class="total-header">Totals</td>
+                    <td>{!transactionTotalDebitAmt}</td>
+                    <td>{!transactionTotalCreditAmt}</td>
+                    <!--<td></td>-->
+                </tr>
+                
+            </tbody>
+        </table>
+        <!--Blocked Transactions -->
+        <h3>Blocked Transactions</h3>
+        <table class="tab-values">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Service Type</th>
+                    <!--<th>SR Number</th>-->
+                    <!--<th>Additional Information(If Any)</th>-->
+                    <!--<th>Fees</th>-->
+                    <!--<th>Qty</th>-->
+                    <th>Invoice/Receipt Reference Number</th>
+                    <th>Debit in AED</th>
+                    <th>Credit in AED</th>
+                    <!--<th>Balance in AED</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!lstBlockedTransactions}" var="sAcct">
+                    <tr>
+                        <td class="col-td-val" style="width:11.1%">
+                            <apex:outputText value="{0, date, dd-MM-YYYY}">
+                                <apex:param value="{!sAcct.receiptDate}" /> 
+                            </apex:outputText>
+                        </td>
+                        <td class="col-td-val" style="width:17%">{!sAcct.description}</td>
+                        <td class="col-td-val" style="width:16%">{!sAcct.serviceType}</td>
+                        <!--<td class="col-td-val">{!sAcct.SrNumber}</td>-->
+                        <!--<td class="col-td-val">{!sAcct.additionalInfo}</td>-->
+                        <!--<td class="col-td-val" style="width:11.1%">{!sAcct.fees}</td>-->
+                        <!--<td class="col-td-val" style="width:11.1%">{!sAcct.qty}</td>-->
+                        <td class="col-td-val" style="width:11.1%">{!sAcct.refNumber}</td>
+                        <td class="col-td-val" style="width:11.1%">{!sAcct.debitAmt}</td>
+                        <td class="col-td-val" style="width:11.1%">{!sAcct.creditAmt}</td>
+                        <!--<td class="col-td-val"></td>-->
+                    </tr>
+                </apex:repeat>
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="total-header">Totals</td>
+                    <td>{!blockedTransactionTotalDebitAmt}</td>
+                    <td>{!blockedTransactionTotalCreditAmt}</td>
+                    <!--<td></td>-->
+                </tr>
+                
+            </tbody>
+        </table>
+        <div class="sum-bal"> Portal Balance in AED as of <apex:outputText value="{0, date, dd-MM-YYYY}">
+                                <apex:param value="{!NOW()}" /> 
+                            </apex:outputText> : {!portalBalance}</div>
+    </body>
+</apex:page>

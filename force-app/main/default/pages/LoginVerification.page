@@ -1,0 +1,94 @@
+<apex:page showHeader="false" sidebar="false" controller="LoginVerificationController" action="{!createAuthToken}">
+    <apex:slds />
+    <style>
+        .image-container {   
+            min-height: 100vh;
+            background-position: center center;
+            background-size: cover;
+            position: relative;
+            height: auto;
+        }
+        body{
+            overflow-x:hidden;
+        }
+        .msgIcon {
+            display: none!important
+        }
+        .customMessage * {
+            color: #fff!important
+        }
+        .customMessage {
+            margin: 5px 0!important;
+            max-width: 1280px;
+            opacity: 1!important;
+            width: 100%;
+            font-size: 12px;
+            border: 0px;
+            padding-left: 10px;
+        }
+        .message {
+            opacity: .8
+        }
+        .sfdc_button{
+            background: #002A3A !important;
+            color: #fff !important;
+            padding: 10px 35px !important;
+        }
+        .btn-block{
+            padding: 5px !important;
+            color : rgb(0, 109, 204) !important;
+        }
+        .sfdc_button{
+            background: #44939C !important;
+        }
+        .standard_logo {
+            margin-left: auto;
+            margin-right: auto;
+            vertical-align: middle;
+            max-width: 180px !important;
+            max-height: 113px !important;
+        }
+    </style>
+    
+<div class="image-container">
+    <center>
+        <div style="padding-top:2%">
+            <img id="logo" class="standard_logo" src="https://adgm--c.eu17.content.force.com/servlet/servlet.ImageServer?id=0151v000003RHP4&oid=00D0Y000002IemY&lastMod=1594641755000" alt="Salesforce" border="0" name="logo"/>            
+            <br/>            
+        </div>
+    </center>              
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-3" style="margin: auto; min-width:400px !important;">
+            <article class="slds-card slds-m-top_small">
+            <apex:form >    
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        {!$User.Username} &nbsp; <a href="/secur/logout.jsp">Sign Out</a> <br /><br />
+                        <h2 class="slds-card__header-title">
+                            <b>Two Factor Authentication</b>
+                        </h2>
+                    </div>
+                </header>            
+            </div>
+            <apex:PageMessages ></apex:PageMessages>
+            <div class="slds-card__body slds-card__body_inner slds-m-top_small">
+                You have been sent an authentication code to your registered email and mobile number. Please enter the authentication code here to proceed with login.<br /><br />
+            <apex:inputText styleClass="slds-input" value="{!inputValue}"/>                         
+            </div>
+            <footer class="slds-card__footer">
+                <div class="slds-clearfix">                    
+                    <div class="slds-float_right">
+                        <apex:commandbutton styleClass="sfdc_button" value="Submit" action="{!verify}"></apex:commandbutton>
+                    </div>
+                    <div class="slds-float_left">
+                        <apex:commandbutton styleClass="slds-button btn-block" value="Send New Code" action="{!resend}"></apex:commandbutton>
+                    </div>                            
+                </div>
+            </footer>
+            </apex:form>    
+            </article>
+        </div>
+    </div>                
+</div>
+</apex:page>

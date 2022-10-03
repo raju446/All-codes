@@ -1,0 +1,487 @@
+<apex:page controller="ManagePortalUsersController"  title="Manage Portal Users">
+    <apex:sectionheader subtitle="Create/Update Users" title="Manage Portal Users" />
+    <style>
+        .btnCheckAvail{
+            color:  #AD9961 !important;
+            font-size: 13px !important;
+            font-weight:bold !important; 
+            text-decoration:underline;
+        }
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+        .bPageBlock .detailList .data2Col {padding-left: 0px !important;}
+        body .bPageBlock .pbBody .labelCol, body .bPageBlock .pbBody .dataCol, body .bPageBlock .pbBody .data2Col, body .print .topics-label, body .print .topics-list{
+                                padding-top: 10px !important;
+        }
+        .Custom15Tab .tertiaryPalette, .individualPalette .Custom15Block .tertiaryPalette, .layoutEdit .individualPalette .Custom15Block .tertiaryPalette{
+            border-color: #fff;
+        }
+        .btn-area {
+            display: table;
+            padding-top: 7px;
+            text-align: center;
+            width: 100%;
+        }
+        .eq-margin{
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+    </style>
+    <script type="text/javascript">
+        function validateFileType(elemid, fileName) {
+            var fileTypes = ['.bmp', '.jpg', '.png', '.jpeg', '.pdf'];
+            if (!fileName) return;
+            var dots = fileName.split(".")
+            //alert(dots);
+            var fpath = fileName.replace(/\\/g, '/');
+            var fname = fpath.substring(fpath.lastIndexOf('/') + 1, fpath.lastIndexOf('.'));
+            if (fname.length > 80) {
+                alert("File Name cannot exceed 80 characters");
+                document.getElementById(elemid).value = "";
+                return;
+            }
+            var fileType = "." + dots[dots.length - 1];
+            fileType = fileType.toLowerCase();
+            //alert(fileType);
+            //alert(fileTypes);
+            if (fileTypes.indexOf(fileType) != -1) { //We don't need to add .
+                //alert('That file is OK!');
+            } else {
+                //alert("Please only upload files that end in types: \n\n" + (fileTypes.join(" ")) + "\n\nPlease select a new file and try again.");
+                alert('Please Note: The SR Document File Format is required to be either PDF, JPEG, JPG, BMP or PNG.');
+                document.getElementById(elemid).value = "";
+            }
+            //Validating File size
+            var iFileSize = document.getElementById(elemid).files[0].size;
+            console.log(iFileSize);
+            if (iFileSize != null && iFileSize > 5242880) { //1048576 ==1MB ; 2097152 == 2MB ; 5242880 = 5MB
+                alert('Document Size should be less than 5 MB.');
+                document.getElementById(elemid).value = "";
+            }
+        }
+
+        function loadCalendarPicker() {
+            //alert('CAL');
+            var select = document.getElementById('calYearPicker');
+            if (!select) return;
+
+            select.innerHTML = '';
+            var startYear = new Date().getFullYear() - 80;
+            for (var year = startYear; year < startYear + 80; year++) {
+                select.options[select.options.length] = new Option(year, year);
+            }
+        }
+
+        function DisableAllButtons(actionText) {
+            var buttons = document.getElementsByClassName("btnSave");
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                button.disabled = true;
+                button.classList.add("btnDisabled");
+                if (actionText != null && actionText != "")
+                    button.value = actionText;
+            }
+            var buttons2 = document.getElementsByClassName("btnCancel");
+            for (var i = 0; i < buttons2.length; i++) {
+                var button = buttons2[i];
+                button.disabled = true;
+                button.classList.add("btnDisabled");
+                if (actionText != null && actionText != "")
+                    button.value = actionText;
+            }
+        }
+
+        function saveOnClick() {
+            try {
+                DisableAllButtons("Saving...");
+                istateSaveRecord();
+            } catch (err) {}
+        }
+    </script>
+    <apex:form id="mainForm">
+        <apex:outputPanel id="pUserPanel">
+            <apex:pageBlock title="List of Users">
+                <apex:pageMessage summary="There can only be a maximum of 2 administrators." severity="error" strength="3"
+                    rendered="{!totalAdminLimitError}" />
+                <apex:pageMessage summary="You have reached the maximum number of {!accountLimit} users. To add a new user, make sure to deactivate an existing one."
+                    severity="error" strength="3" rendered="{!showUserLimitError}" />
+                <apex:pageBlockTable value="{!activePortalUsersByAccount}" var="pUser">
+                    <apex:column width="15%">
+                        <apex:facet name="header">Action</apex:facet>
+                        <apex:outputPanel rendered="{!IF((AND(pUser.isUser,NOT(showSRDetailPanel))),true,false)}">
+                            <!--<apex:commandLink value="Edit" action="{!editContact}" reRender="mainForm" rendered="{!NOT(showContactDetailPanel)}" >
+                                <apex:param name="selectedCon" value="{!pUser.conId}" assignTo="{!existContactId}" />
+                            </apex:commandLink>
+                            &nbsp;<apex:outputText value="|" rendered="{!NOT(showContactDetailPanel)}" />&nbsp;&nbsp;-->
+                            <apex:commandLink value="{!IF((pUser.isActive = TRUE),'Deactivate','Activate')}" onclick="return promptMessage({!pUser.isActive});"
+                                action="{!userUpdate}" rendered="{!NOT(showContactDetailPanel)}">
+                                <apex:param name="userAct" value="{!IF((pUser.isActive = TRUE),'Deactivate','Activate')}"
+                                    assignTo="{!userAction}" />
+                                <apex:param name="userId" value="{!pUser.userId}" assignTo="{!selectedUserId}" />
+                            </apex:commandLink>
+                            &nbsp;
+                            <apex:outputText value="|" rendered="{!AND(NOT(showContactDetailPanel),pUser.isActive = TRUE)}" />&nbsp;&nbsp;
+                            <!--  
+                            <apex:commandLink value="{!IF((pUser.isAdminUser = FALSE),'Promote','Demote')}" action="{!userAdminUpdate}" rendered="{!AND(NOT(showContactDetailPanel),pUser.isActive = TRUE)}">
+                                <apex:param name="userAdminAct" value="{!IF((pUser.isAdminUser = FALSE),'Promote','Demote')}" assignTo="{!userAdminAction}" />
+                                <apex:param name="userId" value="{!pUser.userId}" assignTo="{!selectedUserId}" />
+                            </apex:commandLink>
+                            -->
+                            <apex:commandLink value="Update Access" action="{!UpdateAccessType}" rendered="{!AND(NOT(showContactDetailPanel),pUser.isActive = TRUE)}">
+                                <apex:param name="userAdminAct" value="{!IF((pUser.isAdminUser = FALSE),'Promote','Demote')}"
+                                    assignTo="{!userAdminAction}" />
+                                <apex:param name="userId" value="{!pUser.userId}" assignTo="{!selectedUserId}" />
+                            </apex:commandLink>
+
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Name</apex:facet>
+                        <apex:outputText value="{!pUser.name}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Username</apex:facet>
+                        <apex:outputText value="{!pUser.userName}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Email</apex:facet>
+                        <apex:outputText value="{!pUser.uEmail}" />
+                    </apex:column>
+                    <apex:column width="20%">
+                        <apex:facet name="header">Access Type</apex:facet>
+                        <apex:outputText value="{!pUser.AccessType}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Status</apex:facet>
+                        <apex:outputText value="{!pUser.Status}" />
+                    </apex:column>
+                </apex:pageBlockTable>
+                <div class="btn-area">
+                    <apex:commandbutton value="Add New User" action="{!createNewContact}" reRender="mainForm" rendered="{!AND(NOT(showContactDetailPanel),NOT(showSRDetailPanel))}"
+                        oncomplete="loadCalendarPicker();" />
+                </div>
+            </apex:pageBlock>
+            <script>
+                function promptMessage(userActive){
+                    var msg;
+                    if(userActive)
+                        msg = 'Are you sure you want to deactivate this account?'
+                    else
+                        msg = 'Are you sure you want to activate this account?';
+                    var r = confirm(msg);
+                    if(r == true)
+                        return true;
+                    else
+                        return false;
+
+                }
+            </script>
+        </apex:outputPanel>
+        <br />
+        <br />
+        <apex:outputPanel id="detailContactPanel" rendered="{!showContactDetailPanel}">
+            <apex:pageBlock mode="maindetail">
+                <apex:pageBlockSection title="Personal Details" collapsible="false">
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Title" />
+                        <apex:outputfield value="{!objCon.Title}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="First Name" />
+                        <apex:outputfield value="{!objCon.FirstName}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Middle Name" />
+                        <apex:outputfield value="{!objCon.Middle_Name__c}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Last Name" />
+                        <apex:outputfield value="{!objCon.LastName}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Date of Birth" />
+                        <apex:outputfield value="{!objCon.Birthdate}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Email" />
+                        <apex:outputfield value="{!objCon.Email}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Mobile" />
+                        <apex:outputfield value="{!objCon.MobilePhone}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Services Accessible" />
+                        <apex:inputfield value="{!objCon.Types_of_Services_Accessible__c}" />
+                    </apex:pageblocksectionitem>
+                </apex:pageBlockSection>
+                <apex:pageblocksection title="Documents" collapsible="false" columns="1">
+                    <apex:pageMessage summary="{!invalidFileMsg}" severity="error" strength="3" rendered="{!invalidFileMsg != ''}" />
+                    <apex:pageMessage summary="Please upload {!missedDocuments} document(s)." severity="error" strength="3"
+                        rendered="{!NOT(allDocsUploaded)}" />
+                    <apex:pageblocktable value="{!lstDocuments}" var="doc" width="100%" style="margin-left:7px;">
+                        <apex:column width="35%" headervalue="Name">
+                            <apex:outputText value="{!doc.DocumentName}" escape="false" />
+                        </apex:column>
+                        <apex:column width="45%" headervalue="Description">
+                            <apex:outputText value="{!doc.DocumentDescription}" />
+                        </apex:column>
+                        <apex:column >
+                            <apex:outputpanel layout="block" styleclass="requiredInput" rendered="{!NOT(doc.isOptional)}">
+                                <div class="requiredBlock"></div>
+                                <apex:inputfile styleClass="FileRequired" id="File_Required" value="{!doc.objAttachment.Body}"
+                                    FileName="{!doc.objAttachment.Name}" fileSize="{!doc.objAttachment.BodyLength}"
+                                    contentType="{!doc.objAttachment.ContentType}" style="width:200px !important;"
+                                    onchange="validateFileType(this.id,this.value);" />
+                            </apex:outputpanel>
+                            <apex:outputPanel rendered="{!doc.isOptional}">
+                                <apex:inputfile id="File_Optional" value="{!doc.objAttachment.Body}" FileName="{!doc.objAttachment.Name}"
+                                    fileSize="{!doc.objAttachment.BodyLength}" contentType="{!doc.objAttachment.ContentType}"
+                                    style="width:200px !important;" onchange="validateFileType(this.id,this.value);" />
+                            </apex:outputPanel>
+                        </apex:column>
+                        <apex:column styleclass="fileStatus">
+                            <apex:outputtext value="" />
+                        </apex:column>
+                    </apex:pageblocktable>
+                </apex:pageblocksection>
+                <apex:pageBlockButtons location="bottom">
+                    <apex:commandbutton value="Save" action="{!saveContact}" />
+                    <apex:commandbutton value="Cancel" action="{!cancelDetail}" immediate="true" />
+                </apex:pageBlockButtons>
+                
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel id="detailSRPanel" rendered="{!showSRDetailPanel}">
+            <apex:pageBlock mode="maindetail">
+                <apex:pageblocksection title="Information" columns="2" collapsible="false">
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Title" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.Title__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="First Name" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.First_Name__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputlabel value="Middle Name" />
+                        <apex:inputfield value="{!objSR.Middle_Name__c}" />
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Last Name" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.Last_Name__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Date of Birth" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.Date_of_Birth__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.Date_of_Birth__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Work Email" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required.</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.HexaBPM__Email__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Contact Number" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.HexaBPM__Send_SMS_to_Mobile__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!objSR.HexaBPM__Send_SMS_to_Mobile__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                </apex:pageBlockSection>
+                <apex:pageblocksection id="TypesofServices" title="Interested Services" collapsible="false">
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Types of Services" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput" style="padding-left:0px !important;">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!objSR.Types_of_Services_Accessible__c}" />
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+                <apex:pageblocksection id="usernameDetails" title="Username Details" columns="1" collapsible="false">
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Username" />
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput" style="padding-left:0px !important;">
+                            <div class="requiredBlock"></div>
+                            <!--<apex:inputField value="{!objSR.Guest_Username__c}"/>&nbsp;@adgm.portal-->
+                            <apex:inputText value="{!guestUsername}" />&nbsp;@adgm.portal
+                            <div class="errorMsg" style="{!If((hasErrorUsername==false),'display:none;','')}"><strong>Error</strong>:
+                                Username is required.</div>
+                            <div class="errorMsg" style="{!If((hasErrorformatUsername==false),'display:none;','')}"><strong>Error</strong>:
+                                Username must contain only alphanumeric characters. Please do not include special
+                                characters such as comma (,), quotes('"), slash(/), semi-colon(;), colon(:) and blank
+                                spaces.</div>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        &nbsp;
+                        <apex:outputpanel layout="block">
+                            <apex:commandLink value="Check Availability" styleClass="btnCheckAvail" action="{!checkUname}" />
+                            <apex:outputPanel rendered="{!IF((infomessage!=''),true,false)}" style="margin-left:15px;">
+                                <apex:image id="theImage" value="{!iconURL}" width="15" height="15" />&nbsp;
+                                <apex:outputText value="{!infomessage}" style="{!IF((isUserNameAvailable=true),'color:green;font-weight:bold;','color:red;font-weight:bold;')}" />
+                            </apex:outputPanel>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+                <!--<apex:pageblocksection id="documentDetails" title="Passport Document" columns="1" collapsible="false">
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Passport Copy"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>  Please upload the valid passport copy.</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput" style="padding-left:0px !important;">
+                            <div class="requiredBlock"></div>
+                            <apex:inputFile value="{!passportDocument.Body}" filename="{!passportDocument.Name}" />
+                            <apex:outputText value="Passport Copy is required." style="color:red;" rendered="{!hasErrorAttachment}"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                </apex:pageblocksection>-->
+                <!--<div class="eq-margin">-->
+                <apex:pageblocksection id="Documents" title="Documents" collapsible="false" columns="1">
+                    <apex:pageMessage summary="{!invalidFileMsg}" severity="error" strength="3" rendered="{!invalidFileMsg != ''}" />
+                    <apex:pageMessage summary="Please upload {!missedDocuments} document(s)." severity="error" strength="3"
+                        rendered="{!NOT(allDocsUploaded)}" />
+                    <apex:pageblocktable value="{!lstDocuments}" var="doc" width="100%" style="margin-left:7px;">
+                        <apex:column width="35%" headervalue="Name">
+                            <apex:outputText value="{!doc.DocumentName}" escape="false" />
+                        </apex:column>
+                        <apex:column width="45%" headervalue="Description">
+                            <apex:outputText value="{!doc.DocumentDescription}" />
+                        </apex:column>
+                        <apex:column >
+                            <apex:outputpanel layout="block" styleclass="requiredInput" rendered="{!NOT(doc.isOptional)}">
+                                <div class="requiredBlock"></div>
+                                <apex:inputfile styleClass="FileRequired" id="File_Required" value="{!doc.objAttachment.Body}"
+                                    FileName="{!doc.objAttachment.Name}" fileSize="{!doc.objAttachment.BodyLength}"
+                                    contentType="{!doc.objAttachment.ContentType}" style="width:200px !important;"
+                                    onchange="validateFileType(this.id,this.value);" />
+                            </apex:outputpanel>
+                            <apex:outputPanel rendered="{!doc.isOptional}">
+                                <apex:inputfile id="File_Optional" value="{!doc.objAttachment.Body}" FileName="{!doc.objAttachment.Name}"
+                                    fileSize="{!doc.objAttachment.BodyLength}" contentType="{!doc.objAttachment.ContentType}"
+                                    style="width:200px !important;" onchange="validateFileType(this.id,this.value);" />
+                            </apex:outputPanel>
+                        </apex:column>
+                        <apex:column styleclass="fileStatus">
+                            <apex:outputtext value="" />
+                        </apex:column>
+                    </apex:pageblocktable>
+                </apex:pageblocksection>
+                <!--</div>-->
+                <apex:pageBlockButtons location="bottom">
+                    <!--<apex:commandbutton value="Save" action="{!saveContact}" />
+                    <apex:commandbutton value="Cancel" action="{!cancelDetail}" immediate="true"/>-->
+                    <apex:commandbutton value="Save" styleClass="btnSave" onclick="saveOnClick();return false;" />
+                    <apex:commandbutton value="Cancel" action="{!cancelDetail}" styleClass="btnCancel" immediate="true" />
+                    <apex:actionFunction name="istateSaveRecord" action="{!saveContact}" status="loadingStatus" />
+                </apex:pageBlockButtons>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <script>
+            console.log('{!objSR}');
+        </script>
+    </apex:form>
+</apex:page>

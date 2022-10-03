@@ -1,0 +1,601 @@
+<aura:component controller="BillingManagementController">
+    <!-- attributes Start  -->
+    <aura:attribute name="isOpenSFAModal" type="Boolean" default="false"/>
+    <aura:attribute name="selectedEntityId" type="String" default="null"/>
+    <aura:attribute name="currentProfileName" type="String" default=""/>
+    <aura:attribute name="dynamicBtnName" type="String" default="Submit For Approval"/>
+    <aura:attribute name="todayDate" type="String" default="" />
+    <!-- search box -->
+    <aura:attribute name="entityname" type="String" />
+    <aura:attribute name="ADGMID" type="String" />
+    <aura:attribute name="SITEID" type="String" />
+    <!-- search result attributes -->
+    <aura:attribute name="showTable" type="Boolean" default="false"/>
+    <aura:attribute name="showCreateButtons" type="Boolean" default="false"/>
+    <aura:attribute name="listEntityWrapper" type="object[]"/>
+    <aura:attribute name="selectAll" type="Boolean" default="false"/>
+    <aura:attribute name="selectedIndex" type="Integer" default="-1" />
+    <aura:attribute name="isNoSearchDataFound" type="Boolean" default="false" />
+    <!-- Show Receipt List attributes -->
+    <aura:attribute name="listReceiptsWrapper" type="object[]"/>
+    <aura:attribute name="showReceiptTable" type="Boolean" default="false"/>
+    <aura:attribute name="oracleSiteIdPicklist" type="object[]" />
+    <aura:attribute name="PaymentCurrencyPicklist" type="object[]" />
+    <aura:attribute name="paymentModePicklist" type="object[]" />
+    <aura:attribute name="selectedEntityName" type="String"/>
+    <!-- Show Invoice List attributes -->
+    <aura:attribute name="listInvoiceWrapper" type="object[]"/>
+    <aura:attribute name="showInvoiceTable" type="Boolean" default="false"/>
+	<aura:handler event="force:refreshView" action="{!c.clear}" />  
+    
+     <!-- Show Invoice line item List attributes -->
+    <aura:attribute name="listInvoiceLineItemWrapper" type="object[]"/>
+    <aura:attribute name="showInvoiceLineItemTable" type="Boolean" default="false"/>
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!-- Handler Start 
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" />-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler event="c:LEX_CreateEntityEvent" action="{!c.handleComponentEvent}"/>
+    <!-- Event start -->
+    <aura:registerEvent name="cmpEvent" type="c:LEX_CreateEntityEvent"/>
+    <aura:method name="passRecordId" action="{!c.enablePage}" 
+                 access="public">
+        <aura:attribute name="entityRecordId" type="String" default="Detail"/>
+    </aura:method>
+    
+    
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" id="backdrop"></div>
+    </aura:if>
+    
+    <!-- External Css for toast message -->
+    <ltng:require styles="{!$Resource.multilineToastCSS}" />
+	
+	   
+    <!-- Page body Start -->
+    <lightning:card variant="Narrow" title="Billing Management" iconName="standard:account">
+        <aura:set attribute="actions">
+            <aura:if isTrue="{! v.selectedEntityId != null}">  <lightning:button variant="brand" label="Back" iconName="utility:back" onclick="{!c.navigateBack}" iconPosition="right" /> </aura:if>
+        </aura:set>
+        <div class="slds-border_top"></div>
+       <aura:if isTrue="{!v.selectedEntityId == null}">
+            <!-- Search Section Start-->
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem padding="around-small" size="4">
+                    <div class="custom-box">
+                        <lightning:input name="entityname" aura:id="entitynameinput" value="{!v.entityname}" label="Name" minlength="2"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="4">
+                    <div class="custom-box">
+                        <lightning:input name="ADGMID" value="{!v.ADGMID}" aura:id="ADGMIDinput" label="ADGM ID" minlength="5"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="4">
+                    <div class="custom-box">
+                        <lightning:select name="SITEID" label="Site ID" value="{!v.SITEID}" aura:id="SITEIDinput">
+                            <aura:iteration items="{!v.oracleSiteIdPicklist}" var="groupVal">
+                                <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}"/> 
+                            </aura:iteration>
+                        </lightning:select>
+                       <!--  <lightning:input name="SITEID" value="{!v.SITEID}" aura:id="SITEIDinput" label="Site ID" minlength="5"/> -->
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <lightning:button variant="brand" label="Create Entity" iconName="utility:record_create" iconPosition="right" onclick="{!c.openCE}" class="createEntityBtn" />
+           <lightning:button variant="brand" label="Create Person Entity" iconName="utility:record_create" iconPosition="right" onclick="{!c.openPersonAcc}" class="createPersonEntityBtn" />
+            <lightning:button variant="brand" label="Clear" iconName="utility:clear" iconPosition="right" onclick="{!c.clear}" class="clearbutton1" />
+            <lightning:button variant="brand" label="Search" iconName="utility:search" iconPosition="right" onclick="{!c.searchButtonClick}" class="searchButton" />
+       </aura:if>
+        
+        <br/><br/>
+        <div class="entityTable">
+            
+            <aura:if isTrue="{!v.showTable}">
+                <!-- Possible Match Details start -->
+                <h3 class="slds-section-title--divider headerCss">Search Results</h3>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col"><div class="slds-truncate" title="Action">Select</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Name" style="text-transform: capitalize;">Name</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Oracle_Party_Id">ADGM Id</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Oracle_Site_Id">Site Id</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Golden Entity</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listEntityWrapper}" var="objEntityWrapper" indexVar="tableIndex">
+                            <!-- Child Lightning Component --> 
+                            <tr>
+                                <td scope="col" width="5%">
+                                    <div class="slds-truncate" title="Action">
+                                        
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<ui:inputRadio aura:id="checkbox + {!tableIndex}" value="{! tableIndex == v.selectedIndex}" name="{!tableIndex}" change="{!c.onRadionButtonSelection}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="30%">
+                                    <div class="slds-truncate" title="Name">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Name}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Party_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Oracle_Party_Id__c}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Oracle_Site_Id__c}"/> 
+                                        
+                                    </div>
+                                </td>
+                                <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Parent.Name}"/> 
+                                    </div>
+                                </td>
+                                
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                <aura:If isTrue="{!v.isNoSearchDataFound}">
+                	<h1><b class="noDataFoundCss"><center>No Records Found</center> </b></h1>
+                </aura:If>
+                <br/><br/>
+                    <aura:if isTrue="{!v.showCreateButtons}">
+                        <lightning:button variant="brand" label="Add Receipt" iconName="utility:record_create" iconPosition="right"  class="clearbutton"  onclick="{!c.onInitializeReceipt}" />
+                        <lightning:button variant="brand" label="Add Invoice" iconName="utility:record_create" iconPosition="right"  class="mergeButton" onclick="{!c.onInitializeInvoice}" />
+                        <lightning:button variant="brand" label="{!v.dynamicBtnName}" iconName="utility:approval" iconPosition="right"  class="mergeButton" onclick="{!c.toggleSFAModal}" />
+                    </aura:if>
+                 <br/><br/>
+                
+            </aura:if >
+            <aura:If isTrue="{!v.showReceiptTable}">
+                <br/><br/>
+                <h3 class="slds-section-title--divider headerCss">Create Receipts for - {!v.selectedEntityName}</h3>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col"><div class="slds-truncate" title="Action">Action</div></th>
+                            
+                            <th scope="col"><div class="slds-truncate" title="Receipt No">Receipt No</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Payment Currency">Payment Currency</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Amount">Amount</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Mode of Payment">Payment Method</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Source Receipt Id">Source Receipt Id</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Transaction Reference">Transaction Reference</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Related Invoice">Related Invoice</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Invoice Amount Applied">Invoice Amount Applied</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Receipt Date">Receipt Date</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listReceiptsWrapper}" var="objReceiptsWrapper" indexVar="tableIndex">
+
+                            <!-- Child Lightning Component --> 
+                            <tr class="slds-text-title--caps">
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Action">
+                                        <lightning:button name="{!tableIndex}" variant="base" label="Edit |" title="Edit" onclick="{!c.onEditReceiptRec}" disabled="{!!objReceiptsWrapper.isEditable}"/>
+                                        <lightning:button name="{!tableIndex}" variant="base" label="Save | " title="Save" onclick="{!c.onCreateReceiptRec}" disabled="{!objReceiptsWrapper.isEditable}"/>
+                                        <lightning:button name="{!tableIndex}" variant="base" label="Remove" title="Remove" onclick="{!c.removeReceiptElement}" disabled="{!objReceiptsWrapper.isRemoveEnable}"/>                                      
+                                    </div>
+                                </td>
+                                
+                                <td >
+                                    <div class="slds-truncate" title="Receipt Name">
+                                        <lightning:input name="ReceiptName" value="{!objReceiptsWrapper.receiptRec.Name}" disabled="true" aura:id="recName"/>
+                                    </div>
+                                </td>
+                                
+                                <td >
+                                    <div class="slds-truncate" title="Payment Currency">
+                                        <lightning:select value="{!objReceiptsWrapper.receiptRec.Payment_Currency__c}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="payCurrency">
+                                            <aura:iteration items="{!v.PaymentCurrencyPicklist}" var="groupVal">
+                                                <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}" selected="{!groupVal.picklistVal == objReceiptsWrapper.receiptRec.Payment_Currency__c}"/> 
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Amount">
+                                        <lightning:input type="number" name="{! 'Amount_'+tableIndex}" value="{!objReceiptsWrapper.receiptRec.Amount__c}" disabled="{!objReceiptsWrapper.isEditable}" step="0.01" aura:id="Amount"/>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Mode of Payment">
+                                        <lightning:select value="{!objReceiptsWrapper.receiptRec.Payment_Method__c}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="ModeOfPay">
+                                            <aura:iteration items="{!v.paymentModePicklist}" var="groupVal">
+                                                <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}" selected="{!groupVal.picklistVal == objReceiptsWrapper.receiptRec.Payment_Method__c}"/> 
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Source Receipt Id">
+                                        <lightning:input name="ReferenceNumber" value="{!objReceiptsWrapper.receiptRec.Source_Receipt_Id__c}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="recRef"/>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Transaction Reference">
+                                        <lightning:input name="ReferenceNumber" value="{!objReceiptsWrapper.receiptRec.Transaction_Reference__c}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="TransRef"/>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Related Invoice">
+                                        <lightning:input name="Related Invoice" value="{!objReceiptsWrapper.relatedInvoice}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="relatedInvoice"/>
+                                    </div>
+                                </td>
+                                
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Amount Applied">
+                                      <!--  <lightning:input type="number" name="{! 'Amount_'+tableIndex}" value="{!objReceiptsWrapper.receiptRec.Invoice_Amount_Applied__c}" disabled="{!objReceiptsWrapper.isEditable}" step="0.01" aura:id="AmountApplied"/> -->
+                                      <lightning:input name="{! 'Amount_'+tableIndex}" value="{!objReceiptsWrapper.invoiceAmountApplied}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="AmountApplied"/>
+                                    </div>
+                                </td>
+                                <td scope="col">
+                                    <div class="slds-truncate" title="Receipt Date">
+                                        <lightning:input type="date" max="{!todayDate}" name="input1"  value="{!objReceiptsWrapper.receiptRec.Receipt_Date__c}" disabled="{!objReceiptsWrapper.isEditable}" aura:id="recDate"/>
+                                        <!-- <lightning:textarea name="Description" value="{!objReceiptsWrapper.receiptRec.Description__c}"  disabled="{!objReceiptsWrapper.isEditable}" />  -->
+                                        
+                                    </div>
+                                </td>
+                                
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                <br/> 
+                <lightning:button variant="brand" label="Save All Receipts" iconName="utility:record_create" iconPosition="right"  class="clearbutton" onclick="{!c.onCreateAllReceiptRec}"/>
+                <lightning:button variant="brand" label="Add Receipt" iconName="utility:record_create" iconPosition="right"  class=""  onclick="{!c.onInitializeReceipt}" />
+                <br/><br/>
+            </aura:If>
+           
+            
+            <aura:If isTrue="{!v.showInvoiceTable}">
+                <br/>
+                <h3 class="slds-section-title--divider headerCss">Create Invoices for - {!v.selectedEntityName}</h3>
+                
+                
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th scope="col"><div class="slds-truncate" title="Action">Action</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Invoice No.">Invoice No.</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Transaction Reference">Transaction Reference</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Invoice Date">Invoice Date</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Invoice Class">Invoice Class</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Payment Term">Payment Term</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Payment Currency">Payment Currency</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Related Receipt">Related Receipt</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Description">Description</div></th> 
+                                <th scope="col"><div class="slds-truncate" title="Description">Invoice Type</div></th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.listInvoiceWrapper}" var="objInvoiceWrapper" indexVar="tableIndex">
+                                <tr class="slds-text-title--caps">
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Action">
+                                            <lightning:button name="{!tableIndex}" variant="base" label="Edit |" title="Edit" onclick="{!c.onEditInvoiceRec}" disabled="{!!objInvoiceWrapper.isEditable}"/>
+                                            <lightning:button name="{!tableIndex}" variant="base" label="Save | " title="Save" onclick="{!c.onCreateInvoiceRec}" disabled="{!objInvoiceWrapper.isEditable}"/>
+                                            <lightning:button name="{!tableIndex}" variant="base" label="Remove |" title="Remove" onclick="{!c.removeInvoiceElement}" disabled="{!objInvoiceWrapper.isRemoveEnable}"/>
+                                            <lightning:button name="{!tableIndex}" variant="base" label="Add Line Item" title="Add" onclick="{!c.onInitializeInvoiceLineItem}" disabled="{! !objInvoiceWrapper.isRemoveEnable}"/>                                      
+                                        </div>
+                                    </td>
+                                    <td >
+                                        <div class="slds-truncate" title="Invoice Name">
+                                            <lightning:input name="ReceiptName" value="{!objInvoiceWrapper.invoiceRec.Name}" disabled="true" aura:id="recName"/>
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Transaction Reference">
+                                            <lightning:input name="ReferenceNumber" value="{!objInvoiceWrapper.invoiceRec.Transaction_Reference__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="InvTransRef"/>
+                                            
+                                        </div>
+                                    </td>
+                                    
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Invoice Date">
+                                            <lightning:input type="date" name="input1" max="{!todayDate}" value="{!objInvoiceWrapper.invoiceRec.Invoice_Date__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="invDate"/>
+                                            <!-- <lightning:textarea name="Description" value="{!objReceiptsWrapper.receiptRec.Description__c}"  disabled="{!objReceiptsWrapper.isEditable}" />  -->
+                                            
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Invoice Class">
+                                            <lightning:input name="invoiceclass" value="{!objInvoiceWrapper.invoiceRec.Invoice_Class__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="InvClass"/>
+                                            
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Payment Term">
+                                        <!-- <lightning:input name="paymentTerm" value="{!objInvoiceWrapper.invoiceRec.Payment_Term__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="InvCost"/> -->
+                                            <lightning:select value="{!objInvoiceWrapper.invoiceRec.Payment_Term__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="payTerm">
+                                                <option value="">--None--</option>
+                                                <option value="IMMEDIATE">IMMEDIATE</option>
+                                                <option value="21 NET">21 NET</option>
+                                            </lightning:select>
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Payment Currency">
+                                            <lightning:select value="{!objInvoiceWrapper.invoiceRec.Payment_Currency__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="InvpayCurrency">
+                                                <aura:iteration items="{!v.PaymentCurrencyPicklist}" var="groupVal">
+                                                    <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}" selected="{!groupVal.picklistVal == objInvoiceWrapper.invoiceRec.Payment_Currency__c}"/> 
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Related Receipt">
+                                            <lightning:input name="Related Receipt" value="{!objInvoiceWrapper.relatedReceipt}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="relatedReceipt"/>
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Description">
+                                            <lightning:textarea name="Description" value="{!objInvoiceWrapper.invoiceRec.Description__c}"  disabled="{!objInvoiceWrapper.isEditable}"/> 
+                                            
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        
+                                        <div class="slds-truncate" title="Invoice Type">
+                                            <lightning:select value="{!objInvoiceWrapper.invoiceRec.Oracle_Invoice_Type__c}" disabled="{!objInvoiceWrapper.isEditable}" aura:id="OracleInvType">
+                                               <!-- <aura:iteration items="{!objInvoiceWrapper.listInvoiceType}" var="groupVal">
+                                                    <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == objInvoiceWrapper.invoiceRec.Oracle_Invoice_Type__c}"/> 
+                                                </aura:iteration> -->
+                                                <option value="">--None--</option>
+                                                <option value="CRT Penalty Fees">CRT Penalty Fees</option>
+                                                <option value="FSRA Adhoc fees">FSRA Adhoc fees</option>
+                                            </lightning:select>
+                                        </div>
+                                        <!-- <lightning:input name="itemDescription" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Item_Description__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" />   -->
+                                        
+                                    </td>
+                                    <!--
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Cost">
+                                            <lightning:input type="number" name="Amount" value="{!objInvoiceWrapper.invoiceRec.Cost__c}" disabled="{!objInvoiceWrapper.isEditable}" step="0.01" aura:id="InvCost"/>
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Markup Amount">
+                                            <lightning:input type="number" name="Amount" value="{!objInvoiceWrapper.invoiceRec.Markup_Amount__c}" disabled="{!objInvoiceWrapper.isEditable}" step="0.01" aura:id="InvMarkupAmount"/>
+                                        </div>
+                                    </td>
+                                    
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Tax Amount">
+                                            <lightning:input type="number" name="Amount" value="{!objInvoiceWrapper.invoiceRec.Tax_Amount__c}" disabled="{!objInvoiceWrapper.isEditable}" step="0.01" aura:id="InvTaxAmount"/>
+                                        </div>
+                                    </td>-->
+                                    
+                                    
+                                </tr> 
+                                <tr class="slds-text-title--caps">
+                                    <aura:If isTrue="{!not(empty(objInvoiceWrapper.listInvoiceLineItemWrap ))}"> 
+                                        <td colspan="10" style="border-top:none; background-color:rgb(243, 242, 242); padding-top:10px; padding-bottom:10px">
+                                          <!--<h3 class="slds-section-title-|-divider headerCss">Create Invoices Line Item</h3>-->
+                                          
+
+
+
+                                            <table class="tbl-custom" style="width:90%; float:right">
+                                                <thead>
+                                                    <tr class="slds-text-title--caps">
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Action">Action</div></th>
+                                                        
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Amount">Amount</div></th>
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Tax Amount">Tax Amount</div></th>
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Discount Amount">Discount Amount</div></th>
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Discount Tax Amount">Discount Tax Amount</div></th>
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Item Reference">Item Reference</div></th>
+                                                        <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Amount">Item Description</div></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <aura:iteration items="{!objInvoiceWrapper.listInvoiceLineItemWrap}" var="objInvoiceLineItemWrapper" indexVar="tableIndexLine">
+                                                        <tr class="slds-text-title--caps">
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Action">
+                                                                    <lightning:button name="{!tableIndexLine + '-'+tableIndex}" variant="base" label="Edit |" title="Edit" onclick="{!c.onEditInvoiceLineItemRec}" disabled="{!!objInvoiceLineItemWrapper.isEditable}"/>
+                                                                    <lightning:button name="{!tableIndexLine + '-'+tableIndex}" variant="base" label="Save | " title="Save" onclick="{!c.onCreateInvoiceLineItemRec}" disabled="{!objInvoiceLineItemWrapper.isEditable}"/>
+                                                                    <lightning:button name="{!tableIndexLine + '-'+tableIndex}" variant="base" label="Remove" title="Remove" onclick="{!c.onRemoveInvoiceLineItemRec}" disabled="{!objInvoiceLineItemWrapper.isRemoveEnable}"/>                                      
+                                                                </div>
+                                                            </td>
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:input type="number" min="0" name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Amount__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" step="0.01" aura:id="lineAmount"/>   
+                                                                </div>
+                                                            </td>
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:input type="number" min="0" name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Tax_Amount__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" step="0.01" aura:id="lineTaxAmount"/>   
+                                                                </div>
+                                                            </td>
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:input type="number" min="0" name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Discount_Amount__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" step="0.01"/>   
+                                                                </div>
+                                                            </td>
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:input type="number" min="0" name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Taxable_Discount_Amount__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" step="0.01"/>   
+                                                                </div>
+                                                            </td>
+                                                            
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                <div class="slds-truncate" title="Description">
+                                                                    <lightning:input name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceRec.Item_Reference__c}" disabled="{!objInvoiceLineItemWrapper.isEditable}" aura:id="lineItemRef"/>
+                                                                </div>
+                                                            </td>
+                                                            
+                                                            <td scope="col" style="box-shadow: none;">
+                                                                
+                                                                <div class="slds-truncate" title="Item Description">
+                                                                    <lightning:select name="{!tableIndexLine + '-'+tableIndex}" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Item_Description__c}" disabled="{!objInvoiceLineItemWrapper.isEditable}" aura:id="ItemDesc">
+                                                                        <!--<aura:iteration items="{!objInvoiceLineItemWrapper.listInvoiceDesc}" var="groupVal">
+                                                                            <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == objInvoiceLineItemWrapper.invoiceLineItemRec.Item_Description__c}"/> 
+                                                                        </aura:iteration> -->
+                                                                        <option value="">--None--</option>
+                                                                        <option value="Penality Fees">Penality Fees</option>
+                                                                        <option value="FINANCIAL SERVICES ">FINANCIAL SERVICES </option>
+                                                                    </lightning:select>
+                                                                </div>
+                                                                <!-- <lightning:input name="itemDescription" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Item_Description__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" />   -->
+                                                                
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </td>    
+                                    </aura:If>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <br/>
+                
+                    
+                <br/> 
+                <lightning:button variant="brand" label="Save All Invoices" iconName="utility:record_create" iconPosition="right"  class="clearbutton" onclick="{!c.onCreateAllInvoiceRec}"/>
+                <lightning:button variant="brand" label="Add Invoice" iconName="utility:record_create" iconPosition="right"  onclick="{!c.onInitializeInvoice}" />
+                <br/><br/>
+            </aura:If>
+        </div>
+    </lightning:card>
+    <!--- Submit For Approval Modal window -->
+    <aura:if isTrue="{!v.isOpenSFAModal}">
+    	<section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container">
+        <header class="slds-modal__header">
+        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!v.dynamicBtnName}</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <aura:If isTrue="{!v.currentProfileName != 'ADGM Finance Manager'}"> 
+            	<h3 class="slds-section-title--divider headerCss">Select Invoices for Approval</h3>
+            </aura:If>
+            <aura:If isTrue="{!v.currentProfileName == 'ADGM Finance Manager'}"> 
+            	<h3 class="slds-section-title--divider headerCss">Send Invoices To Oracle</h3>
+            </aura:If>
+        	<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps"> 
+                                 <th scope="col" width="30%"><div class="slds-truncate" title="Action">Action</div></th>
+                            <th scope="col" width="35%"><div class="slds-truncate" title="Payment Currency">Invoice No.</div></th>
+                            <th scope="col" width="35%"><div class="slds-truncate" title="Amount">Cost</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listInvoiceWrapper}" var="objInvoiceWrapper" indexVar="tableIndex">
+                            <aura:If isTrue="{!and(objInvoiceWrapper.invoiceRec.Id != '', objInvoiceWrapper.invoiceRec.Id != null)}"> 
+                                <!-- Child Lightning Component --> 
+                                <tr class="slds-text-title--caps">
+                                    <aura:If isTrue="{!v.currentProfileName != 'ADGM Finance Manager'}"> 
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Action">
+                                            <lightning:input aura:id="myCheckboxes" type="checkbox" value="{!objInvoiceWrapper.isSelectedForApproval}" name="{!tableIndex}" onchange="{!c.onInvoiceCheckBoxAction}"/>                                   
+                                        </div>
+                                    </td>
+                                    </aura:If>
+                                    <aura:If isTrue="{!v.currentProfileName == 'ADGM Finance Manager'}"> 
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Action">
+                                                <lightning:button variant="neutral" name="{!tableIndex}" label="Push to Oracle" onclick="{!c.onPushToOracleInvoice}" />
+                                            </div>
+                                        </td>
+                                    </aura:If>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Name">
+                                            {!objInvoiceWrapper.invoiceRec.Name}
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Cost">
+                                            {!objInvoiceWrapper.invoiceRec.Cost__c}
+                                        </div>
+                                    </td>
+                                </tr>                             
+                            </aura:If>
+                            
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            	
+            	<br/>
+            <aura:If isTrue="{!v.currentProfileName != 'ADGM Finance Manager'}"> 
+            	<h3 class="slds-section-title--divider headerCss">Select Receipt for Approval</h3>
+            </aura:If>
+            <aura:If isTrue="{!v.currentProfileName == 'ADGM Finance Manager'}"> 
+            	<h3 class="slds-section-title--divider headerCss">Send Receipt To Oracle</h3>
+            </aura:If>
+            	
+        		<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            
+                                <th scope="col" width="30%"><div class="slds-truncate" title="Action">Action</div></th>
+                            <th scope="col" width="35%"><div class="slds-truncate" title="Payment Currency">Receipt No.</div></th>
+                            <th scope="col" width="35%"><div class="slds-truncate" title="Amount">Amount</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listReceiptsWrapper}" var="objReceiptsWrapper" indexVar="tableIndex">
+                            <aura:If isTrue="{!and(objReceiptsWrapper.receiptRec.Id != '', objReceiptsWrapper.receiptRec.Id != null)}"> 
+                              <!--  Child Lightning Component --> 
+                                <tr class="slds-text-title--caps">
+                                    <aura:If isTrue="{!v.currentProfileName != 'ADGM Finance Manager'}"> 
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Action">
+                                                <lightning:input aura:id="myCheckboxes" type="checkbox" value="{!objReceiptsWrapper.isSelectedForApproval}" name="{!tableIndex}" onchange="{!c.onReceiptCheckBoxAction}"/>                                    
+                                            </div>
+                                        </td>
+                                    </aura:If>
+                                    <aura:If isTrue="{!and(v.currentProfileName == 'ADGM Finance Manager', objReceiptsWrapper.receiptRec.Oracle_Receipt_Id__c == null)}"> 
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Action">
+                                                <lightning:button variant="neutral" name="{!tableIndex}" label="Push to Oracle" onclick="{!c.onPushToOracle}" />
+                                            </div>
+                                        </td>
+                                    </aura:If>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Name">
+                                            {!objReceiptsWrapper.receiptRec.Name}
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate" title="Cost">
+                                            {!objReceiptsWrapper.receiptRec.Amount__c}
+                                        </div>
+                                    </td>
+                                </tr> 
+                            </aura:If> 
+                        </aura:iteration>
+                    </tbody>
+                </table>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelSubmitforApproval}" />
+            <aura:If isTrue="{!v.currentProfileName != 'ADGM Finance Manager'}"> 
+            	<lightning:button variant="brand" label="Submit" onclick="{!c.onSubmitForApproval}" />
+            </aura:If>
+        </footer>
+        </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,173 @@
+<!--
+  @description       : 
+  @author            : Jayanta Karmakar
+  @group             : 
+  @last modified on  : 10-17-2020
+  @last modified by  : Jayanta Karmakar
+  Modifications Log 
+  Ver   Date         Author             Modification
+  1.0   10-17-2020   Jayanta Karmakar   Initial Version
+-->
+<apex:page controller="CustomerOpenBalanceLetterCtrl" showHeader="false" sidebar="false" renderAs="pdf" >
+    <table style="width:100%">
+        <tr>
+            <td><apex:image url="{!$Resource.ADGM_PDF_LOGO}" style="width: 400px;height: 76px;"/></td>
+            <td style="text-align : right;font-family:SansSerif;font-size:10pt;">
+               <!-- <apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                    <apex:param value="{!TODAY()}" /> 
+                </apex:outputText> -->
+            </td>
+        </tr>
+    </table>
+    
+    <p style="font-family:SansSerif;font-size:10pt;">
+        <apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                 <apex:param value="{!TODAY()}" /> 
+        </apex:outputText> <br/><br/>
+        <b>
+            {!entityDetail.Name} <br/>
+            {!addLine} <br/>
+            {!entCountry}
+        </b>
+    </p>
+    
+    <p style="font-family:SansSerif;font-size:10pt;">
+        Dear Sir/Madam,
+    </p>
+    <p style="font-family:SansSerif;font-size:10pt;">
+        Following Invoices and Receipts are open as per our record on&nbsp;<apex:outputText value="{0,date,dd'-'MMM'-'yyyy}"><apex:param value="{!TODAY()}" /></apex:outputText>, please settle the outstanding balance at your earliest. 
+       <!-- As per our records an amount of <b>AED&nbsp;<apex:outputText value="{0,number, ###,###.##}">
+                    <apex:param value="{!remainingAmnt}" /> 
+                </apex:outputText></b> is outstanding as on&nbsp;<apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                        <apex:param value="{!TODAY()}" /> 
+                    </apex:outputText>. The detail of open invoices and receipts is as follows: -->
+    </p>
+	
+    <apex:outputPanel rendered="{!showInv}">
+    <table style="text-align: center; bakground-color: blue; width:100%;border-collapse: collapse; font-family:SansSerif;font-size:10pt;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td colspan="7" style="border:1px solid black;padding: 3px;background-color: #2f74b5; color:white"><b>Invoices Detail</b></td>
+        </tr>
+    	<tr >
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px; width:10%">Org</th>
+           <!-- <th style="border:1px solid black;background-color: #2f74b5;padding:10px">Reference Number</th> -->
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Invoice Number</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Invoice Date</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Due Date</th> 
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:5%">Curr</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:20%">Invoice Amount</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:20%">Balance Amount</th>
+        </tr>
+        <apex:repeat value="{!openInvoices}" var="v">
+            <tr>
+                <td style="border:1px solid black;padding: 3px;">{!v.entity__r.operating_unit__r.OU_Abbreviation__c}</td>
+               <!-- <td style="border:1px solid black;">{!v.Name}</td> -->
+                <td style="border:1px solid black;padding: 3px;">{!v.Source_Invoice_Id__c}</td>
+                <td style="border:1px solid black;padding: 3px;"> 
+                    <apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                        <apex:param value="{!v.Invoice_Date__c}" /> 
+                    </apex:outputText>
+                </td>
+                <td style="border:1px solid black;"> 
+                	<apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                        <apex:param value="{!v.Due_Date__c}" /> 
+                    </apex:outputText>
+                </td> 
+                <td style="border:1px solid black;padding: 3px;">{!v.Payment_Currency__c}</td>
+                <td style="border:1px solid black;padding: 3px;text-align: right;">
+                    <apex:outputText value="{0,number, ###,##0.00}">
+                        <apex:param value="{!v.Total_Invoice_Amount_OC__c}" /> 
+                    </apex:outputText>
+                </td>
+                <td style="border:1px solid black;padding: 3px;text-align: right;">
+                    <apex:outputText value="{0,number, ###,##0.00}">
+                        <apex:param value="{!v.Inv_Balance_OC__c}" /> 
+                    </apex:outputText>
+                </td>
+            </tr>
+    	</apex:repeat>
+        <tr>
+            <td colspan="6" style="border-right:1px solid white;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black;text-align: left;padding: 3px; background-color: #2f74b5; color:white;"><b>Invoices Balance</b></td>
+            <td style="border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black;padding: 3px; background-color: #2f74b5;color:white;text-align: right;">
+               <b> <apex:outputText value="{0,number, ###,###.00}">
+                    <apex:param value="{! openInvoiceBalance}" /> 
+                </apex:outputText> </b>
+            </td>
+        </tr>
+    </table>
+    </apex:outputPanel>
+    <br/>
+    <apex:outputPanel rendered="{!showRcpt}">
+    <table style="text-align: center; bakground-color: blue;border-collapse: collapse;width:100%; font-family:SansSerif; font-size:10pt;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td colspan="7" style="border:1px solid black;padding: 3px;background-color: #2f74b5; color:white"><b>Receipts Detail</b></td>
+        </tr>
+    	<tr>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:10%">Org</th> 
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Receipt Number</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Transaction No.</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:15%">Receipt Date</th>
+            <!--<th style="border:1px solid black;background-color: #9bc1e3;padding:10px">Receipt Type</th>-->
+            <th style="border:1px solid black;background-color:#ddebf7;padding:10px;width:5%">Curr</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:20%">Receipt Amount</th>
+            <th style="border:1px solid black;background-color: #ddebf7;padding:10px;width:20%">Unapplied Amount</th>
+        </tr>
+        <apex:repeat value="{!unappliedReceipts}" var="v">
+            <tr>
+                <td style="border:1px solid black;padding: 3px;">{!v.entity__r.operating_unit__r.OU_Abbreviation__c}</td>
+                
+                <td style="border:1px solid black;padding: 3px;">{!v.Source_Receipt_Id__c}</td>
+                <td style="border:1px solid black;padding: 3px;">{!v.Name}</td>
+                <td style="border:1px solid black;padding: 3px;">
+                    <apex:outputText value="{0,date,dd'-'MMM'-'yyyy}">
+                        <apex:param value="{!v.Receipt_Date__c}" /> 
+                    </apex:outputText>
+                </td>
+                <!--<td style="border:1px solid black;"></td>-->
+                <td style="border:1px solid black;padding: 3px;">{!v.Payment_Currency__c}</td>
+                <td style="border:1px solid black;padding: 3px;text-align: right">
+                    <apex:outputText value="{0,number, ###,##0.00}">
+                        <apex:param value="{!v.Amount__c * -1}"/>
+                    </apex:outputText>
+                </td>
+                <td style="border:1px solid black;padding: 3px;text-align: right">
+                    <apex:outputText value="{0,number, ###,##0.00}">
+                        <apex:param value="{!v.Receipt_Balance__c * -1}"/>
+                    </apex:outputText>
+                </td>
+            </tr>
+    	</apex:repeat>
+        <tr>
+            <td colspan="6" style="border-right:1px solid white;;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black;text-align: left;padding: 3px;background-color: #2f74b5; color:white;"><b>Receipts Balance</b></td>
+            <td style="border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black;padding: 3px;background-color: #2f74b5; color:white;text-align: right">
+              <b><apex:outputText value="{0,number, ###,##0.00}">
+                	<apex:param value="{! unappliedReceiptsAmnt * -1}"/>
+                 </apex:outputText></b>
+            </td>
+        </tr>
+    </table>
+    </apex:outputPanel>
+    <br/>
+    <table style="font-family:SansSerif; font-size:10pt; text-align: center; bakground-color: blue; width:100%;border-collapse: collapse;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black; width:80%;background-color: #2f74b5; color:white;text-align: left;padding: 3px;"><b>Outstanding Balance</b></td>
+            <td style="border-right:1px solid black;border-top:1px solid black;border-bottom:1px solid black; width:20%;padding: 3px; background-color: #2f74b5; color:white;text-align: right"> 
+               <b> <apex:outputText value="{0,number, ###,##0.00}">
+                	<apex:param value="{!remainingAmnt}"/>
+                   </apex:outputText> 
+               </b>
+            </td>
+        </tr>
+    </table>
+    
+  <!--  <p style="font-family:SansSerif;font-size:10pt;">
+        Kindly settle the outstanding invoices at your earliest.
+    </p> -->
+    
+    <p style="font-family:SansSerif;font-size:10pt;">
+        Thanking you in advance.
+    </p>
+    <p style="font-family:SansSerif;font-size:10pt;">
+        Finance Division.
+    </p>   
+</apex:page>

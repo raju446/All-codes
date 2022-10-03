@@ -1,0 +1,48 @@
+<template>
+  <div class="all">
+      <br>
+      <br>
+      <p class="service">How can we help?</p>
+      <div class="search">
+          <lightning-input type="search" value={textvalue} onkeyup={handleKeyUp}
+              placeholder="search service,companies and such" style="border-radius: 15px;"></lightning-input>
+      </div>
+      <br>
+      <template if:true={showPublicRegister}>
+          <lightning-layout multiple-rows>
+              <lightning-layout-item size="10" padding="around-small">
+                  <div class="cantainer custom-box slds-box slds-p-around_medium slds-text-align_center">
+                      Public Register
+                      <div class="Go">
+                          <a
+                              href="/ADGMMOBILE/s/publicregister"><span style="color:black;font-size:16px;font-weight: 700;">Go &rarr; </span></a>
+                      </div>
+                  </div>
+              </lightning-layout-item>
+          </lightning-layout>
+      </template>
+      <br><br><br><br>
+      <div class="aa">
+          <p class="ff"> Talk to our <br>customer service</p><br>
+          <p class="ff1">we are here to assist you 24/7
+              <a href='tel:028869610'><span style="color:white;font-size:16px;float:right;">Go &rarr; </span></a>
+          </p>
+          <br>
+          <br>
+          <p class="ff">Chat with [name],<br>our vitual assistent</p><br>
+          <p class="ff1">for all yor quick questions
+              <span style="color:white;font-size:16px;float:right;">Go &rarr; </span>
+          </p>
+      </div>
+      <br>
+      <div class="style">
+          <a
+              href="https://www.instagram.com/adglobalmarket/"><span><img class="insta" src="https://www.pngitem.com/pimgs/m/51-510797_instagram-icon-white-instagram-logo-for-business-card.png" width="30" height="30"></span></a>&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;
+          <a
+              href="https://twitter.com/ADGlobalMarket"><span><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcwBQHWbhsCL4b5hz56Kbv4ZUGvKLBBBpiw8_B1NjFHduQv6rpB63WeJhWCpXa_94_qPU&usqp=CAU" width="30" height="30"></span></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a
+              href="https://ae.linkedin.com/company/abudhabiglobalmarket/"><span><img class="linkdin" src="https://static.vecteezy.com/system/resources/previews/003/692/704/non_2x/linkedin-american-business-logo-social-media-icon-black-pictogram-illustration-isolated-on-white-backgroud-free-vector.jpg" width="30" height="30"></span></a>
+      </div>
+  </div>
+</template>

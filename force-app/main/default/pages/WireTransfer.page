@@ -1,0 +1,215 @@
+<apex:page id="pg" tabstyle="Receipt__c" controller="WireTransferController">
+    <div class="pageTopic">Wire Transfer</div>
+    <style>
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+         .pbTitle:first-child:after { 
+            content: "{!$Label.Receipt_Disclaimer}";
+            font-size: 1.2em;
+            margin-top: 5px;
+            display: block;
+        }
+        .bPageBlock .pbTitle{
+            width: 100%;
+        }
+         .fileStatus{
+            color:#c00;
+        }
+        .tdrowB{
+            padding: 1% 18px 1% 2px !important;
+            color: #002A3A;
+            font-family: Raleway_SemiBold;
+            font-size: 1.2em;
+        }
+        .tblRowTitle{
+            color: #46949D !important;
+            font-size: 1.36em !important;
+            font-family: Raleway_Bold !important;
+        }
+        .tbl-blocker{
+            margin: 0 auto 0 0%;
+            width: 60%;
+        }
+        .tbl-section{
+            border-top: 1px solid #dbdbdb; 
+        }
+    </style>
+    <apex:form >
+        <apex:actionFunction action="{!saveReceipt}" name="saveReceipt" />
+        <apex:inputhidden id="hdnSelectedFileType" value="{!strSelectedFileType}"/>
+        <apex:inputhidden id="hdnBooleanError" value="{!hasFileError}"/>
+        <apex:actionstatus id="loadingStatus">
+            <apex:facet name="start">
+                <c:ADGM_Loading_Component />
+            </apex:facet>
+        </apex:actionstatus>
+        <apex:pageblock id="pb" title="New Wire Transfer">
+            <apex:pageMessages />
+            <apex:pageBlockbuttons location="bottom">
+                <apex:commandButton value="Save" onclick="validateSave();return false;" status="loadingStatus"/>
+                <apex:commandbutton value="Cancel" action="{!cancel}" status="loadingStatus" immediate="true"/>
+            </apex:pageBlockbuttons>
+            <apex:pageblocksection columns="2">
+                <apex:outputField value="{!newReceipt.Entity__c }" />
+                <apex:outputField value="{!newReceipt.Payment_Purpose__c }" />
+                <apex:outputField value="{!newReceipt.Payment_Method__c}" />
+                <apex:outputField value="{!newReceipt.Payment_Currency__c }" />
+                <!--<apex:inputText value="{!amountStr}" label="Amount"/>
+                <apex:inputText value="{!bankTransRefNum}" label="Bank Transfer Reference Number" style="width:35%;"/>-->
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Amount"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputText value="{!amountStr}"/>
+                        <div class="errorMsg" style="{!If((hasErrorAmt==false),'display:none;','')}">Amount is required.</div>
+                        <div class="errorMsg" style="{!If((hasErrorAmtValue==false),'display:none;','')}">{!errorMessageStr}</div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Bank Transfer Reference Number"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputText value="{!bankTransRefNum}" style="width:35%;"/>
+                        <div class="errorMsg" style="{!If((hasErrorRefNum==false),'display:none;','')}">Bank Transfer Reference Number is required.</div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:inputTextArea value="{!receiptDescription}" label="Description" cols="50"/>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                    <apex:outputlabel value="File Attachment">
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>Please note that the upload document file format should be either PDF, JPEG, JPG, BMP or PNG with a maximum file size of 1MB.</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputlabel>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputFile value="{!fileUploadAtt.body}" contentType="{!selectedContenttype}" fileSize="{!iFileSize}" filename="{!fileUploadAtt.name}" onchange="return CheckFileFormat(this);"/>
+                        <div class="errorMsg" style="{!If((hasErrorAttachment==false),'display:none;','')}">Attachment is required.</div>
+                        <div  class="fileStatus"></div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+            <div class="tbl-section">
+                <div class="tbl-blocker">
+                    <table style="width:100%;padding-top: 15px;">
+                        <tr><td colspan="2" class="tblRowTitle">ADGM Bank Account Details:</td></tr>
+                        <tr>
+                            <td class="tdrowB">Account Name:</td><td class="tdrowB">ADGM Registration Authority</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Bank Name:</td><td class="tdrowB">National Bank of Abu Dhabi</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Bank Branch:</td><td class="tdrowB">Abu Dhabi, UAE</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">IBAN No:</td><td class="tdrowB">AE810350000006205791532</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Account Number:</td><td class="tdrowB">6205791532</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Account Currency:</td><td class="tdrowB">AED</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Swift Code:</td><td class="tdrowB">NBADAEAA</td>
+                        </tr>
+                        <tr>
+                            <td class="tdrowB">Account Type:</td><td class="tdrowB">Current Accounts Corporate</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </apex:pageblock>
+        
+        <script>
+            $("[id$='hdnBooleanError']").val("false");
+            function validateSave(){
+                if($("[id$='hdnBooleanError']").val() == "false"){
+                    saveReceipt();
+                }
+            }
+            function CheckFileFormat(inputFile){
+                var _validFileExtensions = ["jpg", "jpeg", "bmp", "png", "pdf"];
+                var sFileName = inputFile.value;
+                $("[id$='hdnSelectedFileType']").val("") ;
+                console.log('sFileName==>'+sFileName);
+                if(sFileName.length > 0){
+                    var blnValid = false;
+                    for(var j = 0; j < _validFileExtensions.length; j++) {
+                        var sCurExtension = _validFileExtensions[j];
+                        var chosenFileType = sFileName.split('.').pop();
+                        if(chosenFileType.toLowerCase()  == sCurExtension.toLowerCase()) {
+                            $("[id$='hdnSelectedFileType']").val(chosenFileType) ;
+                            $("[id$='hdnBooleanError']").val("true");
+                            blnValid = true;
+                            break;
+                        }
+                    }
+                    console.log('blnValid==>'+blnValid);
+                    console.log('inputFile==>'+inputFile);
+                    if(blnValid){
+                        if(inputFile!=null && inputFile!=="undefined"){
+                            var iFileSize = inputFile.files[0].size;
+                            if(iFileSize!=null && iFileSize>1048576 ){//1048576 ==1MB ; 26214400
+                                $('.fileStatus').html('<label style="color:red;"><strong>Document Size should be less than 1 MB.</strong></label>');
+                                console.log('Document Size should be less than 1 MB');
+                                
+                                $("[id$='hdnBooleanError']").val("true");
+                            }else{
+                                $('.fileStatus').html(inputFile.value);
+                                $('.fileStatus').html('<label style="color:#4F8A10;"><strong>Selected File is Valid.</strong></label>');
+                                
+                                $("[id$='hdnBooleanError']").val("false");
+                                //$("[id='" +inputFile.id + "']").next().text('Replace');
+                            }
+                        }
+                   }else{
+                        $('.fileStatus').html('<label style="color:#c00;"><strong>Invalid File format.</strong></label>');
+                        
+                        $("[id$='hdnBooleanError']").val("true");
+                        
+                    }
+                }else{
+                    $('.fileStatus').html('<label style="color:#c00;"><strong>Please select the file to Upload.</strong></label>');
+                    //booleanError = true;
+                    $("[id$='hdnBooleanError']").val("true");
+                }
+            }
+        </script>
+    </apex:form>
+</apex:page>

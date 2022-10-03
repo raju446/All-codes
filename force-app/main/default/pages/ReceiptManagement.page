@@ -1,0 +1,39 @@
+<apex:page standardcontroller="Receipt__c" extensions="ReceiptManagementController" tabStyle="Receipt__c">
+    <apex:form id="mainForm">
+        <apex:sectionHeader title="New Receipt" />
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveReceipt}" reRender="mainForm"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:inputfield value="{!newReceipt.Entity__c}" required="true"/>
+                <apex:outputfield value="{!newReceipt.Status__c}" />
+                <apex:outputfield value="{!newReceipt.Payment_Currency__c}" />
+                <apex:inputfield value="{!newReceipt.Amount__c}" required="true"/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Mode of Payment" />
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                            <apex:selectList size="1" style="width:50%" value="{!selPaymentMode}">
+                                <apex:selectOptions value="{!PaymentModes}"/>
+                            </apex:selectList>
+                        <div class="errorMsg" style="{!If((hasErrorPayment==false),'display:none;','')}">Please select a Mode of Payment.</div>
+                    </apex:outputpanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Bank Transfer Reference Number"/>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputText value="{!bankTransRefNum}" style="width:35%;"/>
+                        <div class="errorMsg" style="{!If((hasErrorRefNum==false),'display:none;','')}">Bank Transfer Reference Number is required.</div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:inputTextArea value="{!newReceipt.Description__c}" cols="50"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

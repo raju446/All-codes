@@ -1,0 +1,720 @@
+<apex:page standardcontroller="HexaBPM__Service_Request__c" language="en_GB" extensions="IntroductoryStatementController" id="thePage">
+    <style>
+        #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+            width: 40px;
+            height: 40px;
+            background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+            background-size: contain;
+            -ms-interpolation-mode: bicubic;
+        }
+        #adgmload .sp_loader, #modal-adgmload .sp_loader {
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-bottom: 1%;
+            padding-top: 1%;
+            background-color: #fff;
+            position: absolute;
+            border-radius: 8px;
+            top: 40%;
+            left: 43%;
+        }
+        #adgmload, #modal-adgmload {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: 9999;
+            background: rgba(0,0,0,0.25);
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type=text]{
+            width:62% !important;
+        }
+        textarea{
+            width:62% !important;
+        }
+        .dateOnlyInput input{
+            width:35%;
+        }
+        .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+            border-color: #fff;
+        }
+        .margin-bottom-bl{
+            margin-bottom: 30px;
+        }
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+    </style>
+    <script type="text/javascript">
+        function openExport(){
+            var serviceRequestId = '{!selectedSR.Id}';
+            var subStrSR = serviceRequestId.substring(0,15);
+            //alert(subStrSR);
+            var strUrl = '{!$Label.Introductory_Statement_Report_URL}' + subStrSR;
+            window.open(strUrl);
+        }
+        /*(function() {
+            var windowOnload = window.onload;
+            window.onload = function() {
+              if (windowOnload) windowOnload();
+              var select = document.getElementById('calYearPicker');
+              if (!select) return;
+        
+              select.innerHTML = '';
+              var startYear = new Date().getFullYear() - 80;
+              for (var year = startYear; year < startYear + 87; year++) {
+                select.options[select.options.length] = new Option(year, year);
+              }
+            }
+          }());*/
+          function dynamicCalendarPicker(calendarType){
+              //alert('@@'+calendarType);
+              var startCtr = 0;
+              var endCtr = 0;
+              if(calendarType == 'DOB'){
+                  startCtr = 80;
+                  endCtr = 80;
+              } else if(calendarType == 'PassIssue'){
+                  startCtr = 10;
+                  endCtr = 10;
+              } else if(calendarType == 'PassExpiry'){
+                  startCtr = 0;
+                  endCtr = 7;
+              }
+              var select = document.getElementById('calYearPicker');
+              if (!select) return;
+        
+              select.innerHTML = '';
+              var startYear = new Date().getFullYear() - startCtr;
+              for (var year = startYear; year < startYear + endCtr; year++) {
+                select.options[select.options.length] = new Option(year, year);
+              }
+          }
+          
+        function DisableAllButtons(actionText){ 
+            var buttons = document.getElementsByClassName("btnSaveNew"); 
+            for(var i = 0;i<buttons.length; i++){ 
+                var button = buttons[i]; button.disabled = true; 
+                button.classList.add("btnDisabled"); 
+                if(actionText != null && actionText != "" )
+                    button.value = actionText; 
+            } 
+            var buttons2 = document.getElementsByClassName("btnCancel"); 
+            for(var i = 0;i<buttons2.length; i++){ 
+                var button = buttons2[i]; button.disabled = true; 
+                button.classList.add("btnDisabled"); 
+                if(actionText != null && actionText != "" )
+                    button.value = actionText; 
+            } 
+            var buttons3 = document.getElementsByClassName("btnSaveProceed"); 
+            for(var i = 0;i<buttons3.length; i++){ 
+                var button = buttons3[i]; button.disabled = true; 
+                button.classList.add("btnDisabled"); 
+                if(actionText != null && actionText != "" )
+                    button.value = actionText; 
+            } 
+        } 
+        function saveOnClick(){ 
+            try{
+                DisableAllButtons("Saving...");
+                istateSaveRecord();
+            }catch(err){
+            }
+        } 
+        function saveOnClickRedirect(){ 
+            try{
+                DisableAllButtons("Saving...");
+                istateSaveRedirect();
+            }catch(err){
+            }
+        } 
+    </script>
+    <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <apex:form id="mainForm">
+        <!--<apex:outputText value="List of Participants for {!srNumberStr}" styleClass="pageType noSecondHeader" rendered="{!isPortalUser}"/>-->
+        <apex:outputPanel styleClass="pageTopic margin-bottom-bl" layout="block" rendered="{!isPortalUser}">List of Participants for {!srNumberStr}</apex:outputPanel>
+        <apex:sectionHeader title="List of Participants for {!srNumberStr}" rendered="{!NOT(isPortalUser)}"/>
+        <apex:actionfunction name="SubmitFISForm" action="{!saveRecord}" status="loadingStatus" />
+        <apex:outputPanel id="personnelPanel">
+            <apex:actionRegion >
+            <apex:pageBlock title="List of Participants">
+                <apex:pageblockButtons location="top">
+                    <apex:commandButton value="Back to SR" action="{!Cancel}" style="margin:5px;width:120px !important;" rendered="{!NOT(isPortalUser)}"/>
+                    <apex:commandButton value="Export All" onclick="openExport();" style="margin:5px;width:120px !important;" rendered="{!showExport}" reRender="null"/>
+                    
+                </apex:pageBlockButtons>
+                <!--<apex:outputPanel layout="block" style="overflow:auto;width:100%;height:100px" >-->
+                <apex:outputPanel layout="block" >
+                    <apex:pageBlockTable value="{!personnelWrapList}" var="srPersonnel" rendered="{!personnelWrapList.size>0}">
+                        <apex:column >
+                            <apex:facet name="header">Full Name</apex:facet>
+                            <apex:outputText value="{!srPersonnel.personnel.Full_Name__c}" />
+                        </apex:column>
+                        <apex:column rendered="{!rtype != 'Extended_Operating_Hours'}">
+                            <apex:facet name="header">Gender</apex:facet>
+                            <apex:outputText value="{!srPersonnel.personnel.Gender__c}" /> <!--  rendered="{!rtype != 'Extended_Operating_Hours'}" -->
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">Nationality</apex:facet>
+                            <apex:outputText value="{!srPersonnel.personnel.Nationality_New__c}" />
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">Passport Number</apex:facet>
+                            <apex:outputText value="{!srPersonnel.personnel.Passport_No__c}" />
+                        </apex:column>
+                        <apex:column rendered="{!rtype != 'Extended_Operating_Hours'}">
+                            <apex:facet name="header">Emirates ID Number</apex:facet>
+                            <apex:outputText value="{!srPersonnel.personnel.Emirates_ID_Number__c}" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                        </apex:column>
+                        <apex:column width="20%">
+                            <apex:facet name="header">Action</apex:facet>
+                            <apex:commandLink value="{!IF((isPortalUser = false),'View','Edit')}" action="{!editExisting}" reRender="mainForm" status="loadingStatus">
+                                <apex:param name="selectedPersonnel" value="{!srPersonnel.personnel.Id}" assignTo="{!existPersonnelId}" />
+                            </apex:commandLink>
+                            <apex:outputText value=" | " rendered="{!isPortalUser}" />
+                            <apex:commandLink value="Delete" action="{!deletePartcipant}" rendered="{!isPortalUser}" reRender="mainForm" status="loadingStatus">
+                                <apex:param name="selectedPersonnel" value="{!srPersonnel.personnel.Id}" assignTo="{!existPersonnelId}" />
+                            </apex:commandlink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <apex:outputText value="No participant records." rendered="{!personnelWrapList.size=0}" />
+                </apex:outputPanel>
+            </apex:pageBlock>
+            </apex:actionRegion>
+        </apex:outputPanel>
+        <br/>
+        <apex:outputPanel id="detailsPanel"><!--rendered="{!isPortalUser}"-->
+            <!--<apex:pageMessage rendered="{!IF(DMLError!='',true,false)}" title="{!DMLError}" severity="error" />-->
+            <apex:pageMessages rendered="{!IF(DMLError!='',true,false)}"/>
+            <apex:pageBlock title="New Participant" mode="maindetail" id="pblock">
+                    <apex:pageblockButtons location="bottom">
+                        <apex:commandButton value="Save and New" onclick="saveOnClick();return false;" styleClass="btnSaveNew" status="loadingStatus" style="margin:5px;width:120px !important;"/><!--rendered="{!isPortalUser}"-->
+                        <apex:commandButton value="Save and Proceed" onclick="saveOnClickRedirect();return false;" styleClass="btnSaveProceed" style="margin:5px;width:150px !important;"/><!--rendered="{!isPortalUser}"-->
+                        <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="btnCancel" style="margin:5px;width:120px !important;"/>
+                    </apex:pageBlockButtons>
+                    
+                    <apex:actionFunction name="istateSaveRecord" action="{!saveRecord}" status="loadingStatus"/>
+                    <apex:actionFunction name="istateSaveRedirect" action="{!saveRedirect}" status="loadingStatus"/>
+                
+                <apex:pageBlockSection title="Contractor Details" collapsible="false" rendered="{!rtype == 'Temporary_Fit_Out_Security_Clearance'}" id="section">
+                    <apex:inputfield value="{!newPersonnel.Contractor_Name__c}" required="true" id="contrE"/>
+                    <apex:inputfield value="{!newPersonnel.Contractor_Name_Arabic__c}" required="true" id="contrA"/>
+                    <apex:inputfield label="Contact Number" value="{!newPersonnel.Phone_Number__c}" />
+                    <!-- Commentd by Ravi as per Rola
+                    <apex:inputfield value="{!newPersonnel.Commercial_License_Issue_Date__c}" />
+                    -->
+					<apex:inputfield value="{!newPersonnel.Commercial_License_Expiry_Date__c}" required="true"/>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Applicant Details" collapsible="false" rendered="{!isADPPermit}">
+
+					<!-- ********* UAE Resident *************** -->
+					<apex:pageBlockSectionItem >
+						<apex:outputLabel value="UAE Resident" />
+						<apex:inputField value="{!newPersonnel.UAE_Resident__c}"/>
+				    </apex:pageBlockSectionItem><br/>
+					<apex:inputField value="{!newPersonnel.Emirates_ID_Number__c}" />
+					<apex:inputField value="{!newPersonnel.Unified_Number__c}" />
+					
+					<!-- **************** Full Name *************** -->
+					<apex:pageblocksectionitem >
+						<apex:outputPanel >
+							<apex:outputlabel value="Full Name"/>
+							<span class="vfHelpText">
+								<apex:outputLink value="javascript:return false;">
+									<img src="/s.gif" alt="" class="helpOrb" />
+									<span>This field is required</span>
+								</apex:outputLink>
+								&nbsp;&nbsp;
+							</span>
+						</apex:outputPanel>
+						<apex:outputpanel layout="block" styleclass="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:inputfield value="{!newPersonnel.Full_Name__c}" required="true"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					
+					<!-- *************** Gender **********************  -->
+					 <apex:pageblocksectionitem >
+						<apex:outputPanel >
+							<apex:outputlabel value="Gender"/>
+							<span class="vfHelpText">
+								<apex:outputLink value="javascript:return false;">
+									<img src="/s.gif" alt="" class="helpOrb" />
+									<span>This field is required</span>
+								</apex:outputLink>
+								&nbsp;&nbsp;
+							</span>
+						</apex:outputPanel>
+						<apex:outputpanel layout="block" styleclass="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:inputfield value="{!newPersonnel.Gender__c}" required="true"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					
+					<!-- *********************** Nationality ----------------- ***  -->
+					<apex:pageblocksectionitem >
+						<apex:outputPanel >
+							<apex:outputlabel value="Nationality"/>
+							<span class="vfHelpText">
+								<apex:outputLink value="javascript:return false;">
+									<img src="/s.gif" alt="" class="helpOrb" />
+									<span>This field is required</span>
+								</apex:outputLink>
+								&nbsp;&nbsp;
+							</span>
+						</apex:outputPanel>
+						<apex:outputpanel layout="block" styleclass="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:inputfield value="{!newPersonnel.Nationality_New__c}" required="true"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					
+					<!-- ***************** Passport Number ********************* -->
+					<apex:pageblocksectionitem >
+						<apex:outputPanel >
+							<apex:outputlabel value="Passport Number"/>
+							<span class="vfHelpText">
+								<apex:outputLink value="javascript:return false;">
+									<img src="/s.gif" alt="" class="helpOrb" />
+									<span>This field is required</span>
+								</apex:outputLink>
+								&nbsp;&nbsp;
+							</span>
+						</apex:outputPanel>
+						<apex:outputpanel layout="block" styleclass="requiredInput">
+							<div class="requiredBlock"></div>
+							<apex:inputfield value="{!newPersonnel.Passport_No__c}" required="true"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+				</apex:pageBlockSection>
+                
+                
+                <apex:pageBlockSection title="Applicant Details" collapsible="false" rendered="{!!isADPPermit}">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="UAE Resident" />
+                        <apex:inputField value="{!newPersonnel.UAE_Resident__c}"/>
+                    </apex:pageBlockSectionItem><br/>
+                    <apex:inputField value="{!newPersonnel.Unified_Number__c}" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:inputField value="{!newPersonnel.Emirates_ID_Number__c}" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Full Name"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Full_Name__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Gender"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Gender__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Place of Birth"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Place_of_Birth__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Date of Birth"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.Amendment__c.fields.Date_of_Birth__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield id="birthdate" value="{!newPersonnel.Date_of_Birth__c}" required="true" onclick="dynamicCalendarPicker('DOB');"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Nationality"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Nationality_New__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Occupation"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Occupation__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Mother's Name"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Mother_s_Name__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Mother's Middle Name"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Mother_s_Middle_Name__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    <!--<apex:inputField value="{!newPersonnel.Full_Name__c}" label="Full Name" required="true" />
+                    <apex:inputField value="{!newPersonnel.Gender__c}" required="true" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:inputField value="{!newPersonnel.Place_of_Birth__c}" required="true" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:inputField value="{!newPersonnel.Date_of_Birth__c}" required="true" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:inputField value="{!newPersonnel.Nationality_New__c}" label="Nationality" required="true" />
+                    <apex:inputField value="{!newPersonnel.Occupation__c}" required="true" />-->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Residence Details in UAE" collapsible="false" rendered="{!!isADPPermit}"><!--  rendered="{!rtype != 'Extended_Operating_Hours' && rtype != 'Temporary_Fit_Out_Security_Clearance'}" -->
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="City"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.City__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <br/>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Address"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Address__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <br/>
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Contact Phone Number"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.HexaBPM__Send_SMS_to_Mobile__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Phone__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <!--<apex:inputField value="{!newPersonnel.City__c}" required="true" />
+                    <br/>
+                    <apex:inputField value="{!newPersonnel.Address__c}" required="true" />
+                    <br/>
+                    <apex:inputField value="{!newPersonnel.Phone__c}" label="Contact Phone Number" required="true" />-->
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Educational Details" collapsible="false" rendered="{!!isADPPermit}"><!--  rendered="{!rtype != 'Extended_Operating_Hours' && rtype != 'Temporary_Fit_Out_Security_Clearance'}" -->
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Highest Qualification"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Highest_Qualification__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Institute Name"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Institute_Name__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Year of Graduation"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Year_of_Graduation__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    
+                </apex:pageBlockSection>
+                
+                
+                <apex:pageBlockSection title="Passport Details" collapsible="false"  rendered="{!!isADPPermit}"><!--  rendered="{!rtype != 'Temporary_Fit_Out_Security_Clearance'}" -->
+                    <apex:pageblocksectionitem >
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Passport Number"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Passport_No__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Place of Issue"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Passport_Place_Of_Issue__c}" required="true"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Date of Issue"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.Amendment__c.fields.Passport_Issue_Date__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield id="passportIssueDate" value="{!newPersonnel.Passport_Issue_Date__c}" required="true" onclick="dynamicCalendarPicker('PassIssue');"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Date of Expiry"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>{!$ObjectType.Amendment__c.fields.Passport_Expiry_Date__c.inlineHelpText}</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield id="passportExpiryDate" value="{!newPersonnel.Passport_Expiry_Date__c}" required="true" onclick="dynamicCalendarPicker('PassExpiry');"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <apex:pageblocksectionitem rendered="{!rtype != 'Extended_Operating_Hours'}">
+                        <apex:outputPanel >
+                            <apex:outputlabel value="Passport Type"/>
+                            <span class="vfHelpText">
+                                <apex:outputLink value="javascript:return false;">
+                                    <img src="/s.gif" alt="" class="helpOrb" />
+                                    <span>This field is required</span>
+                                </apex:outputLink>
+                                &nbsp;&nbsp;
+                            </span>
+                        </apex:outputPanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputfield value="{!newPersonnel.Passport_Type__c}" required="true" style="width:62%;"/>
+                        </apex:outputpanel>
+                    </apex:pageblocksectionitem>
+                    <!--<apex:inputField value="{!newPersonnel.Passport_No__c}" required="true" />
+                    <apex:inputField value="{!newPersonnel.Passport_Place_Of_Issue__c}" label="Place of Issue" required="true" />
+                    <apex:inputField value="{!newPersonnel.Passport_Issue_Date__c}" label="Date of Issue" required="true" />
+                    <apex:inputField value="{!newPersonnel.Passport_Expiry_Date__c}" label="Date of Expiry" required="true" />
+                    <apex:inputField value="{!newPersonnel.Passport_Type__c}" required="true" style="width:62%;"/>-->
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="detailsPanelReadOnly" rendered="{!AND(NOT(isPortalUser),showDetail)}">
+            <apex:pageBlock mode="maindetail">
+            	 <apex:pageBlockSection title="Contractor Details" collapsible="false" rendered="{!rtype == 'Temporary_Fit_Out_Security_Clearance'}">
+            	 	<apex:outputField value="{!newPersonnel.Contractor_Name__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Contractor_Name_Arabic__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Phone_Number__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Commercial_License_Issue_Date__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Commercial_License_Expiry_Date__c}" />
+            	 </apex:pageBlockSection>
+            	 
+            	 <apex:pageBlockSection title="Applicant Details" collapsible="false" rendered="{!isADPPermit}">
+            	 	<apex:outputField value="{!newPersonnel.UAE_Resident__c}" /><br/>
+            	 	<apex:outputField value="{!newPersonnel.Emirates_ID_Number__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Unified_Number__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Full_Name__c}" label="Full Name" />
+            	 	<apex:outputField value="{!newPersonnel.Gender__c}" />
+            	 	<apex:outputField value="{!newPersonnel.Nationality_New__c}" label="Nationality" />
+            	 	<apex:outputField value="{!newPersonnel.Passport_No__c}"/>
+            	 </apex:pageBlockSection>
+            	 
+            	 
+                <apex:pageBlockSection title="Applicant Details" collapsible="false" rendered="{!!isADPPermit}">
+                    <apex:outputField value="{!newPersonnel.UAE_Resident__c}" />
+                    <br/>
+                    <apex:outputField value="{!newPersonnel.Unified_Number__c}" />
+                    <apex:outputField value="{!newPersonnel.Emirates_ID_Number__c}" />
+                    <apex:outputField value="{!newPersonnel.Full_Name__c}" label="Full Name" />
+                    <apex:outputField value="{!newPersonnel.Gender__c}" />
+                    <apex:outputField value="{!newPersonnel.Place_of_Birth__c}"/>
+                    <apex:outputField value="{!newPersonnel.Date_of_Birth__c}" />
+                    <apex:outputField value="{!newPersonnel.Nationality_New__c}" label="Nationality" />
+                    <apex:outputField value="{!newPersonnel.Occupation__c}" />
+                    <apex:outputField value="{!newPersonnel.Mother_s_Name__c}"/>
+                    <apex:outputField value="{!newPersonnel.Mother_s_Middle_Name__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Residence Details in UAE" collapsible="false" rendered="{!!isADPPermit}">
+                    <apex:outputField value="{!newPersonnel.City__c}"/>
+                    <br/>
+                    <apex:outputField value="{!newPersonnel.Address__c}"  />
+                    <br/>
+                    <apex:outputField value="{!newPersonnel.Phone__c}" label="Contact Phone Number" />
+                </apex:pageBlockSection>
+                
+                 <apex:pageBlockSection title="Educational Details" collapsible="false" rendered="{!!isADPPermit}">
+                    <apex:outputField value="{!newPersonnel.Highest_Qualification__c}" label="Place of Issue" />
+                    <apex:outputField value="{!newPersonnel.Institute_Name__c}" label="Date of Issue" />
+                    <apex:outputField value="{!newPersonnel.Year_of_Graduation__c}" label="Date of Expiry" />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Passport Details" collapsible="false" rendered="{!!isADPPermit}">
+                    <apex:outputField value="{!newPersonnel.Passport_No__c}"/>
+                    <apex:outputField value="{!newPersonnel.Passport_Place_Of_Issue__c}" label="Place of Issue" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:outputField value="{!newPersonnel.Passport_Issue_Date__c}" label="Date of Issue" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:outputField value="{!newPersonnel.Passport_Expiry_Date__c}" label="Date of Expiry" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                    <apex:outputField value="{!newPersonnel.Passport_Type__c}" rendered="{!rtype != 'Extended_Operating_Hours'}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <br/>
+    </apex:form>
+</apex:page>

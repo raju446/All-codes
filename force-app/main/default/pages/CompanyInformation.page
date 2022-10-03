@@ -1,0 +1,411 @@
+<apex:page docType="html-5.0" title="Company Information" applyBodyTag="false" standardStylesheets="false" standardController="Account" tabStyle="Company_Information__tab" extensions="CompanyProfileController" >
+    <head>
+        <style>
+            .emp-search-table{
+            float:right;
+            }
+            .emp-search-table .td-search-table{
+            vertical-align:middle;
+            padding-right: 10px;
+            }
+            .emp-search-table .td-search-table label{
+            font-size: 1.2em;
+            }
+            .emp-search-table{
+            margin-top:10px;
+            }
+            .emp-search-table .td-search-table .inputBlock{
+            height:25px;
+            font-size: 1.2em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-block">
+            <div class="pageTopic">Company Profile</div>
+            <!--<div class="pageDesc">
+Welcome to your Company Services page. From this page you will be able to apply for all types of Company Services including official communications, 
+company amendments and licensing services. Just click on any menu item to review the services available. 
+Not sure which service you need? Click here to review applications guidlelines for Company Services
+</div>-->
+            <div class="main-detail">
+                <!--<div class="close-area">
+
+<input value="Cancel" class="btnCancel right" name="cancel" title="Cancel" onclick="goBack();" type="submit" />
+</div>-->
+                <div class="company-detail-area">
+                    <apex:outputPanel styleClass="panelWrapper" layout="block">
+                        <apex:pageBlock >
+                            <div class="section-header brandTertiaryBgr">
+                                Company Details
+                            </div>
+                            <apex:pageBlockSection collapsible="false" columns="2">
+                                <apex:repeat value="{!$ObjectType.Account.FieldSets.CompanyInfoFS}" var="acc">
+                                    <apex:outputField value="{!Account[acc]}"/>
+                                </apex:repeat>
+                            </apex:pageBlockSection>
+                        </apex:pageBlock>
+                    </apex:outputPanel>
+                    <div class="shift-margin-top">
+                        <div class="section-header brandTertiaryBgr">
+                            P.O. Boxes
+                        </div>
+                        <apex:outputPanel layout="none" rendered="{!POBoxes.size!=0}">
+                            <apex:form id="poBox-form">
+                                <table class="customTbl" >
+                                    <thead>
+                                        <th>P O Box#</th>                                                                               
+                                        <th>P O Box Name</th>                                        
+                                        <th>Status</th>
+                                        <th>Start Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Type</th>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!POBoxes}" var="poBox">
+                                            <tr>
+                                                <td class="td_text">{!poBox.PO_Box_Number__c}</td>
+                                                <td class="td_text">{!poBox.name}</td>                                                
+                                                <td class="td_text">{!poBox.Status__c}</td>
+                                                <td class="td_text">
+                                                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                        <apex:param value="{!poBox.Start_Date__c}" />
+                                                    </apex:outputText>
+                                                </td>
+                                                <td class="td_text">
+                                                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                                                        <apex:param value="{!poBox.Expiry_Date__c}" />
+                                                    </apex:outputText>
+                                                </td>
+                                                <td class="td_text">{!poBox.P_O_Box_Selected_Bundle__c}</td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                                <div class="page-footer text-center"> 
+                                    
+                                    <span class="first-arrow" disabled="{!!setPOBoxCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="poBox-form"  action="{!setPOBoxCon.first}"  title="First Page">
+                                            <span class="icon icon-adgm-arrow-left"></span><span class="icon icon-adgm-arrow-left double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="prev-arrow" disabled="{!!setPOBoxCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="poBox-form" action="{!setPOBoxCon.previous}" title="Previous Page">
+                                            <span class="icon icon-adgm-arrow-left"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="page-num"><apex:outputText >Page {!setPOBoxCon.PageNumber} of {!POBoxTotalPages} </apex:outputText></span>
+                                    <span class="next-arrow" disabled="{!!setPOBoxCon .hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="poBox-form" action="{!setPOBoxCon.next}"  title="Next Page">
+                                            <span class="icon icon-adgm-arrow-right"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="last-arrow" disabled="{!!setPOBoxCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="poBox-form" action="{!setPOBoxCon.last}"  title="Last Page">
+                                            <span class="icon icon-adgm-arrow-right"></span><span class="icon icon-adgm-arrow-right double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    
+                                </div>
+                            </apex:form>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="div" rendered="{!POBoxes.size=0}" >
+                            <br/>
+                            <apex:outputText value="No records found."  styleClass="no-rec" />
+                            <br/>
+                            <br/>
+                        </apex:outputPanel>
+                    </div>
+                    <!--<div class="shift-margin-top">
+<div class="section-header brandTertiaryBgr">
+Authorized Signatories
+</div>
+<apex:outputPanel layout="none" rendered="{!Signatory.size!=0}">
+<apex:form id="signatory-form">
+<table class="customTbl" >
+<thead>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Date of Birth</th>
+<th>Gender</th>
+<th>Nationality</th>
+<th>Person Email</th>
+</thead>
+<tbody>
+<apex:repeat value="{!Signatory}" var="authSig">
+<tr>
+<td class="td_text">{!authSig.FirstName}</td>
+<td class="td_text">{!authSig.LastName}</td>
+<td class="td_text">
+<apex:outputText value="{0,date,MM/dd/yyyy}">
+<apex:param value="{!authSig.Birthdate}" />
+</apex:outputText>
+</td>
+<td class="td_text">{!authSig.Gender__c}</td>
+<td class="td_text">{!authSig.Nationality__c}</td> 
+<td class="td_text">{!authSig.Email}</td>
+</tr>
+</apex:repeat>
+</tbody>
+</table>
+<div class="page-footer text-center">
+
+<span class="first-arrow" disabled="{!!setSignatoriesCon.hasPrevious}">
+<apex:commandLink styleClass="dec-none" reRender="signatory-form"  action="{!setSignatoriesCon.first}"  title="First Page">
+<span class="icon icon-adgm-arrow-left-1"></span><span class="icon icon-adgm-arrow-left-1 double-left-arrow"></span>
+</apex:commandLink>
+</span>
+<span class="prev-arrow" disabled="{!!setSignatoriesCon.hasPrevious}">
+<apex:commandLink styleClass="dec-none" reRender="signatory-form" action="{!setSignatoriesCon.previous}" title="Previous Page">
+<span class="icon icon-adgm-arrow-left-1"></span>
+</apex:commandLink>
+</span>
+<span class="page-num"><apex:outputText >Page {!setSignatoriesCon.PageNumber} of {!SignatoryTotalPages} </apex:outputText></span>
+<span class="next-arrow" disabled="{!!setSignatoriesCon .hasNext}">
+<apex:commandLink styleClass="dec-none" reRender="signatory-form" action="{!setSignatoriesCon.next}"  title="Next Page">
+<span class="icon icon-adgm-arrow-right-1"></span>
+</apex:commandLink>
+</span>
+<span class="last-arrow" disabled="{!!setSignatoriesCon.hasNext}">
+<apex:commandLink styleClass="dec-none" reRender="signatory-form" action="{!setSignatoriesCon.last}"  title="Last Page">
+<span class="icon icon-adgm-arrow-right-1"></span><span class="icon icon-adgm-arrow-right-1 double-left-arrow"></span>
+</apex:commandLink>
+</span>
+
+</div>
+</apex:form>
+</apex:outputPanel>
+<apex:outputPanel layout="div" rendered="{!Signatory.size=0}" >
+<br/>
+<apex:outputText value="No records found."  styleClass="no-rec" />
+<br/>
+<br/>
+</apex:outputPanel>
+</div>-->
+                    <apex:outputPanel id="empForm" layout="none" rendered="{!isVisaServiceIncluded}" >
+                        <div>
+                            
+                            
+                            <div class="section-header brandTertiaryBgr">
+                                Active Employees
+                            </div>
+                            
+                            <apex:form id="emp-form" >
+                                <table class="emp-search-table">
+                                    <tr>
+                                        <td class="td-search-table"><label>Search by Name</label></td>
+                                        <td class="td-search-table"><apex:inputText value="{!searchValue}" id="searchTextInput" style="color: #002A3A;" styleClass="inputBlock"/></td>
+                                        <td class="td-search-table"><apex:commandButton action="{!searchEmployees}" value="Search" id="searchButton" reRender="emp-form" styleClass="btnBlock" /></td>
+                                        <td class="td-search-table"><apex:commandButton action="{!searchEmployees}" onClick="clearSearch();" value="Clear" id="clearSearchButton" reRender="emp-form" styleClass="btnBlock" /></td>
+                                        <td class="td-search-table"><apex:commandButton action="{!exportEmpData}" value="Export All Employees" id="exportBtn" reRender="emp-form" styleClass="btnBlock" /></td>
+                                    </tr>
+                                </table>
+                                <table class="customTbl" style="{!IF((Employees.size=0),'display:none; !important','')}">
+                                    <thead>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Job Title</th>
+                                        <th>Sponsor</th>
+                                        <th>Passport Number</th>
+                                        <th>Nationality</th>
+                                        <th>Employment Status</th>
+                                        <th>Action</th>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!Employees}" var="emp">
+                                            <tr>
+                                                <td class="td_text">{!emp.FirstName}</td>
+                                                <td class="td_text">{!emp.LastName}</td>
+                                                <td class="td_text">{!emp.Email}</td>
+                                                <td class="td_text">{!emp.Job_Title__c}</td>
+                                                <td class="td_text">{!emp.Sponsor__r.Name}</td>
+                                                <td class="td_text">{!emp.Passport_No__c}</td>
+                                                <td class="td_text">{!emp.Nationality__c}</td> 
+                                                <td class="td_text">{!emp.Employment_Status__c}</td>
+                                                <td class="td_text"><apex:outputLink value="/{!emp.Id}">View</apex:outputLink></td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                                <div class="page-footer text-center" style="{!IF((Employees.size=0),'display:none; !important','')}"> <!---Pagination Area-->
+                                    
+                                    <span class="first-arrow" disabled="{!!setEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="emp-form"  action="{!setEmployeesCon.first}"  title="First Page">
+                                            <span class="icon icon-adgm-arrow-left"></span><span class="icon icon-adgm-arrow-left double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="prev-arrow" disabled="{!!setEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="emp-form" action="{!setEmployeesCon.previous}" title="Previous Page">
+                                            <span class="icon icon-adgm-arrow-left"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="page-num"><apex:outputText >Page {!setEmployeesCon.PageNumber} of {!EmpTotalPages} </apex:outputText></span>
+                                    <span class="next-arrow" disabled="{!!setEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="emp-form" action="{!setEmployeesCon.next}"  title="Next Page">
+                                            <span class="icon icon-adgm-arrow-right"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="last-arrow" disabled="{!!setEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="emp-form" action="{!setEmployeesCon.last}"  title="Last Page">
+                                            <span class="icon icon-adgm-arrow-right"></span><span class="icon icon-adgm-arrow-right double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    
+                                </div>
+                                <div style="{!IF((Employees.size=0),'display:block; !important','display:none;')}" >
+                                    <br/>
+                                    <apex:outputText value="No records found."  styleClass="no-rec" />
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </apex:form>
+                            
+                            
+                            <!-- Cancelled Employee section --->
+                            <div class="section-header brandTertiaryBgr">
+                                Cancelled Employees 
+                            </div>
+                            <apex:form id="Cemp-form" >
+                                
+                                <table class="customTbl" style="{!IF((CancelledEmployees.size=0),'display:none; !important','')}">
+                                    <thead>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Job Title</th>
+                                        <th>Sponsor</th>
+                                        <th>Passport Number</th>
+                                        <th>Employment Status</th>
+                                        <th>Nationality</th>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!CancelledEmployees}" var="emp">
+                                            <tr>
+                                                <td class="td_text">{!emp.FirstName}</td>
+                                                <td class="td_text">{!emp.LastName}</td>
+                                                <td class="td_text">{!emp.Email}</td>
+                                                <td class="td_text">{!emp.Job_Title__c}</td>
+                                                <td class="td_text">{!emp.Sponsor__r.Name}</td> 
+                                                <td class="td_text">{!emp.Passport_No__c}</td>
+                                                <td class="td_text">{!emp.Employment_Status__c}</td>
+                                                <td class="td_text">{!emp.Nationality__c}</td> 
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                                <div class="page-footer text-center" style="{!IF((CancelledEmployees.size=0),'display:none; !important','')}"> <!---Pagination Area-->
+                                    
+                                    <span class="first-arrow" disabled="{!!setEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Cemp-form"  action="{!setEmployeesCon.first}"  title="First Page">
+                                            <span class="icon icon-adgm-arrow-left"></span><span class="icon icon-adgm-arrow-left double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="prev-arrow" disabled="{!!setEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Cemp-form" action="{!setEmployeesCon.previous}" title="Previous Page">
+                                            <span class="icon icon-adgm-arrow-left"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="page-num"><apex:outputText >Page {!setEmployeesCon.PageNumber} of {!EmpTotalPages} </apex:outputText></span>
+                                    <span class="next-arrow" disabled="{!!setEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Cemp-form" action="{!setEmployeesCon.next}"  title="Next Page">
+                                            <span class="icon icon-adgm-arrow-right"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="last-arrow" disabled="{!!setEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Cemp-form" action="{!setEmployeesCon.last}"  title="Last Page">
+                                            <span class="icon icon-adgm-arrow-right"></span><span class="icon icon-adgm-arrow-right double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    
+                                </div>
+                                <div style="{!IF((CancelledEmployees.size=0),'display:block; !important','display:none;')}" >
+                                    <br/>
+                                    <apex:outputText value="No records found."  styleClass="no-rec" />
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </apex:form>
+                            
+                            
+                            <!-- Cancelled Employee section --->
+                            <div class="section-header brandTertiaryBgr">
+                                Transferred Employees History
+                            </div>
+                            <apex:form id="Trform" >
+                                
+                                <table class="customTbl" style="{!IF((TeEmployees.size=0),'display:none; !important','')}">
+                                    <thead>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Job Title</th>
+                                        <th>Passport Number</th>
+                                        <th>Visa Number</th>
+                                        <th>Nationality</th>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!TeEmployees}" var="emp">
+                                            <tr>
+                                                <td class="td_text">{!emp.Name}</td>
+                                                <td class="td_text">{!emp.Employee_Email_ID__c}</td>
+                                                <td class="td_text">{!emp.Job_Title__c}</td>
+                                                <td class="td_text">{!emp.Passport_Number__c}</td>
+                                                <td class="td_text">{!emp.Residence_Visa_Number__c}</td>
+                                                <td class="td_text">{!emp.Nationality__c}</td> 
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                                <div class="page-footer text-center" style="{!IF((TeEmployees.size=0),'display:none; !important','')}"> <!---Pagination Area-->
+                                    
+                                    <span class="first-arrow" disabled="{!!setTrEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Trform"  action="{!setTrEmployeesCon.first}"  title="First Page">
+                                            <span class="icon icon-adgm-arrow-left"></span><span class="icon icon-adgm-arrow-left double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="prev-arrow" disabled="{!!setTrEmployeesCon.hasPrevious}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Trform" action="{!setTrEmployeesCon.previous}" title="Previous Page">
+                                            <span class="icon icon-adgm-arrow-left"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="page-num"><apex:outputText >Page {!setTrEmployeesCon.PageNumber} of {!TeTotalPages} </apex:outputText></span>
+                                    <span class="next-arrow" disabled="{!!setTrEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Trform" action="{!setTrEmployeesCon.next}"  title="Next Page">
+                                            <span class="icon icon-adgm-arrow-right"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    <span class="last-arrow" disabled="{!!setTrEmployeesCon.hasNext}">
+                                        <apex:commandLink styleClass="dec-none" reRender="Trform" action="{!setTrEmployeesCon.last}"  title="Last Page">
+                                            <span class="icon icon-adgm-arrow-right"></span><span class="icon icon-adgm-arrow-right double-left-arrow"></span>
+                                        </apex:commandLink>
+                                    </span>
+                                    
+                                </div>
+                                <div style="{!IF((TeEmployees.size=0),'display:block; !important','display:none;')}" >
+                                    <br/>
+                                    <apex:outputText value="No records found."  styleClass="no-rec" />
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </apex:form>
+                            
+                            
+                            
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                
+            </div>
+        </div>
+        
+    </body>
+    <script>
+    function goBack() {
+        window.history.back();
+    }
+    function clearSearch(){
+        $("[id$='searchTextInput']").val("");
+    }
+    
+    </script>
+</apex:page>

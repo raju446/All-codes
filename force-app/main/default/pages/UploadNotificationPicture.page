@@ -1,0 +1,182 @@
+<apex:page id="PhotoUploadPage" standardController="Notice__c" extensions="NotificationPictureController">
+    <apex:stylesheet value="{!URLFOR($Resource.ImageCropper,'Cropper/cropper.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.ADGMStaticResources, 'ADGMStaticResources/js/jquery.min.js')}"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+    <style>
+        .btn-group .fa, .btn-group .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            vertical-align: middle
+        } 
+        .docs-tooltip >.icon {
+            margin: 0 -3px;
+            vertical-align: top;
+        }        
+        .icon-crop {
+            background-position: -30px 0;
+        }        
+        .btn-primary {
+            border-color: #0066bf;
+            background-color: #0074d9;
+        }
+        .docs-tooltip {
+            display: block;
+        } 
+        /*
+        .cropper-view-box{
+            border-radius: 50%;
+        }   
+        */    
+        .btn-group {margin-bottom: 5px;}
+        .btn-group button { background: none; background-color: #002A3A !important; color: #fff;}
+        .message table td {padding: inherit;}
+        
+        #DivNoBorder .bPageBlock {
+            border:none !important;
+            margin-top:10px;
+        }
+        .content{
+            margin-top:20px;
+            margin-bottom:10px;
+        }
+        #DefaultImage
+        {
+            width: 100%;
+        }
+    </style>
+    <!-- <div class="content" >
+        <h4>UPLOAD PROFILE PICTURE</h4>
+    </div>
+    <label >The ideal size for the image is <b>352x352 pixles</b>, but you can zoom your image in and out using your mouse or keyboard to make it fit.</label> -->
+    <!--<div class="pageTopic">UPLOAD PROFILE PICTURE</div>-->
+    <!-- The ideal size for the image is <b>352x352 pixles</b>, but you can zoom your image in and out using your mouse or keyboard to make it fit. -->
+    <!--<div class="pageDesc">
+        The ideal profile picture size is <b>352x352 pixels</b>, you can adjust your image by dragging or zooming the picture.
+    </div>-->
+    <apex:form id="filefrm">
+         <apex:actionstatus id="PleaseWait">
+            <apex:facet name="start">
+                <c:ADGM_Loading_Component />
+            </apex:facet>
+        </apex:actionstatus>
+        <apex:inputHidden value="{!strCroppedData}" id="imgvalhdn"/>
+        <apex:actionFunction name="CroppeImage" action="{!SaveCroppedImage}" status="PleaseWait"/>
+        <apex:pageMessages id="showmsg" escape="false"/>
+        <div id="DivNoBorder">
+            <apex:pageBlock >
+                <apex:pageBlockButtons >
+                    <apex:commandButton OnClick="CanvastoString();return false;" value="Save" style="float:right;"/>
+                    <apex:commandButton value="Cancel" action="{!Cancel}" status="PleaseWait" style="float:right;"/>
+                </apex:pageBlockButtons>
+                <table style="width:100%;table-layout: fixed">
+                    <tr>
+                        <td width="20%" style="text-align:right;padding-right:5px;"><apex:outputLabel value="File" for="file"/></td>
+                        <td><input type="file" id="imageLoader" name="imageLoader"/></td>
+                    </tr>
+                </table>
+                <table style="width:100%;table-layout: fixed">
+                    <tr>
+                        
+                        <td width="20%" style="text-align:right"><apex:outputLabel value="Image Preview" for="Picture"/></td><td>&nbsp;</td></tr>
+                        <tr><td style="padding-left:20%">
+                        <div style="width: 552px; height: 552px">
+                            <canvas id="imageCanvas" style="display: none"></canvas>
+                            <apex:outputPanel rendered="{!ProfilePictureId != null}" layout="none" >  
+                                <img id="DefaultImage" style="display:block;" src="{!$Site.Prefix}/servlet/servlet.FileDownload?file={!ProfilePictureId }"/>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!ProfilePictureId = null}" layout="none">  
+                                <img id="DefaultImage" style="display:block;" src="{!$Site.Prefix}/profilephoto/005/F"/>
+                            </apex:outputPanel>
+                            <img id="imgCropper" style="display: none" src="data:image/bmp;"/>
+                            <div class="btn-group" style="display: none">
+                                <button class="btn btn-primary" data-method="zoom" data-option="0.1" type="button" onclick="$j('#imgCropper').cropper('zoom', 0.1)" title="Zoom In">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-search-plus fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="zoom" data-option="-0.1" type="button" onclick="$j('#imgCropper').cropper('zoom', -0.1)" title="Zoom Out">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-search-minus fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="rotate" data-option="-45" type="button" onclick="$j('#imgCropper').cropper('rotate', -45)" title="Rotate Left">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <i class="fa fa-undo fa-lg"></i>                      
+                                  </span>
+                                </button>
+                                <button class="btn btn-primary" data-method="rotate" data-option="45" type="button" onclick="$j('#imgCropper').cropper('rotate', 45)" title="Rotate Right">
+                                  <span class="docs-tooltip" data-toggle="tooltip" title="" >
+                                    <!--<span class="icon icon-rotate-right"></span>-->
+                                    <i class="fa fa-repeat fa-lg"></i>                      
+                                  </span>
+                                </button>
+                            </div>              
+                        </div>
+                        </td>
+                    </tr>
+                </table>    
+            </apex:pageBlock>
+        </div>
+        <script type="text/javascript">
+            var $j = jQuery.noConflict();
+            if(typeof(jQuery) == "undefined")
+                document.write('\x3Cscript type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">\x3C/script>');
+        </script>    
+        <script src="{!URLFOR($Resource.ImageCropper,'Cropper/cropper.js')}"></script>
+        <script type="text/javascript">
+            $j('body').removeClass('homeTab');
+            var imageLoader = document.getElementById('imageLoader');
+            imageLoader.addEventListener('change', handleImage, false);
+            var canvas = document.getElementById('imageCanvas');
+            var ctx = canvas.getContext('2d');
+            function handleImage(e){
+                document.getElementById('DefaultImage').style.display = 'none';
+                var reader = new FileReader();
+                reader.onload = function(event){
+                    var img = new Image();
+                    img.onload = function(){
+                        //canvas.width = img.width;
+                        //canvas.height = img.height;
+                        ctx.drawImage(img,0,0);
+                        img.width= this.naturalWidth;
+                        img.height=this.naturalHeight;
+                    }
+                    img.src = event.target.result;
+                    if($j('.cropper-container').length > 0){            
+                        $j('#imgCropper').cropper('destroy');
+                        $j('.btn-group').css('display', 'none');
+                    }
+                    $j('.btn-group').css('display', 'block');
+                    $j('#imgCropper').attr('src', img.src);
+                    $j('#imgCropper').cropper({
+                        aspectRatio: 1,
+                        autoCropArea: 0.8,
+                        strict: false,
+                        guides: true,
+                        highlight: true,
+                        dragCrop: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                        built: function () {
+                            //$j('#imgCropper').cropper('method', argument1, , argument2, ..., argumentN);
+                        }
+                    });          
+                }
+                reader.readAsDataURL(e.target.files[0]);     
+            }
+            function CanvastoString(){
+                var imagestr=  $j('#imgCropper').cropper('getCroppedCanvas').toDataURL('image/jpeg');
+                /*
+                var  can = $j('#imgCropper').cropper('getCroppedCanvas',{width: 352,height: 352})
+                var imagestr = can.toDataURL();
+                */
+                //window.alert('imagestr '+imagestr);
+                //console.log(imagestr);
+                document.getElementById('PhotoUploadPage:filefrm:imgvalhdn').value=imagestr;
+                CroppeImage();
+            }
+        </script>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,76 @@
+<apex:page controller="SRListViewController">
+  <head>
+    <style>
+      .select-list{
+        font-size: 1.2em;
+        font-family: Raleway_Medium;
+      }
+      .select-block{
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <apex:form id="table-form">
+      <div class="select-block">
+        <apex:selectList value="{!selectedView}" size="1" multiselect="false" styleClass="select-list">
+          <apex:selectOptions value="{!selectValues}"/>
+          <apex:actionSupport event="onchange" reRender="table-form" action="{!reloadView}"/>
+        </apex:selectList>
+      </div>
+      <div class="alert-detail-area">
+          <div class="table-header-block">Service Request</div>
+          
+              <apex:dataTable value="{!ServiceRequest}" var="sr" styleClass="customTbl {!selectedView}" rendered="{!selectedView == 'savedrequests'}">
+                <!--Saved ServiceRequest --> 
+                <apex:repeat value="{!$ObjectType.HexaBPM__Service_Request__c.fieldsets.Saved_Requests}" var="fieldValue" >
+                    <apex:column styleClass="{!fieldValue}" headerValue="{!$ObjectType.HexaBPM__Service_Request__c.fields[fieldValue].Label}" rendered="{!fieldValue!='Id'}">
+                      <apex:outputLink styleClass="{!fieldValue}" value="/{!sr['id']}" rendered="{!fieldValue=='Name'}">{!sr[fieldValue]}</apex:outputLink>
+                      <apex:outputField styleClass="{!fieldValue}" value="{!sr[fieldValue]}" rendered="{!fieldValue!='Name' && fieldValue!='Id'}"/>
+                    </apex:column>
+                </apex:repeat>
+              </apex:dataTable>
+              <!--Current,Rejected and Approved ServiceRequest --> 
+              <apex:dataTable value="{!ServiceRequest}" var="sr" styleClass="customTbl {!selectedView}" rendered="{!selectedView == 'approvedrequests' || selectedView == 'currentrequests' || selectedView == 'rejectedrequests'}">
+                <apex:repeat value="{!$ObjectType.HexaBPM__Service_Request__c.fieldsets.Current_Requests}" var="fieldValue" >
+                    <apex:column styleClass="{!fieldValue}" headerValue="{!$ObjectType.HexaBPM__Service_Request__c.fields[fieldValue].Label}" rendered="{!fieldValue!='Id'}">
+                      <apex:outputLink styleClass="{!fieldValue}" value="/{!sr['id']}" rendered="{!fieldValue=='Name'}">{!sr[fieldValue]}</apex:outputLink>
+                      <apex:outputField styleClass="{!fieldValue}" value="{!sr[fieldValue]}" rendered="{!fieldValue!='Name' && fieldValue!='Id'}"/>
+                    </apex:column>
+                </apex:repeat>
+              </apex:dataTable>
+               <!--Pending Action Items --> 
+              <apex:dataTable value="{!ActionItem}" var="ai" styleClass="customTbl {!selectedView}" rendered="{!selectedView == 'pendingactions' || selectedView == 'cancellationrequests' || selectedView == 'couriersteps'}">
+                <apex:repeat value="{!$ObjectType.HexaBPM__Step__c.fieldsets.Pending_Actions}" var="fieldValue" >
+                    <apex:column styleClass="{!fieldValue}" headerValue="{!$ObjectType.HexaBPM__Step__c.fields[fieldValue].Label}" rendered="{!fieldValue!='Id'}">
+                      <apex:outputLink styleClass="{!fieldValue}" value="/{!ai['HexaBPM__SR__c']}" rendered="{!fieldValue=='HexaBPM__SR__c'}">{!ai['HexaBPM__SR__r.Name']}</apex:outputLink>
+                      <apex:outputField styleClass="{!fieldValue}" value="{!ai[fieldValue]}" rendered="{!fieldValue!='HexaBPM__SR__c' && fieldValue!='Id'}"/>
+                    </apex:column>
+                </apex:repeat>
+              </apex:dataTable>
+      </div> <!--Detail Area Ends here -->
+      <div class="page-footer text-center"> <!---Pagination Area-->
+          <span class="first-arrow" disabled="{!!setCon.hasPrevious}">
+              <apex:commandLink styleClass="dec-none" reRender="table-form"  action="{!setCon.first}"  title="First Page">
+                  <span class="icon icon-adgm-arrow-left"></span><span class="icon icon-adgm-arrow-left double-left-arrow"></span>
+              </apex:commandLink>
+          </span>
+          <span class="prev-arrow" disabled="{!!setCon.hasPrevious}">
+              <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.previous}" title="Previous Page">
+                  <span class="icon icon-adgm-arrow-left"></span>
+              </apex:commandLink>
+          </span>
+          <span class="page-num"><apex:outputText >Page {!setCon.PageNumber} of {!TotalPages} </apex:outputText></span>
+          <span class="next-arrow" disabled="{!!setCon.hasNext}">
+              <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.next}"  title="Next Page">
+                  <span class="icon icon-adgm-arrow-right"></span>
+              </apex:commandLink>
+          </span>
+          <span class="last-arrow" disabled="{!!setCon.hasNext}">
+              <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.last}"  title="Last Page">
+                  <span class="icon icon-adgm-arrow-right"></span><span class="icon icon-adgm-arrow-right double-left-arrow"></span>
+              </apex:commandLink>
+          </span>
+      </div>
+  </apex:form>
+  
+</apex:page>

@@ -1,0 +1,56 @@
+<apex:page standardController="Appointment_Master__c" extensions="CreateAppointmentMasterScheduleCtrlr" tabStyle="Appointment_Master__c">
+    <style>
+        body{
+        position: relative;
+        }
+        .bPageBlock .detailList .dataCol{
+        width:10% !important;
+        }
+    </style>
+    <apex:form id="mainForm">
+        <apex:actionstatus id="loadingStatus">
+            <apex:facet name="start">
+                <c:ADGM_Loading_Component />
+            </apex:facet>
+        </apex:actionstatus>
+        <apex:sectionHeader title="Appointment Master Edit" subtitle="New Appointment Master"/>
+        <apex:pageBlock title="Appointment Master Edit">
+            <apex:pagemessages id="msg"/>
+            <apex:pageBlockSection title="Information" collapsible="false" columns="4">
+                <div style="width:100px;" />
+                <apex:inputField label="From Date" value="{!startAMDate.Date__c}" required="true" />
+                <apex:inputField label="To Date" value="{!endAMDate.Date__c}" required="true" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection collapsible="false" columns="5">
+                <apex:repeat value="{!timeWrapList}" var="time">
+                    <apex:pageBlockSectionItem >
+                        <apex:inputCheckbox value="{!time.isBiometricsRequired }" />
+                        <apex:outputLabel value="Biometrics Required" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:inputCheckbox value="{!time.isVIP }" />
+                        <apex:outputLabel value="VIP" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:inputCheckbox value="{!time.isSelected}" />
+                        <apex:outputLabel value="{!time.timeStr}" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:inputCheckbox value="{!time.avaliableForFriday}" />
+                        <apex:outputLabel value="Available for Friday" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                       <apex:inputText value="{!time.numOfSeats}" />
+                        <apex:outputLabel value="Number of Seats" />
+                    </apex:pageBlockSectionItem>
+                        
+                    <!--<div>&nbsp;</div>-->
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveAppointmentMaster}" reRender="mainForm" status="loadingStatus"/>
+                <apex:commandButton value="Cancel" action="{!Cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

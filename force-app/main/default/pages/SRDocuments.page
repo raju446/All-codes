@@ -1,0 +1,28 @@
+<apex:page applyBodyTag="false" standardStylesheets="false" showHeader="false" readOnly="true" controller="SRDocController">
+<apex:pageBlock >
+     <div class="pList ">
+         <div class="no-rec-msg {!IF(lstSRDocs.size > 0 ,'hide','show')}" > No Documents Uploaded.</div>
+          <div class="{!IF(lstSRDocs.size > 0 ,'show','hide')}">
+              <apex:form >
+              <apex:pageBlockTable value="{!lstSRDocs}" var="srDoc" styleClass="{!IF(lstSRDocs.size > 0 ,'show','hide')}" >
+                 <apex:column value="{!srDoc.HexaBPM__Document_Name__c}"/>
+                 <apex:column value="{!srDoc.HexaBPM__Document_Description_External__c}"/>
+                 <apex:column headerValue="Required">
+                     <apex:outputPanel rendered="{!srDoc.HexaBPM__Is_Not_Required__c = false}">
+                         <img alt="Checked" class="checkImg" height="16"  src="/img/checkbox_checked.gif" style="display:" title="Checked" width="21"/>
+                     </apex:outputPanel>
+                     <apex:outputPanel rendered="{!srDoc.HexaBPM__Is_Not_Required__c = true}">
+                         <img alt="UnChecked" class="checkImg" height="16"  src="/img/checkbox_unchecked.gif" style="display:" title="UnChecked" width="21" />
+                     </apex:outputPanel>
+                     <!--<apex:outputField value="{!srDoc.HexaBPM__Is_Not_Required__c}" styleClass="{!srDoc.HexaBPM__Is_Not_Required__c}" />-->
+                 </apex:column>
+                 <apex:column value="{!srDoc.HexaBPM__Status__c}"/>
+                 <apex:column value="{!srDoc.Preview_Download_Document__c}"/>
+                 <apex:column value="{!srDoc.HexaBPM__Sys_IsGenerated_Doc__c}"/>
+              </apex:pageBlockTable>
+              </apex:form>
+          </div>
+      </div>
+   </apex:pageBlock>
+   
+</apex:page>

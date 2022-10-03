@@ -1,0 +1,77 @@
+<aura:component implements="force:appHostable" controller="GLConfigurationController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:attribute name="glPeriodWrapper" type="Object"/>
+    <aura:attribute name="selectedMonth" type="String"/>
+    <aura:attribute name="selectedYear" type="String"/>
+    <lightning:card >
+        <lightning:layout class="slds-m-top_large">
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                <b>New GL Period</b>
+                <lightning:select value="{!v.selectedYear}" name="yearselection" label="Select Year" required="true" class="slds-m-right_large">
+                    <aura:iteration items="{!v.glPeriodWrapper.availableYears}" var="pickVal">
+                        <option value="{!pickVal}" selected="{!v.selectedYear == pickVal}">{!pickVal}</option>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                <div>&nbsp;</div>
+                <lightning:select value="{!v.selectedMonth}" name="monthselection" label="Select Month" required="true" class="slds-m-left_large">
+                    <aura:iteration items="{!v.glPeriodWrapper.availableMonths}" var="pickVal">
+                        <option value="{!pickVal}" selected="{!v.selectedMonth == pickVal}">{!pickVal}</option>
+                    </aura:iteration>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                <div>&nbsp;</div>
+                <lightning:button variant="brand" class="slds-m-top_large slds-m-left_large" label="Configure Period" title="Brand action" onclick="{! c.configurePeriod }" />
+            </lightning:layoutItem>
+        </lightning:layout>
+        
+        <lightning:layout class="slds-m-top_large">
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6">
+                <b>Available GL Periods</b>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col" width="35%">
+                                    <div class="slds-truncate">Year</div>
+                                </th>
+                                <th class="" scope="col" width="35%">
+                                    <div class="slds-truncate">Month</div>
+                                </th>
+                                <th class="" scope="col" width="30%">
+                                    <div class="slds-truncate">&nbsp;</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.glPeriodWrapper.exisitingGLConfigList}" var="wrap" indexVar="indx">
+                                <tr class="slds-hint-parent">
+                                    <td  scope="row">
+                                        <div class="slds-truncate">{!wrap.Month__c}</div>
+                                    </td>
+                                    <td >
+                                        <div class="slds-truncate">{!wrap.Year__c}</div>
+                                    </td>
+                                    <td >
+                                        <div onclick="{!c.closePeriod}" data-value="{!indx}">
+                                            <lightning:button variant="destructive" label="Close GL Period" title="Close GL Period"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+        </lightning:layout>
+    </lightning:card>
+</aura:component>

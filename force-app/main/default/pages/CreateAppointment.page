@@ -1,0 +1,218 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="CreateAppointmentController">
+    <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <style>
+        .bPageBlock{
+            border-top :  #ac975e !important;
+            width: 30%;
+            margin-top: 10px;
+            background-color: #fff !important; 
+        }
+       .pageSpanContainer h1{
+            font-size: 23px;
+            line-height: 36px;
+            color: #008375;
+            margin-top: 40px;
+        }
+        .fieldLabelFormat{
+            width:50%;
+            font-weight:bold;
+            margin-right:15px;
+        }/*
+        .btnSave{
+            height : 27px !important;
+            width : 65px !important;
+            background :  #AD9961 !important;
+            color: #fff !important;
+        }
+        .btnCancel{
+            height : 27px !important;
+            width : 65px !important;
+            background :  #8C9CA0 !important;
+            color: #fff !important;
+        }
+        */
+        body .bPageBlock .detailList tr td{
+            border-color: #fff
+        }
+        .columnA{
+            width:30%;
+            text-align:right;
+            padding-top: .5em;
+            padding-bottom: .5em;
+        }
+        .columnB{
+            width:50%;
+            padding-top: .5em;
+            padding-bottom: .5em;
+        }
+        .pad-bottom{
+            padding-bottom: 5%;
+           }
+        a:-webkit-any-link {
+            //color: -webkit-link;
+            cursor: default;
+            text-decoration: none;
+        }
+        .close{
+            display:none;
+        }
+    </style>
+    <apex:form id="appointmentForm">
+        <div class="formContainer">
+            <center>
+                <div class="pad-bottom">
+                    <br/>
+                    <!--<div class="pageSpanContainer">
+                        <div id="header-content"><h1>MAKE AN APPOINTMENT</h1></div>
+                    </div>
+                    <br/>
+                    <br/>-->
+                    <apex:outputPanel style="display: block;" rendered="{!isMedClosed}">
+                        <span style="font-size:1.2em;">The Service Request medical appointment is closed. Re-scheduling the appointment is not allowed.</span>
+                        <div style="text-align:center;padding-top:3%;">
+                            <apex:commandButton value="Cancel" styleClass="btnCancel" onClick="navBackURL();return false;"/>
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel style="display: block;font-size: 1.2em" rendered="{!NOT(isMedClosed)}">
+                        <apex:panelGrid columns="2" width="100%" columnClasses="columnA,columnB">
+                            
+                            <apex:outputLabel value="Applicant" styleClass="fieldLabelFormat"/>
+                            <apex:outputpanel layout="block" styleclass="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <!--<apex:inputField value="{!newAppointment.Service_Request__c}" />-->
+                                <apex:selectList size="1" style="width:50%" value="{!selectedSR}" rendered="{!IF((newAppointment.Id = null),true,false)}">
+                                   <apex:actionSupport event="onchange" action="{!createDates}" reRender="appointmentForm" immediate="false"/>
+                                    <apex:selectOptions value="{!availableSRs}"/>
+                                </apex:selectList>
+                                <!--<apex:outputField value="{!newAppointment.Service_Request__c}" rendered="{!IF((newAppointment.Id <> null),true,false)}" style="text-decoration: none !important;"/>-->
+                                <apex:outputText value="{!selectedSRName}" rendered="{!IF((newAppointment.Id <> null),true,false)}" style="text-decoration: none !important;"/>
+                                <div class="errorMsg" style="{!If((hasError==false),'display:none;','')}">Please select a Service Request.</div>
+                            </apex:outputpanel>
+                            
+                            <apex:outputLabel value="Arrival date in UAE (most recent)" styleClass="fieldLabelFormat"/>
+                            <apex:outputpanel layout="block" styleclass="">
+                                <div class=""></div>
+                                <apex:inputfield value="{!newAppointment.Recent_date_entered_in_U_A_E__c}" label="">
+                                    <!--<apex:actionSupport event="onchange" action="{!createDates}" reRender="appointmentForm" immediate="false"/>-->
+                                </apex:inputfield>
+                                <!--<div class="errorMsg" style="{!If((hasErrorDateArrival==false),'display:none;','')}">Please select a date.</div>-->
+                                <div class="errorMsg" style="{!If((hasFutureDate==false),'display:none;','')}">Please select the past date.</div>
+                            </apex:outputpanel>
+                            
+                            <!-- ******************************Date **************************** -->
+                            <apex:outputLabel value="Date" styleClass="fieldLabelFormat"/>
+                            <apex:outputpanel layout="block" styleclass="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:selectList size="1" style="width:50%" value="{!selectedDate}">
+                                    <!--<apex:actionSupport event="onchange" action="{!createTimeWrapper}" reRender="appointmentForm" status="loadingStatus" immediate="false"/>-->
+                                    <apex:actionSupport event="onchange" action="{!createTimeWrapper}" reRender="appointmentForm" immediate="false"/>
+                                    <apex:selectOptions value="{!availableAppDates}"/>
+                                </apex:selectList>
+                                <div class="errorMsg" style="{!If((hasErrorDate==false),'display:none;','')}">Please select a date.</div>
+                            </apex:outputpanel>
+                            <!--  *******************************Date ends ************************ -->
+                            
+                            <apex:outputLabel value="Time" styleClass="fieldLabelFormat"/>
+                            <apex:outputpanel layout="block" styleclass="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:selectList size="1" style="width:50%" value="{!selectedTimeVal}">
+                                    <apex:selectOptions value="{!availableAppTimes}"/>
+                                </apex:selectList>
+                                <div class="errorMsg" style="{!If((hasErrorTime==false),'display:none;','')}">Please select a time.</div>
+                            </apex:outputpanel>
+                            
+                            <!--  ********************Travel Option ********************* -->
+                            <apex:outputLabel value="Select Travel Option" styleClass="fieldLabelFormat"/>
+                            <apex:outputpanel layout="block" styleclass="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:inputfield value="{!newAppointment.Select_Travel_option__c}" />
+                                <div class="errorMsg" style="{!If((hasSelectTravelOption==false),'display:none;','')}">Please select travel option.</div>
+                            </apex:outputpanel>
+                       
+                            
+                            <apex:outputLabel value="Reschedule Reason" styleClass="fieldLabelFormat" rendered="{!newAppointment.Id <> null}"/>
+                            <apex:outputpanel layout="block" styleclass="requiredInput" rendered="{!newAppointment.Id <> null}">
+                                <div class="requiredBlock"></div>
+                                <apex:inputTextArea value="{!selectedReason}" rendered="{!newAppointment.Id <> null}" style="width:188px;"/>
+                                <div class="errorMsg" style="{!If((hasErrorReason==false),'display:none;','')}">Please provide a reason.</div>
+                            </apex:outputpanel>
+                        </apex:panelGrid>
+                        
+                    </apex:outputPanel>
+                    <apex:outputPanel style="display: block;font-weight:bold;" styleClass="errorMsg" rendered="{!hasPaymentFineError}">
+                        <span>{!hasPaymentFineErrorMsg}</span>
+                    </apex:outputPanel>
+                    <apex:outputPanel style="display: block;font-weight:bold;" styleClass="errorMsg" rendered="{!DMLError!=''}">
+                        <span>{!DMLError}</span>
+                    </apex:outputPanel>
+                    <br/>
+                    <!--  *********************************Negative COVID-19 PRC test resul  Option *************** --> 
+                    
+                    <apex:outputLabel style="text-align:left;padding:0px 0px 10px 10px;">
+                        
+                        <apex:inputCheckbox id="remember_me" value="{!selectCovidTest}" >
+                        </apex:inputCheckbox> &nbsp;&nbsp;
+                        
+                        <!--/apex:outputpanel>
+                        <apex:outputpanel layout="block" styleclass="requiredInput"-->
+                        I acknowledge my understanding that a negative COVID-19 PRC test result (not exceeding (48) hours) is mandatory to be presented at the Visa Screening Center upon arrival for my scheduled medical appointment
+                        <div class="errorMsg" style="{!If((hasErrorCovidTest==false),'display:none;','')}">Negative COVID-19 PRC test result is required.</div>
+                    </apex:outputLabel>
+                    
+                    <!-- ********************************************************* -->
+
+                    <!--<br/>
+                    <br/>-->
+                    <apex:outputpanel rendered="{!NOT(isMedClosed)}">
+                        <!--<apex:commandButton id="buttnSave" value="Save" styleClass="btnSave" action="{!saveAppointment}" reRender="appointmentForm" />-->
+                        <!--<apex:commandButton id="buttnCancel" value="Cancel" styleClass="btnCancel" action="{!cancelApp}"/>-->
+                        <apex:commandButton id="buttnSave" value="Save" styleClass="btnSave" onclick="saveOnClick();return false;"/>
+                        <apex:commandButton id="buttnCancel" value="Cancel" styleClass="btnCancel"  onClick="navBackURL();return false;"/>
+                    </apex:outputpanel>
+                    <apex:actionFunction name="createApptmnt" action="{!saveAppointment}" reRender="appointmentForm" />
+                </div>
+            </center>        
+        </div>
+    </apex:form>
+    <script>
+        function navBackURL(){
+            if(window.location.pathname && window.location.pathname.indexOf("/home") > -1)
+                location.href = window.location.pathname;
+            else
+                window.history.back();
+        }
+        function changeValue(input, textid) {
+            document.getElementById(textid).value = input.value;
+        }
+        function createAppointment(){
+            createApptmnt();
+        }
+        function DisableAllButtons(actionText){ 
+            var buttons = document.getElementsByClassName("btnSave"); 
+            for(var i = 0;i<buttons.length; i++){ 
+                var button = buttons[i]; button.disabled = true; 
+                button.classList.add("btnDisabled"); 
+                if(actionText != null && actionText != "" )
+                    button.value = actionText; 
+            } 
+            var buttons2 = document.getElementsByClassName("btnCancel"); 
+            for(var i = 0;i<buttons2.length; i++){ 
+                var button = buttons2[i]; button.disabled = true; 
+                button.classList.add("btnDisabled"); 
+                if(actionText != null && actionText != "" )
+                    button.value = actionText; 
+            } 
+        } 
+        function saveOnClick(){ 
+            try{
+                DisableAllButtons("Saving...");
+                createAppointment();
+            }catch(err){
+            }
+        } 
+    </script>
+</apex:page>

@@ -1,0 +1,55 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" controller="ChartController" action="{!prepareSRPieChart}">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+    <div id="donutchart"></div>
+</body>
+<script>
+    //Invoke the draw chart to plot the points...
+    function drawChart() {
+        drawDonutChart();
+    }
+    function toTitleCase(str) {
+        return str.replace(/(?:^|\s)\w/g, function(match) {
+            return match.toUpperCase();
+        });
+    }
+    function drawDonutChart(){
+        var colorValues = [];
+        var colorCodes = {"letters & permits": "#BBC0C3", "company services": "#FFC526", "visa services" : "#ADCCCF","other":"#ADCCCF"};
+        var rows = new Array();
+        var serviceRequestStatusJSONString = '{!serviceRequestStatusJSON}' ;//'{"rejected":7,"Submitted":40,"closed":25,"Draft":22,"permit generated":10}';//'{!serviceRequestStatusJSON}';
+        var serviceRequestStatusJSON = JSON.parse(serviceRequestStatusJSONString);
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Status');
+        data.addColumn('number', 'Count');
+        for(var key in serviceRequestStatusJSON ){
+            if (serviceRequestStatusJSON.hasOwnProperty(key)) {
+              rows.push([toTitleCase(key), serviceRequestStatusJSON[key]]);
+              if(colorCodes[key.toLowerCase()])
+              {
+                colorValues.push(colorCodes[key.toLowerCase()]); //Maps the color codes for the status
+              }
+              else
+                colorValues.push(colorCodes["other"]); //Defaults the color to #e08231 if the status is not found in the colorCodes[] Dictionary.
+            }
+        }
+        data.addRows(rows);
+        var options = {
+            chartArea:{left:0,top:0,width:"100%",height:"100%"},
+            'height':'250',
+            pieHole: 0.5,
+            bar: {groupWidth: "10%"},
+            colors: colorValues,
+            vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }}
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+    }
+      google.charts.setOnLoadCallback(drawChart);
+</script>
+</apex:page>

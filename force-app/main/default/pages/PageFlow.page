@@ -1,0 +1,475 @@
+<apex:page controller="PageFlowController" id="DyncPgFlow" showheader="true" sidebar="true" cache="false">
+    <!-- 
+    <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.HexaBPM__HexaBPM_PageFlow, 'js/jquery-2.2.4.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.HexaBPM__HexaBPM_PageFlow, 'js/bootstrap.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.HexaBPM__HexaBPM_PageFlow, 'css/HexaBPM_PageFlow.css')}"/>
+     
+    <link rel="stylesheet"  type="text/css" href="/apex/Hexabpm__PageFlowCSS"/>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.HexaBPM__HexaBPM_PageFlow, 'css/HexaBPM_PageFlow.css')}"/>
+    <style>
+        .dashboard-content .pbBottomButtons .pbButtonb {
+            text-align: center !important;
+        }
+        .container-fluid{
+            padding-left : 0px;
+            padding-right : 0px;
+        }
+        .content{
+            margin-left:15px;
+            margin-bottom : 5px;
+        }
+        .dashboard-content .bPageBlock .pbHeader .pbTitle{
+            display:block;
+        }
+    </style>-->
+    
+    <apex:actionStatus id="pleasewait" stopText="">
+        <apex:facet name="start">
+            <div id="adgmload">
+                <span class="sp_loader">
+                    <div class="adgm_spinner"></div> <!--ADGM Loader Image -->
+                </span>
+            </div>
+        </apex:facet>
+    </apex:actionStatus>
+    
+    <style>
+        .rowWrapper{
+            display: table;
+            width: 100%;
+        }
+        .errorHighlight{
+            border:2px solid #c00 !important;
+        }
+        .labelWrapper {
+            display: table-cell;
+            position: relative;
+            padding: 0 18px 0px 2px !important;
+            color: #002A3A;
+            font-family: Raleway_SemiBold;
+            width: 32%;
+            text-align: right;
+            vertical-align: middle;
+        }
+        .fieldWrapper{
+            display: table-cell;
+            padding: 0 18px 0px 2px !important;
+            color: #002A3A;
+            font-family: Raleway_SemiBold;
+        }
+        .descriptionLbl{
+            width: 16% !important;
+        }
+        .content{
+            width: 100%!important;
+        }
+        .message{
+            margin: 4px 0px ;
+        }
+        select[multiple], select[size]{
+            max-width: 100px;
+        }
+        .editPage .detailList .helpOrb {
+            right: -4px;
+        }
+        .helpButton, .helpButtonOn {
+            position: initial;
+        }
+        #ReqMessageSpan{
+            font-size:1.2em !important;
+                
+        }
+    </style>
+    <!--
+    <apex:actionstatus id="pleasewait">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    -->
+    <apex:outputlabel id="hdnCurrentPageId" value="{!strPageId}" style="display:none;"/>
+    <!--
+        <div class="container-fluid">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <apex:outputpanel layout="block">
+                    <div class="col-lg-offset-2 col-lg-8 col-md-offset-3 col-md-8 col-sm-offset-3 col-sm-8 col-xs-offset-3 col-xs-8">
+                        <div class="medium-9 columns title">
+                            <h3>
+                                {!pageTitle}
+                            </h3>
+                        </div>
+                    </div>
+                </apex:outputpanel>
+            </div>    
+        </div>
+    -->
+    <div class="bPageTitle">
+        <div class="ptBody">
+            <div class="content">
+            <h2 class="pageDescription" style="display: block;">{!PageTitle}</h2>
+            <div class="description">
+                <apex:outputtext value="{!pageDescription}" escape="false"/>
+            </div>
+           <!-- <apex:outputtext value="{!objRequest.disclaimer__c}" escape="false" /> -->
+        </div>
+    </div>
+    <div class="">
+            <div>
+                <table style="width:100%;">
+                    <tbody>
+                        <tr class="custom-row">
+                             <td id="" class="">
+                                <apex:form id="frm">
+                                <apex:actionfunction name="InvokeAction" action="{!DynamicButtonAction}" status="pleasewait" rerender="hdnCurrentPageId,MenuComp,MainPnl" oncomplete="ErrorFocus();"/>
+                                <apex:actionfunction name="RePrepareFields" action="{!RePrepareSection}" status="pleasewait" rerender="hdnCurrentPageId,MenuComp,MainPnl"/>
+                                <apex:actionfunction name="SaveRecord" action="{!CommitRecord}" status="pleasewait" rerender="hdnCurrentPageId,MenuComp,MainPnl" oncomplete="ErrorFocus();"/>
+                                <apex:actionfunction name="CancelReq" action="{!CancelSR}" status="pleasewait" rerender="hdnCurrentPageId,MenuComp,MainPnl"/>
+                                <apex:actionfunction name="NavigatePage" action="{!goTopage}" status="pleasewait" rerender="hdnCurrentPageId,MenuComp,MainPnl" oncomplete="ErrorFocus();">
+                                    <apex:param name="NextPageId" value="" assignTo="{!strNavigatePageId}"/>
+                                </apex:actionfunction>
+                                <apex:inputhidden value="{!stringActionId}" id="hdnActnId"/>
+                                <apex:outputpanel id="MainPnl" layout="block">
+                                    <apex:inputhidden value="{!strReqFieldIds}" id="hdnReqFldIds"/>
+                                    <div class="message" style="display:none;" id="errorDiv">
+                                        <div class="reqErrorMsg" >
+                                            <!-- <img src="/img/msg_icons/error24.png" alt='Error'/> -->
+                                            <h4 style="color:#cc0000 !important;"><a id="ErrorLink" href="#" style="color:#cc0000 !important;text-decoration:none;margin-left:8px;">Error</a>:&nbsp;</h4>
+                                            <span class="messageText">Invalid Data.</span>
+                                            <span style="display: block;" class="messageText">Review all Required Fields below and provide values for those.</span>
+                                        </div>
+                                    </div>                        
+
+                                    <apex:actionStatus id="ActStatus">
+                                         <apex:facet name="start">
+                                             <img class="loader" id="theLoadImage" src="/img/loading32.gif"/>
+                                         </apex:facet>
+                                     </apex:actionStatus>
+                                    <apex:outputpanel id="DyncPnl">
+                                        <apex:pagemessages id="errormsg"/>
+                                        <apex:dynamicComponent componentValue="{!DyncPgMainPB}" />
+                                    </apex:outputpanel>
+                                    <script>
+                                        translate_field(); //Gets the source field values(from custom settings) and performs the Arabic translation.
+                                        //Script to Disable the Lookup Inputs
+                                        var inputFlds = document.getElementsByTagName('input');
+                                        for(index = 0; index < inputFlds.length; ++index) {
+                                            var FieldId = inputFlds[index].id;
+                                            var LookupId = FieldId+'_lkid';
+                                            if(document.getElementById(LookupId)!=null)
+                                                document.getElementById(FieldId).disabled = true;
+                                        }
+                                                    
+                                        var hdnMenu = '{!strHiddenPageIds}';
+                                        if(hdnMenu!=null && hdnMenu!=''){
+                                            var hdnsize = hdnMenu.indexOf(",");
+                                            if(hdnsize>-1){
+                                                var hdnPgLst = hdnMenu.split(',');
+                                                for(i = 0; i < hdnPgLst.length;i++){
+                                                    if(document.getElementById(hdnPgLst[i])!=null){
+                                                        document.getElementById(hdnPgLst[i]).style.display = 'none';
+                                                    }
+                                                }
+                                            }else{
+                                                if(document.getElementById(hdnMenu)!=null)
+                                                    document.getElementById(hdnMenu).style.display = 'none';
+                                            }
+                                        }
+                                        //to hide the red bar for check boxes
+                                        if(document.getElementById('{!$Component.hdnReqFldIds}')!=null){
+                                            var reqflds = document.getElementById('{!$Component.hdnReqFldIds}').value;
+                                            if(reqflds!=null && reqflds!=''){
+                                                var ReqFldCompIds = reqflds;
+                                                var n = ReqFldCompIds.indexOf(",");
+                                                if(n>-1){
+                                                    var strFldIds = ReqFldCompIds.split(',');
+                                                    if(strFldIds!=null && strFldIds.length>0){
+                                                        for(var i=0;i<strFldIds.length;i++){
+                                                            var ComPid = strFldIds[i];
+                                                            var inputs, index;
+                                                            inputs = document.getElementsByTagName('input');
+                                                            for(index = 0; index < inputs.length; ++index) {
+                                                                var ElemId = inputs[index].id;
+                                                                if(ElemId.indexOf(ComPid)>-1){
+                                                                    if(document.getElementById(ElemId).type=='checkbox' && document.getElementById(ElemId+'_ReqBlock')!=null){
+                                                                        document.getElementById(ElemId+'_ReqBlock').style.backgroundColor="#F9F4F4";
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }else{
+                                                    //for muliple fields
+                                                    var ComPid = ReqFldCompIds;
+                                                    var inputs, index;
+                                                    inputs = document.getElementsByTagName('input');
+                                                    for(index = 0; index < inputs.length; ++index) {
+                                                        var ElemId = inputs[index].id;
+                                                        if(ElemId.indexOf(ComPid)>-1){
+                                                            if(document.getElementById(ElemId).type=='checkbox' && document.getElementById(ElemId+'_ReqBlock')!=null){
+                                                                document.getElementById(ElemId+'_ReqBlock').style.backgroundColor="#F9F4F4";
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
+
+                                        //hide the dropdown in lookup
+                                        var selects = document.getElementsByTagName('select');
+                                        for(index=0;index<selects.length;index++){
+                                            var ElemId = selects[index].id;
+                                            if(undefined != ElemId && ElemId.indexOf('_mlktp')>-1){
+                                                document.getElementById(ElemId).style.display = 'none';
+                                            }
+                                        }
+                                    </script>
+                                    <script>
+                                        var ReqFieldsFilled = true;
+                                        //navigate from one to another page
+                                        function DoAction(ButtonSectionId,IgnoreReqFlds){
+                                            if(document.getElementById('DyncPgFlow:frm:hdnActnId')!=null){
+                                                document.getElementById('DyncPgFlow:frm:hdnActnId').value = ButtonSectionId;
+                                                if(IgnoreReqFlds==true || IgnoreReqFlds=='true'){
+                                                    InvokeAction();
+                                                }else{
+                                                    ValidateRequiredFlds();
+                                                    if(ReqFieldsFilled==true){
+                                                        InvokeAction();
+                                                    }else{
+                                                        //location.href = "#";
+                                                        //location.href = "#errorDiv";
+                                                        //window.location.hash = '#errorDiv';
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //save sr and keep the user on the same page 
+                                        function SaveDetails(){
+                                            ValidateRequiredFlds();
+                                            if(ReqFieldsFilled==true){
+                                               SaveRecord();
+                                            }
+                                        }
+                                        //re evaluate the condition and re-prepare the sections with new values 
+                                        function InvokeChangeEvent(){
+                                            RePrepareFields();
+                                        }
+                                        //cancel sr and redirects to home 
+                                        function CancelRequest(){
+                                            CancelReq();
+                                        }
+                                        //error message displayed
+                                        function DisplayMessage(FldDetail,FldLabel){
+                                            if(document.getElementById('FldDesc')!=null)
+                                                document.getElementById('FldDesc').innerHTML = FldDetail;
+                                            if(document.getElementById('FldHead')!=null)
+                                                document.getElementById('FldHead').innerHTML = FldLabel + ' Description';
+                                        }
+                                        //Required Field Validation Check
+                                        function ValidateRequiredFlds(){
+                                            ReqFieldsFilled = true;
+                                            if(document.getElementById('{!$Component.hdnReqFldIds}')!=null){
+                                                var ReqFldCompIds = document.getElementById('{!$Component.hdnReqFldIds}').value;
+                                                var FieldMap = new Map();
+                                                console.log('ReqFldCompIds==>'+ReqFldCompIds);
+                                                if(ReqFldCompIds!=null && ReqFldCompIds!=''){
+                                                    var n = ReqFldCompIds.indexOf(",");
+                                                    if(n>-1){
+                                                        var strFldIds = ReqFldCompIds.split(',');
+                                                        if(strFldIds!=null && strFldIds.length>0){
+                                                            for(var i=0;i<strFldIds.length;i++){
+                                                                var ReqFieldErrorDiv = strFldIds[i];
+                                                                console.log('ReqFieldErrorDiv==>'+ReqFieldErrorDiv);
+                                                                var ComPid = strFldIds[i];
+                                                                ComPid = ':'+ComPid;
+                                                                var inputs, index, selects;
+                                                                inputs = document.getElementsByTagName('input');
+                                                                selects = document.getElementsByTagName('select');
+                                                                for(index = 0; index < inputs.length; ++index) {
+                                                                    var ElemId = inputs[index].id;
+                                                                    if(ElemId.indexOf('_lkid')>-1 && document.getElementById(ElemId)!=null){//+'_lkid'
+                                                                        if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value=='' || document.getElementById(ElemId).value=='000000000000000'){
+                                                                            ReqFieldsFilled = false;
+                                                                            FieldMap.set(ElemId,"Please click on search icon and select the value.");
+                                                                        }
+                                                                    }
+                                                                    if(ElemId.indexOf(ComPid)>-1 && ElemId.indexOf('_lkid')==-1){
+                                                                        console.log('ElemId==>'+ElemId);
+                                                                        if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                                            ReqFieldsFilled = false;
+                                                                            document.getElementById(ElemId).className = "errorHighlight";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                        }else{
+                                                                            document.getElementById(ElemId).className = "";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                        }
+                                                                        if(FieldMap.get(ElemId+'_lkid')!=null){
+                                                                            ReqFieldsFilled = false;
+                                                                            document.getElementById(ElemId).className = "errorHighlight";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = FieldMap.get(ElemId+'_lkid');
+                                                                        }
+                                                                            
+                                                                    }
+                                                                }
+                                                                for(index = 0; index < selects.length; ++index) {
+                                                                    var ElemId = selects[index].id;
+                                                                    if(ElemId.indexOf(ComPid)>-1){
+                                                                        var isMultiSelect = (document.getElementById(ElemId).getAttribute('multiple') =="multiple")?true:false;
+                                                                        if(isMultiSelect){
+                                                                            if(ElemId.indexOf('_selected')>-1){
+                                                                                if(document.getElementById(ElemId).options.length<1){
+                                                                                    ReqFieldsFilled = false;
+                                                                                    document.getElementById(ElemId).className = "errorHighlight";
+                                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                                }else{
+                                                                                    document.getElementById(ElemId).className = "";
+                                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                                }
+                                                                            }
+                                                                        }else if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                                            ReqFieldsFilled = false;
+                                                                            document.getElementById(ElemId).className = "errorHighlight";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                        }else{
+                                                                            document.getElementById(ElemId).className = "";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }else{
+                                                        var ComPid = ReqFldCompIds;
+                                                        var ReqFieldErrorDiv = ReqFldCompIds;
+                                                        ComPid = ':'+ComPid;
+                                                        var inputs, index, selects;
+                                                        inputs = document.getElementsByTagName('input');
+                                                        selects = document.getElementsByTagName('select');
+                                                        for(index = 0; index < inputs.length; ++index) {
+                                                            var ElemId = inputs[index].id;
+                                                            if(ElemId.indexOf('_lkid')>-1 && document.getElementById(ElemId)!=null){
+                                                                if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value=='' || document.getElementById(ElemId).value=='000000000000000'){
+                                                                    ReqFieldsFilled = false;
+                                                                    FieldMap.set(ElemId,"Please click on search icon and select the value.");
+                                                                }
+                                                            }
+                                                            if(ElemId.indexOf(ComPid)>-1 && ElemId.indexOf('_lkid')==-1){
+                                                                if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                                    ReqFieldsFilled = false;
+                                                                    document.getElementById(ElemId).className = "errorHighlight";
+                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                }else{
+                                                                    document.getElementById(ElemId).className = "";
+                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                }
+                                                            }
+                                                        }
+                                                        for(index = 0; index < selects.length; ++index) {
+                                                            var ElemId = selects[index].id;
+                                                            if(ElemId.indexOf(ComPid)>-1){
+                                                               var isMultiSelect = (document.getElementById(ElemId).getAttribute('multiple') =="multiple")?true:false;
+                                                                if(isMultiSelect){
+                                                                    if(ElemId.indexOf('_selected')>-1){
+                                                                        if(document.getElementById(ElemId).options.length<1){
+                                                                            ReqFieldsFilled = false;
+                                                                            document.getElementById(ElemId).className = "errorHighlight";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                        }else{
+                                                                            document.getElementById(ElemId).className = "";
+                                                                            document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                        }
+                                                                    } 
+                                                                }else if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                                    ReqFieldsFilled = false;
+                                                                    document.getElementById(ElemId).className = "errorHighlight";
+                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "You must enter a value";
+                                                                }else{
+                                                                    document.getElementById(ElemId).className = "";
+                                                                    document.getElementById(ReqFieldErrorDiv).innerHTML = "";
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if(ReqFieldsFilled==false){
+                                                document.getElementById('errorDiv').style.display = '';
+                                                document.getElementById("ErrorLink").focus();
+                                            }else{
+                                                document.getElementById('errorDiv').style.display = 'none';
+                                            }
+                                        }
+                                        function Navigate_To_Page(NextPG){
+                                            ValidateRequiredFlds();
+                                            if(ReqFieldsFilled==true){
+                                                NavigatePage(NextPG);
+                                            }else{
+                                                location.href = "#";
+                                                location.href = "#errorDiv";
+                                            }
+                                        }
+                                        function check_FieldValue(FieldId){
+                                            /*
+                                            var inputs, index, selects;
+                                            inputs = document.getElementsByTagName('input');
+                                            selects = document.getElementsByTagName('select');
+                                            for(index = 0; index < inputs.length; ++index) {
+                                                var ElemId = inputs[index].id;
+                                                if(ElemId.indexOf(FieldId)>-1){
+                                                    if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                        ReqFieldsFilled = false;
+                                                        document.getElementById(ElemId).className = "errorHighlight";
+                                                    }else{
+                                                        document.getElementById(ElemId).className = "";
+                                                    }
+                                                }
+                                            }
+                                            for(index = 0; index < selects.length; ++index) {
+                                                var ElemId = selects[index].id;
+                                                if(ElemId.indexOf(FieldId)>-1){
+                                                    if(document.getElementById(ElemId).value==null || document.getElementById(ElemId).value==''){
+                                                        ReqFieldsFilled = false;
+                                                        document.getElementById(ElemId).className = "errorHighlight";
+                                                    }else{
+                                                        document.getElementById(ElemId).className = "";
+                                                    }
+                                                }
+                                            }
+                                            */
+                                        }
+                                        function ErrorFocus(){
+                                            if(document.getElementById('DyncPgFlow:frm:errormsg')!=null){
+                                                var ErrorDiv = document.getElementById('DyncPgFlow:frm:errormsg');
+                                                ErrorDiv.setAttribute('id','ErrMsgDiv');
+                                                location.href = "#";
+                                                location.href = "#ErrMsgDiv";
+                                            }
+                                        }
+                                        Sfdc.onReady(function() {
+                                            $('[data-toggle="tooltip"]').tooltip(); 
+                                            var select = document.getElementById('calYearPicker');
+                                            if(!select)
+                                                return;
+                                            select.innerHTML = '';
+                                            var startYear = new Date().getFullYear() - 90;
+                                            for(var year = startYear; year < startYear + 100; year++) {
+                                                select.options[select.options.length] = new Option(year, year);
+                                            }
+                                        });
+                                        
+                                    </script>
+                                </apex:outputpanel>
+                            </apex:form>
+                        </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+       <input type="hidden" name="save_new_url" id="save_new_url" value="{!urltitle}" />
+    </div>
+</apex:page>

@@ -1,0 +1,737 @@
+<apex:page docType="html-5.0" title="Home" applyBodyTag="false" standardStylesheets="false" controller="HomeController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Free Zone ~ HOME</title>
+        <style>
+            .bg-img {
+                background-image:url("{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/home.png')}");
+                height: 1500px;
+                width: 100%;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+
+            .outer td.oRight {
+                padding: 0px !important;
+            }
+
+            .home-bg {
+                /*background-image:url("{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/BG_Image.png')}");*/
+                height: 217px;
+                width: 100%;
+                background-size: cover;
+                background-repeat: no-repeat;
+                padding-top: 3%;
+                /*padding-bottom: 4%;*/
+                padding-left: 2%;
+                padding-right: 2%;
+                background: rgba(246,249,253,1);
+                background: -moz-linear-gradient(left, rgba(246,249,253,1) 0%, rgba(164,192,231,1) 100%);
+                background: -webkit-gradient(left top, right top, color-stop(0%, rgba(246,249,253,1)), color-stop(100%, rgba(164,192,231,1)));
+                background: -webkit-linear-gradient(left, rgba(246,249,253,1) 0%, rgba(164,192,231,1) 100%);
+                background: -o-linear-gradient(left, rgba(246,249,253,1) 0%, rgba(164,192,231,1) 100%);
+                background: -ms-linear-gradient(left, rgba(246,249,253,1) 0%, rgba(164,192,231,1) 100%);
+                background: linear-gradient(to right, rgba(246,249,253,1) 0%, rgba(164,192,231,1) 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f9fd', endColorstr='#a4c0e7', GradientType=1 );
+            }
+            
+
+            .services-block {
+                padding: 30px;
+            }
+
+            .menu {
+                background-color: #fff;
+                border-radius: 8px;
+            }
+           
+
+            .home-container {
+                padding-left: 1%;
+                padding-right: 1%;
+            }
+
+            .graph-box {
+                height: 330px;
+                padding: 15px;
+                position: relative;
+            }
+
+            .announce {
+                height: 301px;
+                padding: 15px;
+            }
+
+            .alerts-contact {
+                height: 100%;
+                padding: 15px;
+            }
+
+            .calendar-block {
+                height: 233px;
+                padding: 15px;
+            }
+
+            .twitter-block {
+                height: 301px;
+                padding: 20px;
+            }
+
+            .home-block .home-bg {
+                color: #4B4B4B;
+            }
+
+            .home-block .home-bg .home-header {
+                font-family: Raleway_Bold;
+                font-size: 2.2em;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            .home-block .home-bg .sub-header {
+                font-family: Raleway_Medium;
+                font-size: 1.4em;
+                padding-right: 48%;
+                letter-spacing: 0.5px;
+            }
+            .home-header{
+                color: #002a3a;
+            }
+            .sub-header{
+                color:#3E5766;
+            }
+            .services-block .header-label {
+                text-transform: uppercase;
+                font-family: Raleway_Bold;
+                font-size: 2.2em;
+                color: #505050;
+            }
+
+            .services-block {
+                padding-left: 2%;
+                padding-right: 2%;
+            }
+
+            .services-block .service {
+                font-family: Raleway_Bold;
+                font-size: 1.4em;
+                text-transform: uppercase;
+                color: #505050;
+            }
+
+            .home-box .title {
+                font-family: Raleway_Bold;
+                font-size: 1.4em;
+                text-transform: uppercase;
+                color: #505050; /*Change Made*/
+            }
+
+            .services-block .service-logo,
+            .services-block .service,
+            .menu .service-logo,
+            .menu .title,
+            .alert-block.contact-block .stats-logo,
+            .alert-block.contact-block .summary {
+                display: inline-block;
+                vertical-align: middle;
+                text-align: left;
+            }
+
+            .services-block .service-logo {
+                font-size: 40px;
+                color: #046874;
+                padding-right: 1%;
+            }
+
+            .menu .service-logo {
+                font-size: 21px;
+                color: #046874;
+                padding-right: 2%;
+            }
+
+            .alert-block .line-row:not(:last-child) {
+                border-bottom: 1px solid #eeeeee;
+            }
+
+            .alert-block .space {
+                padding-top: 2%;
+                padding-bottom: 2%;
+            }
+
+            .stats {
+                font-family: Raleway_Bold;
+                color: #046874;
+                margin-right: 5px;
+            }
+
+            .stats-logo {
+                font-family: Raleway_Bold;
+                color: #046874;
+                margin-left: 4px;
+                margin-right: 16px;
+                font-size: 14px;
+            }
+
+            .alert-block .summary {
+                font-size: 1.2em;
+                font-family: Raleway_Medium;
+            }
+
+            .alert-block .summary a {
+                color: inherit;
+            }
+
+            .inverse-btn {
+                background-color: #fff !important;
+                color: #44939C !important;
+                border: 1px solid #44939C !important;
+                background: none !important;
+                padding: 4px 10px !important;
+            }
+
+            .w3-black,
+            .w3-hover-black:hover {
+                color: #040f3d !important;
+                background-color: #e5e9ea !important;
+            }
+
+            .w3-display-left {
+                position: absolute;
+                top: 25%;
+                left: 0%;
+                transform: translate(0%, -50%);
+                -ms-transform: translate(-0%, -50%);
+            }
+
+            .w3-btn,
+            .w3-button {
+                border: none;
+                display: inline-block;
+                outline: 0;
+                border-radius: 50%;
+                padding: 11px 16px;
+                vertical-align: middle;
+                overflow: hidden;
+                text-decoration: none;
+                background: inherit;
+                color: inherit;
+                background-color: inherit;
+                text-align: center;
+                cursor: pointer;
+                white-space: nowrap;
+                -webkit-appearance: button;
+            }
+
+            .w3-display-right {
+                position: absolute;
+                top: 25%;
+                right: 0%;
+                transform: translate(0%, -50%);
+                -ms-transform: translate(0%, -50%);
+            }
+
+            .w3-display-container {
+                position: relative;
+                height: 90%;
+            }
+
+            .slidesbox {
+                margin-left: 8%;
+                margin-right: 8%;
+                padding-right: 18%;
+            }
+
+            .announceTitle {
+                //padding-left: 8%; Change Made    
+                padding-right: 8%;
+                padding-bottom: 2%;
+            }
+
+            .alert-block {
+                height: 149px;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            .alert-scroll{
+                
+                overflow-x: hidden;
+                overflow-y: auto;
+             }
+
+            .titleContent {
+                padding-bottom: 15px;
+                border-bottom: 2px solid #eeeeee;
+            }
+
+            .annBtn {
+                padding-top: 10px;
+                padding-right: 8%;
+                display: inline-block;
+            }
+            .alert-view-all{
+                display: inline-block;
+                 width: 100%; /*Change Added*/
+            }
+            .rdmore {
+                font-family: Raleway_Bold;
+                font-size: 14px;
+                text-transform: uppercase;
+                color: #44939C;
+            }
+
+            .readmore-area {
+                margin-top: 2%;
+            }
+            .row{
+                margin-bottom: 20px;
+            }
+            .padding-0{
+                padding-right:20px;
+                padding-left:20px;
+            }
+            .padding-left-0{
+                padding-left: 0px !important;
+            }
+            .padding-right-0{
+                padding-right: 0px ;
+            }
+            .container-fluid-box{
+                margin-right: auto;
+                margin-left: auto;
+                padding-right: 30px;
+                padding-left: 30px;
+            }
+            .row-spacer{
+                margin: 10px 0 2px 0px;
+            }
+            .home-bdg-block
+            {
+                width:20%;
+            }
+            .img-bldg{
+                float: right;
+                position: absolute;
+                right: 0px;
+                top: 0px;
+            }
+            .header-image-an{
+                height:176px;
+                background-repeat:no-repeat;
+                background-size:contain;
+                background-position:center;
+                float: left;
+                width: 100%;
+            }
+            .book-btn{
+                position: absolute;
+                bottom: 10px;
+            }
+            .img-bldg{ display:block;}
+            @media screen and (max-width: 1373px) {
+                .img-bldg{ display:none;}
+            }
+             @media screen and (max-width: 1024px) {
+                .services-block .service{font-size: 1em;}
+            }
+        .w-acs {
+            font-family: Calibri_Light;
+            letter-spacing: -0.1em;
+            color:#46949d;
+            font-weight: 700;
+            font-size: 1.09em;
+        }
+        .a-label{
+            font-family: Calibri_Custom;
+            font-weight: 800;
+            font-size: 1.1em;
+            letter-spacing: -0.01em;
+        }
+        .tabl{
+            display: table;
+            table-layout: fixed;
+            width: 100%;
+        }
+        .cell-tabl{
+            display: table-cell;
+                vertical-align: top;
+        }
+        .img-width{
+            width: 200px;
+        }
+        .no-records-msg{
+            font-size:1.2em;
+            padding-top: 14%;
+            font-family: Raleway_Medium;
+            font-style: italic;
+        }
+        .adgm-logo{
+            margin-left: -9px;
+            height: 16px;
+            position: relative;
+            top: -6px;
+            left:-2px;
+        }
+        .access-logo{
+            height:17px;
+            position: relative;
+            top: -6px;
+            left:-2px;
+        }
+        @media screen  and (max-width:428px) {
+          .access-logo{
+                height:17px;
+                position: relative;
+                top: -3px;
+                left:-2px;
+            }  
+             .adgm-logo{
+                margin-left: -9px;
+                height: 16px;
+                position: relative;
+                top: -3px;
+                left:-2px;
+            }
+        }
+        #donutchart{
+            margin-top: 10px;
+        }
+        .shortDtl{
+            padding-top: 5px;
+            font-size:1.1em;
+        }
+        .note-title{
+            font-family: Raleway_Bold;
+            font-size: 1em;
+            text-transform: uppercase;
+            color: #505050;
+        }
+        .home-header span { position: relative }
+        .adgm-label{font-weight: 700;}
+        .access-label{font-style: italic;}
+        </style>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+            google.charts.load('current', {
+                packages: ['corechart']
+            });
+        </script>
+    </head>
+
+
+    <body>
+        <div class="home-block">
+            <div class="home-bg">
+                <img class="img-bldg" src="{!$Resource.BldImg}" height="216px" />
+                <!--home banner-->
+                <div class="home-header">
+                    <span>Welcome to</span> <span class="logo-label"><img class="access-logo" src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/access.svg')}" /></span>
+                        <span class="logo-label"><img class="adgm-logo" src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/adgm.svg')}" /></span>
+                </div>
+                <div class="sub-header">
+                    <apex:outputPanel rendered="{!isGuestUser}">
+                        Welcome to<span class="access-label">ACCESS</span><span class="adgm-label">ADGM</span>, a world of services at your fingertips!  As a guest user you will enjoy access to 15 government related services,
+                        including letters and permits for various purposes. Your <span class="access-label">ACCESS</span><span class="adgm-label">ADGM</span> homepage dashboard displays the status of all your service requests and cases,
+                        in addition to many more value added services for full transparency.
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!!isGuestUser}">
+                        Welcome to<span class="access-label">ACCESS</span><span class="adgm-label">ADGM</span>, a world of services at your fingertips!  From here you can access over 60 government related services, including company services,
+                        visa services, letters and permits. Your <span class="access-label">ACCESS</span><span class="adgm-label">ADGM</span> homepage dashboard displays the status of all your service requests and cases,
+                        in addition to many more value added services for full transparency.
+                    </apex:outputPanel>
+                </div>
+            </div>
+            <div style="padding-top:20px;display:{!IF(isGuestUser,'block','none')};">
+            
+            </div>
+            <div class="services-block" style="display:{!IF(isGuestUser,'none','block')};">
+                <span class="header-label">Frequently Used Services</span>
+                <div class="section group center">
+                    <apex:outputPanel rendered="{!!isGuestUser}" layout="none">
+                        <div class="row row-spacer">
+                            <div class="col-sm-3">
+                                <a href="{!If(service.isCompanyService,$Label.Fawri_Service_Link,'#')}" onclick="{!If(!service.isCompanyService,'disableServiceMsg()','')}">
+                                    <span class="service-logo icon-adgm-fawri"></span>
+                                    <span class="service">E-Channels
+                                        <div> Services </div>
+                                    </span>
+                                </a>
+                            </div>
+                            <div class="col-sm-3">
+                                <a href="{!If(service.isVisaLetterService,$Label.Employment_Visa_Link,'#')}" onclick="{!If(!service.isVisaLetterService,'disableServiceMsg()','')}">
+                                    <span class="service-logo icon-adgm-employee-visa"></span>
+                                    <span class="service">Employment Visa
+                                        <div>Services</div>
+                                    </span>
+                                </a>
+                            </div>
+                            <div class="col-sm-3">
+                                <a href="{!If(service.isPermitService,$Label.NOC_Link,'#')}" onclick="{!If(!service.isPermitService,'disableServiceMsg()','')}">
+                                    <span class="service-logo icon-adgm-noc-letter"></span>
+                                    <span class="service">Sales &amp; Promotion
+                                        <div>Services</div>
+                                    </span>
+                                </a>
+                            </div>
+                            <div class="col-sm-3">
+                                <a href="{!If(service.isVisaLetterService,$Label.Work_Permit_Link,'#')}" onclick="{!If(!service.isVisaLetterService,'disableServiceMsg()','')}">
+                                    <span class="service-logo icon-adgm-work-permit"></span>
+                                    <span class="service">Work Permit
+                                        <div>Services</div>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                <div class="right">
+                    <span class="note-title">To View Full List of Services, Click <a href="/apex/CommunityServices">Here</a></span>
+                </div>
+            </div>
+            <div class="home-box">
+                <div >
+                    <div class="container-fluid-box">
+                        <div class="row" style="margin-bottom: 0px;">
+                            <div class="col-sm-8 padding-left-0 padding-right-0 padding-0">
+                                <!--First Col-->
+                                <div class="row">
+                                    <div class="col-sm-6 padding-0 padding-right-0">
+                                        <!--Visa Status Block -->
+                                        <!-- Bar chart -->
+                                        <div class="menu graph-box">
+                                            <span class="title"> Service Request By Status </span>
+                                            <div id="columnchart"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 padding-0 ">
+                                        <!--Service Request Status -->
+                                        <div class="menu graph-box">
+                                            <span class="title"> Service Request By Category </span>
+                                            <div id="donutchart"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class=" {!IF(isGuestUser,'col-sm-12 padding-0','col-sm-6 padding-0 padding-right-0')}">
+                                        <div class="menu graph-box">
+                                            <span class="title"> Case Statistics </span>
+                                            <div id="bar-container"></div>
+                                        </div>
+                                    </div>
+                                    <apex:outputPanel rendered="{!!isGuestUser}"> <!--Render Due Visa only for Company user -->
+                                        <div class="col-sm-6 padding-0 ">
+                                            <!--Visa Expiring Chart -->
+                                            <div class="menu graph-box">
+                                                <span class="title"> Visa due for Renewal </span>
+                                                <div id="visaExpirationChart"></div>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 padding-0">
+                                        <div class="menu announce">
+                                            <span class="title announceTitle ">Announcements</span>
+                                            <apex:outputPanel rendered="{!lstAnnouncement.size > 0}" layout="none">
+                                                <div class="w3-content w3-display-container">
+                                                    
+                                                    <div class="titleContent">
+                                                        <apex:repeat value="{!lstAnnouncement}" var="announce">
+                                                            <div class="slidesbox container-fluid" style="width:100%">
+                                                                <div class="tabl">
+                                                                    
+                                                                        <div class="cell-tabl img-width">
+                                                                            <div class="header-image-an padding-0" style="background-image:url('data:{!announce.HeaderImageContentType};base64,{!announce.headerImage}') " >
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="cell-tabl">
+                                                                            <span class="announce-header-title">
+                                                                                <apex:outputText value="{!announce.announceTitle}"
+                                                                                    escape="false" />
+                                                                            </span>
+                                                                            <div class="shortDtl">
+                                                                                <apex:outputText value="{!announce.shortAnnouncementDtl}" escape="false" />
+                                                                            </div>
+                                                                            <div class="readmore-area">
+                                                                                <a href="announcementdetail?id={!announce.id}" class="dec-none">
+                                                                                    <span class="rdmore left">READ MORE</span>
+                                                                                    <div class="arrow-right arrow-spacer left"></div>
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                </div>
+                                                            </div>
+    
+                                                        </apex:repeat>
+                                                        <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+                                                        <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+                                                    </div>
+                                                    
+                                                    <div class="button-area annBtn">
+                                                        <a class="btn inverse-btn right" href="announcementlist">View All</a>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 padding-0 padding-right-0" style="padding-left: 10px;">
+                                <!--Alerts Section-->
+                                <div class="row">
+                                    <div class="col-sm-12 padding-0">
+                                        <div class="menu alerts-contact">
+                                            <span class="service-logo icon-adgm-alerts"></span>
+                                            <span class="title">Alerts </span>
+                                            <div class="alert-block alert-scroll">
+                                                <div class="no-records-msg {!IF(lstAlert.size = 0,'show','hide')}">
+                                                    There are currently no alerts for {!companyName } as of <apex:outputText value="{0, date, dd/MM/yyyy}"><apex:param value="{!NOW()}" /></apex:outputText>
+                                                </div>
+                                                <apex:repeat value="{!lstAlert}" var="alert">
+                                                    <div class="line-row space">
+                                                        <span class="summary">{!alert.alertMessage}</span>
+                                                    </div>
+                                                </apex:repeat>
+                                            </div>
+                                            <apex:outputPanel rendered="{!AlertsViewAll}" layout="none">
+                                                <div class="button-area alert-view-all">
+                                                    <a class="btn inverse-btn right" href="alertsList">View All</a>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Appointment Section -->
+                                <apex:outputpanel layout="block" styleclass="row" rendered="{!!isGuestUser}">
+                                    <div class="col-sm-12 padding-0">
+                                        <apex:outputpanel layout="block" styleclass="menu calendar-block">
+                                            <span class="service-logo icon-adgm-appointment"></span>
+                                            <span class="title">Appointment Calendar</span>
+                                            <div class="alert-block">
+                                                <div class="no-records-msg {!IF(lstAppointment.size = 0,'show','hide')}">
+                                                    There are currently no medical appointments for {!companyName } as of <apex:outputText value="{0, date, dd/MM/yyyy}"><apex:param value="{!NOW()}" /></apex:outputText>
+                                                </div>
+                                                <apex:repeat value="{!lstAppointment}" var="appointment">
+                                                    <div class="line-row space">
+                                                        <span class="tabular">
+                                                            <span class="summary tabular-cell left">{!appointment.appointmentMessage}</span>
+                                                            <span class="tabular-cell right">{!appointment.appointmentDate}</span>
+                                                        </span>
+                                                    </div>
+                                                </apex:repeat>
+                                            </div>
+                                            <div class="button-area book-btn">
+                                                <input type="submit" id="submit" name="{!lstAppointment.size} submit" onclick="openAppointment();" value="Book an Appointment"
+                                                    class="btn btnSubmit" />
+                                                <apex:outputPanel rendered="{!lstAppointment.size > 0}" layout="none">
+                                                    <!--Shows the view all button if the list items > 4 -->
+                                                    <!--<input type="submit" id="submit" name="submit" value="View All" class="btn inverse-btn right" />-->
+                                                    <a class="btn inverse-btn right" href="{!$Site.Prefix}/{!$Label.Appointment_Object_Prefix}">View All</a>
+                                                </apex:outputPanel>
+                                            </div>
+                                        </apex:outputpanel>
+                                    </div>
+                                </apex:outputpanel>
+                                <div class="row">
+                                    <div class="col-sm-12 padding-0">
+                                        <div class="menu alerts-contact">
+                                            <span class="service-logo icon-adgm-contact-2-1"></span>
+                                            <span class="title"> Contact Information</span>
+                                            <div class="alert-block contact-block alert-scroll">
+
+                                                <div class="line-row space">
+                                                    <span class="stats-logo icon-adgm-create-ticket-1"></span>
+                                                    <span class="summary">
+                                                        <a href="{!$Site.Prefix}/500/o" class="dec-none">Raise a Case</a>
+                                                    </span>
+                                                </div>
+                                                <div class="line-row space">
+                                                    <span class="stats-logo icon-adgm-contact-small-1"></span>
+                                                    <span class="summary">Call us at
+                                                        <a href="tel:+971 2333 8888">+971 2333 8888</a>
+                                                    </span>
+                                                </div>
+                                                <div class="line-row space">
+                                                    <span class="stats-logo  icon-adgm-email-1"></span>
+                                                    <span class="summary">Email us at
+                                                        <a href="mailto:accessadgm.cases@adgm.com​​">accessadgm.cases@adgm.com​​</a>
+                                                    </span>
+                                                </div>
+                                                <div class="line-row space">
+                                                    <span class="stats-logo icon-adgm-web-1"></span>
+                                                    <span class="summary">Visit our website
+                                                        <a href="https://www.adgm.com" target="_blank">www.adgm.com</a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 padding-0">
+                                        <div class="menu twitter-block" style="{!IF(isGuestUser,'height:558px','')}">
+                                            <a class="twitter-timeline" href="https://twitter.com/ADGlobalMarket?ref_src=twsrc%5Etfw" data-chrome="nofooter" data-height="{!IF(isGuestUser,'510px','240px')}">Tweets by ADGlobalMarket</a>
+                                            <script async="true" src="https://platform.twitter.com/widgets.js"
+                                                charset="utf-8"></script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        //Opens Appointment Popup
+        function openAppointment() {
+            clearModalContent();
+            document.getElementById('modal-adgmload').style.visibility="visible";
+            $("#modalBox").modal(); //Confirm Top Up Portal Balance
+            $("#modalBox .modal-title").text('Book an Appointment');
+            $("#modalBox .modal-main-content").load("{!$Site.Prefix}/apex/createappointment",function(){
+                document.getElementById('modal-adgmload').style.visibility="hidden";
+            });
+        }
+        function disableServiceMsg(){
+            alert("This service is not available.");
+            return false;
+        }
+        //Announcement Slider JS 
+        var slideIndex = 1;
+        showDivs(slideIndex);
+
+        function plusDivs(n) {
+            showDivs(slideIndex += n);
+        }
+
+        function showDivs(n) {
+            var i;
+            var x = document.getElementsByClassName("slidesbox");
+            if (n > x.length) {
+                slideIndex = 1
+            }
+            if (n < 1) {
+                slideIndex = x.length
+            }
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            if(x[slideIndex - 1])
+                x[slideIndex - 1].style.display = "block";
+        }
+        //Announcement Slider ends here..
+
+        //Load the charts
+        (function() {
+            $("#columnchart").load("/apex/visastatuschart");
+            $("#donutchart").load("/apex/servicerequestchart");
+            $("#bar-container").load("/apex/casechart");
+            $("#visaExpirationChart").load("/apex/DueVisaChart");
+        })();
+        
+    </script>
+</apex:page>

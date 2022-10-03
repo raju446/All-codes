@@ -1,0 +1,10 @@
+.button{
+    font-family: serif;
+    color:white;
+    width: 114px;
+     top: 5%;
+     left: 30%;
+    background: linear-gradient(324.88deg, #B89553 10.65%, #D3AB5E 104.25%);
+    border-radius: 50px;
+    height: 37px;
+    }

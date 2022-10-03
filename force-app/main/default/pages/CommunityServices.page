@@ -1,0 +1,326 @@
+<apex:page controller="ServicesController" action="{!LoadServices}">
+    <style>
+    .loading {
+        background: url("../img/loading.gif") no-repeat;
+        left: 50%;
+        top : 50%;
+        display: block;
+        position: relative;
+    }
+    /*
+    .loadingView {
+        width: 100%;
+        /*height: 300px;*/
+        display: block;
+        position: absolute;
+        top: 40%;
+        left: 0px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    */
+    #container {
+        position: relative;
+        margin: 0 auto;
+        width: 100%;
+        height: 100%;
+        min-height: 200px;
+    }
+    .row.service-header h3 {
+        font-size: 18px;
+        display: block;
+    }    
+    
+/********* Services list *******/
+.main-content.services .box {
+    width: 350px;
+    margin-bottom: 10px;
+    padding-right: 1em;
+    min-height: 120px;
+}        
+.main-content dl {
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+}
+.main-content.services .box {
+    width: 350px;
+}
+
+.accordion dl {
+    /* border: 1px solid #DDD; */
+    margin: 0;
+}
+    
+.accordion dl ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    background: #F2F4F4;
+}
+
+.accordion dd dl.sections ul li {
+    margin-left: 0;
+    margin-top: 0px;
+}
+        
+.accordion dd a, .accordion dd dl.sections ul li a {
+    text-decoration: none;
+}
+
+.accordion dd dl.sections ul li a {line-height: 30px;}
+
+.accordion dd > a {
+    display: block;
+    min-height: 40px;
+    background:#44939C;
+    color: #fff;
+    font-size: 1.2em;
+}
+
+.accordion dd dl.sections > ul > li > a {
+    display: block;
+    position: relative;
+    min-height: 30px;
+    background: #fff;
+    text-decoration: none;
+    padding: 5px;
+    padding-left: 32px;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #002A3A;
+}
+
+.accordion dd dl.sections > ul > li > a span {
+    padding-left: 30px;    
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: -20px;     
+}
+.accordion dd > a, .accordion dd > a:hover {
+        line-height: 40px;
+        line-height: 40px;
+        padding-left: 52px;
+        font-weight: bold;        
+}
+
+.accordion {
+    *zoom: 1;
+    margin-bottom: 0; 
+}
+
+.accordion:before, .accordion:after {
+content: " ";
+display: table; }
+
+.accordion:after {
+clear: both; }
+.accordion dd {
+display: block;
+margin-bottom: 0 !important; }
+
+.accordion dd.active > a {
+        /*        background: #e8e8e8;*/ }
+  
+  .accordion dd > a:hover {
+        /* background: #e3e3e3;*/ }
+      
+  .accordion .content {
+    display: none;
+    }
+
+.accordion .content.active {
+  display: block;
+  background: white; }    
+
+.accordion ul ul li:hover { background: #dcdcdc;}
+.accordion ul ul li a {
+    font-size: 1.1em !important;
+} 
+.accordion ul ul li a {color: #000;}
+
+.content ul.list.menu-items li {
+    padding-left: 30px;
+}
+.content ul.list.menu-items li:not(:last-child) {
+    border-bottom: 1px solid #e0e0e0;
+}
+        
+#sidebarMenu .accordion dd > a:hover {
+        color: #222;
+}   
+.main-content.services .box {
+  -webkit-transition: width 0.4s, height 0.4s;
+     -moz-transition: width 0.4s, height 0.4s;
+       -o-transition: width 0.4s, height 0.4s;
+          transition: width 0.4s, height 0.4s;
+}        
+    i.fa.fa-lg {
+        margin-left: -20px;
+    }        
+.service-header {margin-bottom: 20px;}        
+.service-header h3 {display: block;}    
+a.mainmenu{
+    text-transform: uppercase;
+}  
+
+.fa-caret-right {
+     border: solid #002A3A;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+} 
+.fa-caret-down{
+    border: solid black;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    margin-bottom: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+.submenusection{
+    padding-left: 5px;
+    vertical-align: top !important;
+    font-family: Raleway_Bold;
+}
+.box:first-child .accordion{
+    margin-left:0px;
+}
+    </style>
+   
+        <div class="menu-services">
+                <div class="pageTopic">GOVERNMENT SERVICES</div>
+                <div class="pageDesc">
+                    Welcome to your Company Services page. From this page you will be able to apply for all types of Company Services including official communications, company amendments and licensing services. Just click on any menu item to review the services available.
+                </div>
+                <!--
+                <div class="service-header">
+                    <div class="medium-12 columns">
+                        <apex:outputPanel rendered="{!serviceType == 'Company Services'}" layout="none">
+                            <div class="pageTopic">Company Services</div>                            
+                            <div class="pageDesc">Welcome to your Company Services page. From this page you will be able to apply for all types of Company Services including official communications, company amendments and licensing services. Just click on any menu item to review the services available. Not sure what service you need? <a target='_blank' href='#'>Click here</a> to review applications guidelines for Company Services.</div>                            
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!serviceType == 'Employment Services'}" layout="none">
+                            <div class="pageTopic">{!$Label.Employee_Services}</div>                            
+                            <div class="pageDesc">Welcome to your Employment Services page. From this page you will be able to apply for all types of Employment Services including official communications, visa services and card &amp; access services. Just click on any menu item to review the services available. Not sure what service you need? <a target='_blank' href='#'>Click here</a> to review applications guidelines for Employment Services.</div>                            
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!serviceType == 'Property Services'}" layout="none">
+                            <div class="pageTopic">Property Services</div>                            
+                            <div class="pageDesc">Welcome to your Compliance Services page. From this page you will be able to submit your company’s audited financial statements. Select Submit Copy to get started. Not sure what service you need? <a target='_blank' href='#'>Click here</a> to review applications guidelines for Compliance Services.</div>                            
+                        </apex:outputPanel>
+                    </div>
+                </div>
+                -->
+                <!---->
+                <div id="container">
+                    <!--
+                    <div class="loadingView">
+                        <div style="position: relative;top: 45%;">
+                                    <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." style="display: inline-block;margin-bottom: 20px;"/>
+                                    <span class="waitingDescription" style="display: block;">Loading Menu Services...</span>
+                        </div>
+                    </div>
+                    -->
+                    <apex:outputPanel id="thePanel" layout="none">                   
+                        <div class="hidden-services">
+                            <apex:repeat value="{!lstMainMenu}" var="subMenu" >
+                                <div class="box" style="display:none;">
+                                    <dl class="accordion" data-accordion="data-accordion">
+                                        <dd data-tab="data-tab">
+                                            <a href="javascirpt:void(0)" class="expanded collapsed mainmenu ">{!subMenu.mainMenuName}</a>
+                                            
+                                            <apex:outputPanel rendered="{!mapServiceIcon[subMenu.mainMenuName] != 'no-icon'}" layout="none">
+                                                <span class="services-icon icon {!mapServiceIcon[subMenu.mainMenuName]}"></span>
+                                            </apex:outputPanel>
+                                            
+                                            <div>                 
+                                                <dl class="sections">
+                                                    
+                                                    <ul class="subMenu">
+                                                        <apex:repeat value="{!subMenu.lstSubmenu}" var="subMenuSection" >
+                                                            <li>
+                                                                <a href="javascript:void(0)" class="SubMenu-Section collapsed">
+                                                                    <i class="fa fa-lg fa-caret-right"></i>
+                                                                    <span class="submenusection">{!subMenuSection.subMenuName}</span>
+                                                                </a>
+                                                                <div class="content {!IF(subMenuSection.subMenuName == subMenu, 'no-section', 'sub-section')}">                                                
+                                                                    <ul class="list menu-items">
+                                                                            <apex:repeat value="{!subMenuSection.lstInnerMenu}" var="subMenuSection_ListItem" >
+                                                                            <li>
+                                                                                <a id="{!subMenuSection_ListItem.API_NAME}" 
+                                                                                   href="{!$Site.Prefix}/apex/PageFlow?FlowId={!subMenuSection_ListItem.strFlowId}&Id={!subMenuSection_ListItem.RecordId}&service_request_title={!subMenuSection_ListItem.MenuTitle}" 
+                                                                                   style="display:{!IF(subMenuSection_ListItem.isFlow==true && subMenuSection_ListItem.strFlowId!=null,'block','none')};" onclick="{!If(subMenuSection_ListItem.preventSRCreation,'disableServiceMsg();return false;','')}">
+                                                                                    {!subMenuSection_ListItem.MenuTitle}
+                                                                                </a>                                                                                
+                                                                                <a id="{!subMenuSection_ListItem.API_NAME}" 
+                                                                                   href="{!subMenuSection_ListItem.MenuURL}"
+                                                                                   style="display:{!IF(subMenuSection_ListItem.isFlow==false && subMenuSection_ListItem.strFlowId==null,'block','none')};" onclick="{!If(subMenuSection_ListItem.preventSRCreation,'disableServiceMsg();return false;','')}">                                                                                  
+                                                                                    {!subMenuSection_ListItem.MenuTitle}
+                                                                                </a>   
+                                                                                
+                                                                            </li>
+                                                                        </apex:repeat>
+                                                                    </ul>
+                                                                </div>
+                                                            </li>
+                                                        </apex:repeat>
+                                                    </ul>
+                                                </dl>
+                                            </div>
+                                            
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </apex:repeat>          
+                        </div>
+                    </apex:outputPanel> 
+                    <div class="main-content services bottom-space-20">  
+                    </div>
+                </div>
+            </div>
+    
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/masonry/3.1.5/masonry.pkgd.min.js"></script>              
+    
+                <script>
+                     Sfdc.onReady(function() {
+                      var timeoutID;
+                      timeoutID = window.setTimeout(loadServices, 500);
+                      function loadServices(){  
+
+                          var elements = $('.hidden-services .box');                              
+                          $(elements).each(function(){
+                              this.style.display='block'; 
+                              $(this).detach();
+                          });
+
+                         var container = document.querySelector('.main-content');
+                         var msnry = new Masonry( container, {
+                             columnWidth: 5,
+                             itemSelector: '.box'
+                         });
+                         $(elements).appendTo('.main-content.services');
+                         msnry.appended(elements);    
+                          
+                        $(".accordion dd dl.sections > ul > li > a, dd > a").click(function(e) {
+                                e.preventDefault(), 
+                                $(this).children("i").toggleClass("fa-caret-right").toggleClass("fa-caret-down"), 
+                                $(this).next().slideToggle(function() {
+                                 var container = document.querySelector('.main-content');
+                                 var msnry = new Masonry( container, {
+                                     columnWidth: 5,
+                                     itemSelector: '.box'                               
+                                 });
+                                msnry.reloadItems();
+                            })
+                        });                         
+                      }
+                      
+                  }) 
+                    function disableServiceMsg(){
+                            alert("This service is not available");
+                      }
+                </script>
+</apex:page>

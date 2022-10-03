@@ -1,0 +1,280 @@
+<template>
+  <div class="bg">
+    <lightning-record-edit-form object-api-name="Account" onsuccess={handleSuccess} onerror={handleError} onsubmit={handleSubmit}>
+      <lightning-messages></lightning-messages>
+      <lightning-layout multiple-rows>
+        <lightning-layout-item size="6" medium-device-size="3" padding="around-small">
+          <div class="custom-box slds-box slds-p-around_medium">
+            <lightning-vertical-navigation class="lables" selected-item="Company">
+              <lightning-vertical-navigation-item-icon label="| Companies" name="Company" icon-name="utility:company"></lightning-vertical-navigation-item-icon>
+              <lightning-vertical-navigation-item-icon label="| Partnerships" name="Partnerships" icon-name="utility:people"></lightning-vertical-navigation-item-icon>
+              <lightning-vertical-navigation-item-icon label="| Foundations" name="Foundations" icon-name="utility:moneybag"></lightning-vertical-navigation-item-icon>
+              <lightning-vertical-navigation-item-icon label="| Property Services" name="Property Services" icon-name="utility:matrix"></lightning-vertical-navigation-item-icon>
+              <lightning-vertical-navigation-item-icon label="| Auditor" name="Auditor" icon-name="utility:record_lookup"></lightning-vertical-navigation-item-icon>
+              <lightning-vertical-navigation-item-icon label="| Charges Services" name="Charges Services" icon-name="utility:money"></lightning-vertical-navigation-item-icon>
+            </lightning-vertical-navigation>
+          </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" medium-device-size="9" padding="around-small">
+          <div class="custom-box slds-box slds-p-around_medium"> Services for registering companey into ADGM <br>
+            <br>
+            <div class="text"> Name Reservation </div>
+            <br> Reserve preferred name for your company <br>
+            <br>
+            <div class="text"> Reserve a Name </div>
+            <br>
+            <div class="border slds-border_bottom"></div>
+            <lightning-radio-group class="text1" options={options} value={value} type="radio" style="color:#002C5E;"></lightning-radio-group>
+            <div class="description">An aplication to reserve an entity name must be submitted to the Register <br> along with relevant requirements and fee Reserved name must be used to <br> incorporate a new entity within 30days from the date of reservation. <br> Reservation can be extended for a further period of 30 days upon submission <br> of name reservation extenstion form and fee, however reservation can only <br> be extended twice after the initial reservation futher extension of name <br> reservation will require Register's consent. in th future, after the legal entity <br> is established, if you wish to change the name of your company, you may <br> also apply to reserve the new company name. </div>
+            <div class="border1 slds-border_bottom"></div>
+            <div class="button">
+              <button label="preview" title="Non-primary action" onclick={handleClick} class="priview slds-m-left_x-small">Back</button>
+              <button label="Next" title="Non-primary action" onclick={handleClick} class="next slds-m-left_x-small">Procees</button>
+              <br>
+              <br>
+            </div>
+          </div>
+        </lightning-layout-item>
+      </lightning-layout>
+    </lightning-record-edit-form>
+    
+    <lightning-record-edit-form object-api-name="Account" onsuccess={handleSuccess} onerror={handleError} onsubmit={handleSubmit}>
+      <lightning-layout multiple-rows>
+        <lightning-layout-item size="3" padding="around-small">
+          <div class="custom-box slds-box slds-p-around_medium">
+            1<br>2<br>3
+          </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" medium-device-size="9" padding="around-small">
+          <div class=" cll custom-box slds-box slds-p-around_medium">
+            <div class="text">Details</div>
+            <div class="buttonfooter">
+              <div class="inner">
+                <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                  <i class="fa fa-caret-left"></i> Back </button>
+              </div>
+              <div class="inner">
+                <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                  <i class="fa fa-save"></i>Save </button>
+              </div>
+              <div class="inner">
+                <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                  <i class="fa fa-caret-right"></i>Next </button>
+              </div>
+            </div>
+            </div>
+            </lightning-layout-item>
+            <div class="slds-size_1-of-4">
+            </div>
+            <div class="slds-size_3-of-4">
+              <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small">
+            <div class="lable">
+              <span class="required">*</span>
+              <label class="lable">Requirde, Can fill out later</label>
+          </div>
+            <br>
+            <span class="required1" style="margin-left: 877px;color:red;">[*]</span>
+            <label class="lable">-Mandatory to save the details</label>
+            <div class="text" style="font-weight:600">General Details</div>
+          </div>
+          <br>
+          <div class="custom-box slds-box slds-p-around_medium">
+            <lightning-input-field variant="label-stacked" field-name="Entity_Type__c" class="font" placeholder="Branch of a Foreign Company"></lightning-input-field>
+            <br>
+          </div>
+          <br>
+          <div class="text" style="font-weight:600">Reserved Name Details</div>
+          <br>
+          <div class="custom-box slds-box slds-p-around_medium">
+            <button class="button1">Validate</button>
+            <div class="slds-size_2-of-3">
+              <lightning-input label="Proposed Name" required=""></lightning-input>
+              <br>
+              <button class="button2">Translate</button>
+              <lightning-input label="Proposed Name in Abrabic script"></lightning-input>
+            </div>
+            <lightning-combobox label="Domicil" placeholder="Aland islands" required=""></lightning-combobox>
+            <br>
+            <label>Does the proposed name in either its current or abbreviated form contain sensitive words or expressions that require you to seek comments of a government de partment or specified body? <span class="required">*</span>
+            </label>
+            <BR>
+            <input class="input" type="radio" name="optradio" required> Yes <input class="input" type="radio" name="optradio" required> No <br>
+            <br>
+            <label>Is the proposed name very similar to another name or trade name appearing in the register of names or trade names in ADGM or Abu Dhabi or any other rele vant jurisdictions, and is this application made AS or ON BEHALF of and with the authority of the registered owner(s) of the similarly registered business name(s)? <span class="required">*</span>
+            </label>
+            <BR>
+            <input class="input" type="radio" name="optradio" required> Yes <input class="input" type="radio" name="optradio" required> No <br>
+            <br>
+            <lightning-input type="text" label="Explanation of the proposed name meaning"></lightning-input>
+            <br>
+            <label>Dose the proposed name contain an abbrevation? <span class="required">*</span>
+            </label>
+            <BR>
+            <input class="input" type="radio" name="optradio" required> Yes <input class="input" type="radio" name="optradio" required> No <BR>
+            <BR>
+            <lightning-input type="file" label="Supporting Document"></lightning-input>
+            <br>
+            <div class="text" style="font-weight:600">Reserved Name Details</div>
+            <br>
+            <lightning-input type="checkbox" label="I have ensured that this proposed name in either its current or abbreviated form does not contain any restricted terms as per the ADGM Company Business and Name Rules 2021" name="checkbox" required></lightning-input>
+            <br>
+            <lable>I have conducted extensive searches on the proposed name and found partial/exact matches on the ADGM public register and other registers in the Emirate of Abu Dhabi, the UAE and other jurisdictions as deemed appropriate</lable>
+            <br>
+            <input class="input" type="radio" name="optradio" required> Yes <input class="input" type="radio" name="optradio" required> No <br>
+            <br>
+            <lable>The proposed name of ADGM entity under formation is similar to the name of the incorporating shareholder the consent to use the similar name is evidenced by the resolution approving incorporation this legal entity</lable>
+            <br>
+            <input class="input" type="radio" name="optradio" required> Yes <input class="input" type="radio" name="optradio" required> No <br>
+          </div>
+          <br>
+          <div class="text" style="font-weight:600">Acknowledgement of accountbulity</div>
+          <br>
+         <div class="custom-box slds-box slds-p-around_medium">
+            <lightning-input type="checkbox" label="the undersigned hereby understand that there may be various matches identified by ADGM on the National Economic Register or any other jurisdictions which are similar to the proposed name and that may be challenged by third parties regarding the use of such 
+nama at a later stage confirm that I understand that it will be my responsibility to handle any possibla ensuing proceedings or challenges as such proceedings and challenges are beyond ADGM RAs control will keep ADGM RA harmless from and against all and any claims actions, proceedings and demands 
+which may be brought against ADOM RA and all losses abilities charges costs damages and expenses which ADEM RA may incur in connection with the use of the proposed name for the application to sat, un a legal entity in ADGM and obtain a commercial license; the undersigned hereby declare that the information 
+provided herein above and in the documents appended herewith is true and correct to the best of my knowledge and belief and nothing has been falsely stareuior concealed the can understand that if the sagt information as given by me is proven to be false or misleading, then will have to face the consequencas
+ as per previsions contained in the relevant sections of the applicable ADGM legislation for the time being in torce as well as the benelit availed of by me or the benefit accrued to me shall be summarily cancelled" name="input2" checked required></lightning-input>
+          </div>
+          <br>
+      <div>
+            <button style="background-color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;color:white;height:30px;float: left;">
+              <i class="fa fa-caret-left"></i> Back </button>
+          </div>
+          <div class="inner">
+            <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;margin-left: 736px;">
+              <i class="fa fa-save"></i>Save </button>
+          </div>
+          <div class="inner">
+            <button style="background-color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;float:right;color:white;height:30px;margin-left:965px;margin-top:-29px;">
+              <i class="fa fa-caret-right"></i>Next </button>
+              <br>
+            </div>
+          </div>
+            <br>
+            <div class="slds-size_1-of-4">
+            </div>
+            <div class="slds-size_3-of-4">
+              <div class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small box-color">
+                <br>
+                <div style="font-weight:600;margin-left:20px;margin-right: 1000px;font-size: 20px;color:#002C5E;margin-top:7px">Review</div>
+                <div class="buttonfooter">
+                  <div class="inner">
+                    <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                      <i class="fa fa-caret-left"></i> Back </button>
+                  </div>
+                  <div class="inner">
+                    <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                      <i class="fa fa-save"></i>Save </button>
+                  </div>
+                  <div class="inner">
+                    <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;">
+                      <i class="fa fa-caret-right"></i>Next </button>
+                  </div>
+                </div>
+                </div>
+                <br>
+                <div style="font-weight:600;margin-left:20px;margin-right: 1000px;font-size: 20px;color:#002C5E;white-space: nowrap">Review Service Request Details</div>
+                <br>
+                <label style="display: inline-block;text-align: left;vertical-align: middle;margin-left: 20px">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</label>
+                <br>
+          <br>
+          <div class="text" style="font-weight:600;margin-left: 20px">Expand all the below information or print them review</div>
+          <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;float:right;height:30px;margin-right:152px;margin-top:-29px;">
+            <i class="fa fa-print" style="color: #A9904D"></i>print </button>
+            <br>
+            <br>
+            <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;float:right;height:30px;margin-left:1085px;margin-top: -68px;">
+              <i class="fa fa-align-center" style="color: #A9904D"></i>collabration</button>
+
+              <div class="text" style="font-weight:600">Service Request Details</Details></div>
+              <div class="c-container">
+                <lightning-layout>
+                    <lightning-layout-item padding="around-small">
+                        <div class="header-column">
+                            <p class="field-title" title="SR Number">SR Number</p><br>
+                            <p class="field-title">Entity Name</p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small">
+                        <div class="header-column">
+                            <p class="field-title" title="SR-44987">SR-44987</p><br>
+                            <p class="">STARBUCKS</p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small">
+                        <div class="header-column">
+                            <p class="field-title" title="Status">Status 3</p><br>
+                            <p class="">Created Date</p>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small">
+                        <div class="header-column">
+                            <p class="field-title" title="Draft">Draft</p><br>
+                            <p>
+                                <span title="">31 Mar 2022</span>
+                            </p>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+
+
+            <div>
+              <a style="font-weight:600;font-size: 20px;color:#002C5E">2.Detail</a><br><hr>
+              <a style="font-weight:600;font-size: 20px;color:#002C5E">General Detail</a>
+              <div class="custom-box slds-box slds-p-around_medium">
+                <p>Entity Type</p>
+              </div>
+              <p style="font-weight:600;font-size: 20px;color:#002C5E">Reverved Name Details</p>
+              <div class="custom-box slds-box slds-p-around_medium">
+                <p>Proposed Name</p><br>
+                <p>Proposed Name in Arabic Script</p><br>
+                <p>Domicile</p><br>
+                <p>Does the proposed name in either its current or abbreviated form contain sensitive words or expressions that require you to seek comments of a government department or specified or specified body?</p><br>
+                <p>Is the proposed name very similar to another name or trade name appearing in the register of names or trade name in ADGM or Abu Dhabi or any other relevant jurisdictions, and is the application made AS or ON BEHALF of and with the authority of, the registered owner(s) of the similarly registered vusiness name(s)?</p><br>
+                <p>Explanation of the proposed name meaning</p><br>
+                <p>Does the propased name contain an abbrevation?</p><br>
+                <p>Supporting Document</p>
+
+              </div>
+              <p style="font-weight:600;font-size: 20px;color:#002C5E">
+                Partial or Exact matches</p>
+                <div class="custom-box slds-box slds-p-around_medium">
+                  <p>I have ensured that this proposed name in either its current or abbreviated form does not contain any restricted terms as per the ADGM Company Business and Name Rules 2021 </p><br>
+                  <lightning-input type="checkbox"></lightning-input>
+                  <p>I have conducted extensive searches on the proposed name and found partial/exact matches on the ADGM public register and other registers in the Emirate of Abu Dhabi, the UAE and other jurisdictions as deemed appropriate</p><br>
+                  <p>The proposed name of ADGM entity under formation is similar to the name of the incorporating shareholder The consent to use the similar name is evi denced by the resolution approving incorporation of this legal entity</p><br>
+                  <p>The proposed name of ADGM entity under formation is similar to the name of the entity in which this holding company will hold shares The consent to use the similar name is implied.</p><br>
+                </div>
+                <div class="text" style="font-weight:600">Acknowledgement of accountbulity</div>
+                <br>
+               <div class="custom-box slds-box slds-p-around_medium">
+                  <lightning-input type="checkbox" label="the undersigned hereby understand that there may be various matches identified by ADGM on the National Economic Register or any other jurisdictions which are similar to the proposed name and that may be challenged by third parties regarding the use of such 
+      nama at a later stage confirm that I understand that it will be my responsibility to handle any possibla ensuing proceedings or challenges as such proceedings and challenges are beyond ADGM RAs control will keep ADGM RA harmless from and against all and any claims actions, proceedings and demands 
+      which may be brought against ADOM RA and all losses abilities charges costs damages and expenses which ADEM RA may incur in connection with the use of the proposed name for the application to sat, un a legal entity in ADGM and obtain a commercial license; the undersigned hereby declare that the information 
+      provided herein above and in the documents appended herewith is true and correct to the best of my knowledge and belief and nothing has been falsely stareuior concealed the can understand that if the sagt information as given by me is proven to be false or misleading, then will have to face the consequencas
+       as per previsions contained in the relevant sections of the applicable ADGM legislation for the time being in torce as well as the benelit availed of by me or the benefit accrued to me shall be summarily cancelled" name="input2" checked required></lightning-input>
+                </div>
+                <br>
+            <div>
+                  <button style="background-color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;color:white;height:30px;float: left;">
+                    <i class="fa fa-caret-left"></i> Back </button>
+                </div>
+                <div class="inner">
+                  <button style="color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;height:30px;margin-left: 736px;">
+                    <i class="fa fa-save"></i>Save </button>
+                </div>
+                <div class="inner">
+                  <button style="background-color:#A9904D;border-color:#A9904D;border-bottom-color:#A9904D;width:100px;float:right;color:white;height:30px;margin-left:965px;margin-top:-29px;">
+                    <i class="fa fa-caret-right"></i>Next </button>
+                    <br>
+                  </div>
+                
+            </div>
+                <br><br><br>
+            </div>
+      </lightning-layout>
+    </lightning-record-edit-form>
+  </div>
+</template>

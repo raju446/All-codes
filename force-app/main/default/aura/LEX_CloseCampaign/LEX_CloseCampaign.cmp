@@ -1,0 +1,47 @@
+<aura:component controller="CloseCampaignController" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" >
+    
+    <!-- <ltng:require styles="{!$Resource.CloseCampaign}" /> -->
+    
+    <!-- attributes-->
+    <aura:attribute name="showError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="showSucess" type="Boolean" default="false" />
+    <aura:attribute name="sucessMessage" type="String" />
+    <!-- Handler Start -->
+  
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    
+	
+    <aura:if isTrue="{!v.showError}"> 
+        <!-- Show the message to ui -->
+        
+        
+        <div class="slds-notify slds-notify_toast slds-theme_error">
+            <span class="slds-assistive-text">error</span>
+            <div class="slds-notify__content">
+                <h5 class="slds-text-heading_small ">Error!</h5>
+                <p class="slds-align_absolute-center">{!v.errorMessage}</p>                
+            </div>
+        </div>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showSucess}"> 
+        
+        
+        <div class="slds-modal__content slds-p-around_medium" id="prompt-message-wrapper">
+            <p>Are you sure you want to close this campaign?</p>
+            <br/>
+            <lightning:button variant="brand" label="Yes" onclick="{!c.afterYesButton}" iconPosition="right" class="nextButton" />
+            <lightning:button variant="brand" label="No" onclick="{!c.cancelButton}" iconPosition="right" class="cancelButton" />
+        </div>
+        <footer class="slds-theme_default textLeftAlign">
+                    
+        </footer>
+        
+        
+        
+    </aura:if>    
+    
+</aura:component>

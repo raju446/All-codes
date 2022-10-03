@@ -1,0 +1,14 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+    <aura:attribute name="toDate" type="Date" />
+    <aura:attribute name="fromDate" type="Date" />
+    <lightning:card variant="Narrow" title="Generate Events Detail" iconName="standard:account">
+        <div class="row">
+            <h2 class="header">Please input the date range to generate the Campaign information. </h2>
+            <lightning:input type="date" name="input1" label="From Date" value="{!v.fromDate}" class="dateCss"/>
+            <lightning:input type="date" name="input1" label="To Date" value="{!v.toDate}" class="dateCss"/>
+            <Br/>
+            <lightning:button variant="brand" label="Generate Report" iconName="utility:chevronright" onclick="{!c.nextProcess}" iconPosition="right" class="nextButton" />
+                    
+        </div>
+    </lightning:card>
+</aura:component>

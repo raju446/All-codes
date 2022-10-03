@@ -1,0 +1,211 @@
+<apex:page cache="false"   controller="ReopenCaseController" docType="html-5.0" standardstylesheets="true" showheader="false" sidebar="false">
+<html lang="en"> 
+<link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+
+<head>
+        <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+        <style>
+            .pageSpanContainer {
+                background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+                background-repeat: no-repeat;
+                width: 100%;
+                padding-bottom: 17%;
+                background-size: cover;
+                position: relative;
+            }
+
+            .pageSpanContainer h1 {
+                font-size: 24px;
+                line-height: 36px;
+                color: #fff;
+                margin-bottom: 10px;
+                position: absolute;
+                bottom: 0;
+                left: 10%;
+            }
+
+            .lblMsg {
+                color: #44939C;
+                font-family: Raleway_Bold;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+            }
+
+            .content {
+                min-height: 210px;
+                position: relative;
+                margin-top: 20px;
+            }
+
+            html .brandTertiaryBgr {
+                background-color: #44939C !important;
+            }
+
+            .dBlock {
+                
+              margin-top:10px;
+            margin-right:auto;
+            margin-bottom:40px;
+            margin-left:auto;
+              width: 80%;
+            
+            }
+
+            body {
+                background-color: #F5F5F5 !important;
+                position: relative;
+            }
+
+            input[type="text"],
+            select,
+            textarea {
+                width: 60%;
+                height: 60px;
+                font-size: 12px;
+                margin-left: 5px;
+                
+                
+            }
+
+            .top-sp {
+                margin-top: 10px;
+            }
+
+            .lbl-bl {
+                font-weight: 700;
+                font-size: 14px;
+                padding-left: 5px;
+            }
+
+            .txt-left {
+                text-align: left;
+            }
+
+            .txt-right {
+                text-align: right;
+            }
+
+            .btn-bl {
+                padding-top: 15px;
+                padding-bottom: 20px;
+            }
+           
+            #body {
+                padding-bottom: 60px;
+                /* Height of the footer */
+            }
+
+            #footer {
+                position: sticky;
+                bottom: 0;
+                width: 100%;
+                height: 60px;
+                
+                
+                
+            }
+    </style>
+    </head>
+    
+        <apex:composition template="UserRegistrationHeader_ADGM" />
+        <div class="pageSpanContainer">
+            <div id="header-content">
+            <!-- <h1>Thankyou</h1> -->
+            </div>
+        </div>
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:outputPanel layout="none" >
+        <div class="dBlock content" >
+            <apex:pageBlock >
+                <div class="section-header brandTertiaryBgr ">
+                        Please Select the reason for Re-opening the case 
+                </div>
+                <apex:outputPanel rendered="{!isSubmitted}" >
+                     <div class="lbl-bl" style="color: #e22424;">Your case is already open</div>
+                </apex:outputPanel>  
+                <apex:form >
+                    <div class="container top-sp">
+                        <div class="row">
+                            <div class="lbl-bl ">*Reason</div>
+                                <apex:selectList required="true" multiselect="false" size="1" label="Type" id="selectedValue"  value="{!selectedValue}">
+                                    <apex:selectOptions value="{!Items}"/>
+                                </apex:selectList><br/><br/>
+                                <div class="lbl-bl ">*Kindly clarify the reason :</div>
+                                    <apex:inputTextarea id="details" value="{!comments}"/>
+                                <div class="btn-bl">
+                                <apex:commandbutton value="Submit" onclick="return MaskString();" action="{!reopenCaseEmail}" style="margin-left: 5px;" styleclass="btnSubmit" />
+                                </div>  
+                       </div>
+                            
+                </div>
+                     
+            </apex:form>
+        </apex:pageBlock>
+        </div>
+        
+    </apex:outputPanel>
+    
+    <apex:pageBlock > 
+    <div class="footer-block" id="footer">
+        <div class="left">
+            <div class="footer-text">
+                <span class="footer-line"><a href="https://www.adgm.com/privacypolicy/" target="_blank">Privacy Policy</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/terms-conditions/" target="_blank">Terms and
+                        Conditions</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/disclaimer/" target="_blank">Disclaimer</a></span>
+            </div>
+            <div class="footer-note">
+                © 2016 Abu Dhabi Global Market. All rights Reserved.
+            </div>
+        </div>
+        <div class="right">
+            <div class="footer-icons">
+                <a href="https://www.linkedin.com/company/abu-dhabi-global-market-adgm-" target="_blank"><span class="linked-in-icon icon-adgm-group-820"></span></a>
+                <!--<a href="https://m.facebook.com/abudhabiglobalmarket/" target="_blank"><span class="fb-icon icon-adgm-facebook"</span></a>-->
+                <a href="https://twitter.com/adglobalmarket?lang=en" target="_blank"><span class="twitter-icon icon-adgm-twitter-circular-button"></span></a>
+                <!--<a href="https://www.youtube.com/watch?v=Lhx9lJVxVZw" target="_blank"><span class="youtube-icon icon-adgm-youtube"></span></a>-->
+            </div>
+        </div>
+    </div> 
+    
+     </apex:pageBlock>
+    
+    <script type="text/javascript">
+            function MaskString() {
+            var stringTobeMasked  = document.getElementById('j_id0:j_id34:j_id38:details').value;
+            var selectedValue     = document.getElementById('{!$Component.theSection.selectedValue}');
+            
+            if(stringTobeMasked != '' && stringTobeMasked != null){
+                
+                var filterWordsList  = "{!$Label.Swear_Words},{!$Label.Swear_words_2},{!$Label.Swear_words_3},{!$Label.Swear_words_4},{!$Label.Swear_words_5}";
+                var filterwords     = filterWordsList
+                var pattern = '' ;
+                for (var i = 0; i < filterWordsList.split(",").length; i++) {
+                    if (pattern == ''){
+                        pattern = '(^|)'+ filterWordsList.split(",") [i] + '(?=\\s|$)';
+                    }else{
+                        pattern = pattern + '|' + '(^|)'+ filterWordsList.split(",") [i] + '(?=\\s|$)';
+                    } 
+                    
+                }
+                var rgxx = new RegExp(pattern,"gi");
+                var found = stringTobeMasked.search(rgxx);
+                var maskedComment = stringTobeMasked.replace(rgxx, "****");
+                if (found === -1 ){
+                    return true;
+                }
+                else{
+                    document.getElementById('j_id0:j_id34:j_id38:details').value = maskedComment;
+                    return true;
+                } 
+           } return false;  
+            
+}
+    </script>
+</html>
+</apex:page>

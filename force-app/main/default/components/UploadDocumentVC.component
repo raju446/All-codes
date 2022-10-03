@@ -1,0 +1,418 @@
+<apex:component id="docComponent" controller="UploadDocumentsController" access="global" allowDML="true"> 
+    <apex:stylesheet value="{!URLFOR($Resource.HexaBPM__DocumentCSS,'css/base.css')}" />
+    <apex:stylesheet value="{!$Resource.HexaBPM__DocumentCSS}/popup/reveal.css"/>
+    <apex:includeScript value="{!$Resource.HexaBPM__DocumentCSS}/popup/jquery.min.js"/>
+    <apex:includeScript value="{!$Resource.HexaBPM__DocumentCSS}/popup/jquery.reveal.js"/>
+    <style type="text/css">
+        .loader {
+          z-index: 1200;
+          position: absolute;
+          margin-left: -60px;
+          filter: Alpha(Opacity =70);
+          opacity: 0.70;
+          -moz-opacity: 0.70;
+          top: 35%;
+          left: 55%;
+        }
+        .pg3 .bPageBlock {
+            width:600px;
+            display:table !important;
+         }
+        .bbt {
+            float:left; 
+            padding:3px 5px !important;
+        }
+        @media \0screen {
+         .bbt {
+            float:left; padding:2px 5px !important;
+            }
+        }
+        @media screen and (-webkit-min-device-pixel-ratio:0) {  
+        .bbt {
+            float:left; padding:4px 5px !important;
+            }
+        }
+        #pg4 .bPageBlock {
+            width:680px;    
+            border:none !important;
+        }
+        #DivNoBorder .bPageBlock {
+            border:none !important;
+        }
+        .order_line_item {
+            width:140px;
+        }
+        #iframe_pg {
+            width:1127px !important;
+        }
+        .pg_up .bPageBlock, #pg_up .bPageBlock {
+            width:850px;
+            border:none !important;
+        }
+        .reveal-modal {
+            left: 45% !important;
+            font-size: 1.2em;
+        }
+        .doc_opport {
+            width:150px;
+        }
+        
+        /*  newly added Css on 9-3-2012   */
+        .upl_ordr {
+            width: 70px;
+        }
+        .upl_ordr_typ {
+            width: 80px;
+        }
+        .upl_ordr_status {
+            width: 100px;
+        }
+        .up_ordr_ownr {
+            width: 180px;
+        }
+        .up_ordr_opp {
+            width: 170px;
+        }
+        #DivNoBorder{
+            margin-top:-20px;
+        }
+         .pageDesc {
+            font-size: 14px;
+            margin-bottom: 30px;
+            color: #505050;
+        }
+        .close-area {
+            display: table;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        .pageTopic {
+            font-size: 15px;
+            text-transform: uppercase;
+            margin-bottom: 13px;
+        }
+        .actionLink:hover{
+            text-decoration:underline !important;
+        }
+        .actionLink {
+            color: #44939c !important;
+            font-weight: bold;
+        }
+        .fileStatus{
+            color:#c00;
+        }
+        #noDocDiv{
+            display: block;
+            height: 100%;
+            width: 100%;
+            padding-top: 10%;
+            text-align: center;
+            font-size: 1.2em;
+            font-family: Raleway_Bold;
+        }
+        .doc-alert{color:Red;font-size:1.2em}
+        .doc-alert li{margin-left:0px !important}
+    </style>
+    <script language="javascript"> 
+            function EditdocAction(DocId){
+                if(document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm2:hdnDocId')!=null){
+                    document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm2:hdnDocId').value = DocId;
+                    EditDoc();
+                }
+            }
+            //Display the current document into the viewer once the document has been selected 
+            function ShowImg(id,val){ 
+                var x = location.pathname;
+                document.getElementById('PreviewDiv').innerHTML = '';
+                var elmIfr = document.createElement("IFRAME");  
+                elmIfr.style.width= "100%";
+                elmIfr.style.height= "750px";
+                var usertype = '{!JSENCODE(userType)}';
+                var DomainVal = 'N/A';
+                if(id!=null && id.length==18)
+                    id = id.substring(0,15);
+               
+                var strhostName = window.location.host;
+                if(document.getElementById('DocTitle')!=null && val!=null && val!=''){
+                    document.getElementById('DocTitle').value = val;
+                    document.getElementById('DocTitle').innerHTML = 'Previewing - '+val;
+                }
+                if(val.substring(val.indexOf('.')+1,val.length)=='jpg'|| val.substring(val.indexOf('.')+1,val.length)=='gif'|| val.substring(val.indexOf('.')+1,val.length)=='bmp'|| val.substring(val.indexOf('.')+1,val.length)=='png')
+                {
+                    document.getElementById('noDocDiv').style.display = 'block'; 
+                    document.getElementById('display').style.display = 'block';
+                    if(DomainVal!=null && DomainVal!='N/A'){
+                        elmIfr.src = "https://"+strhostName+"/"+DomainVal+"/servlet/servlet.FileDownload?file="+id;;
+                    }else{
+                        elmIfr.src = "https://"+strhostName+"/servlet/servlet.FileDownload?file="+id;
+                    }
+                    var s=document.getElementById('noDocDiv').src;              
+                }
+                if(val.substring(val.indexOf('.')+1,val.length)=='rtf' || val.substring(val.indexOf('.')+1,val.length)=='TIF' || val.substring(val.indexOf('.')+1,val.length)=='doc'|| val.substring(val.indexOf('.')+1,val.length)=='docx'|| val.substring(val.indexOf('.')+1,val.length)=='ppt'|| val.substring(val.indexOf('.')+1,val.length)=='pptx' || val.substring(val.indexOf('.')+1,val.length)=='xls'|| val.substring(val.indexOf('.')+1,val.length)=='xlsx')
+                {
+                    document.getElementById('noDocDiv').style.display = 'none';
+                    document.getElementById('display').style.display = 'none'; 
+                    if(DomainVal!=null && DomainVal!='N/A'){
+                        elmIfr.src = "https://"+strhostName+"/"+DomainVal+"/servlet/servlet.FileDownload?file="+id;;
+                    }else{
+                        elmIfr.src = "https://"+strhostName+"/servlet/servlet.FileDownload?file="+id;
+                    }
+                }else{
+                    document.getElementById('noDocDiv').style.display = 'none';
+                    document.getElementById('display').style.display = 'block';   
+                    if(DomainVal!=null && DomainVal!='N/A'){
+                        elmIfr.src = "https://"+strhostName+"/"+DomainVal+"/servlet/servlet.FileDownload?file="+id;;
+                    }else{
+                        elmIfr.src = "https://"+strhostName+"/servlet/servlet.FileDownload?file="+id;
+                    }
+                }
+                document.getElementById('PreviewDiv').appendChild(elmIfr);
+                document.getElementById('PreviewDiv').style.display = ''; 
+        }
+        //Clearing the Existing values in popup when user clicks on AddLine
+        function ClearValues(SRDocId,docname,docCode){
+            document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:docBlock:popUpPB:DocumentName').innerHTML = docname;
+            document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:hdnDocName').value = docname;
+            document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:hdnDocCode').value = docCode;
+            document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:hdnSRDocId').value = SRDocId;
+        }
+        //Validation when User didnot enter values for Required Fields 
+        function Validation(){
+            if(booleanError){
+                return false;
+            }
+            else{
+            
+                document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:hdnExternalComments').value = document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:docBlock:popUpPB:ExternalComments').value;
+                UploadSave();
+            }
+        }
+    </script> 
+    <apex:form id="theForm">
+        <apex:inputhidden id="hdnSRDocId" value="{!strSRDocId}"/>
+        <apex:inputhidden id="hdnDocName" value="{!strAttachmentName}"/>
+        <apex:inputhidden id="hdnDocCode" value="{!strDocument_Code}"/>
+        <apex:inputhidden id="hdnExternalComments" value="{!strExternalComments}"/>
+        <apex:inputhidden id="hdnSelectedFileType" value="{!strSelectedFileType}"/>
+            <apex:actionFunction action="{!upload}" status="NewDocStatus" name="UploadSave"/>
+            <div id="DivNoBorder">
+                <apex:outputpanel layout="block" styleClass="close-area" style="text-align:center">
+                    <apex:commandbutton value="Save" action="{!SaveChanges}" />
+                    <apex:commandbutton value="Cancel" action="{!Back_To_SR}" />
+                </apex:outputpanel>
+                <apex:pageBlock id="docBlock" title="{!IF(lstUploadableDocuments!=null && lstUploadableDocuments.size>0,'Documents to be Uploaded','')}">
+                    <apex:messages id="msg" styleClass="doc-alert"></apex:messages>
+                    <apex:actionstatus id="status" startText="Processing.."></apex:actionstatus>
+                    <div id="dvDocs" style="display:block;">
+                        <apex:pageblocktable value="{!lstUploadableDocuments}" var="Doc" id="theTblContact" rendered="{!IF(lstUploadableDocuments!=null && lstUploadableDocuments.size>0,true,false)}">
+                             
+                            <apex:column headervalue="Name" style="width:15%; !important;">
+                                <apex:outputtext value="{!Doc.Name}" rendered="{!IF(Doc.Participant_Name__c=='',true,false)}"/>
+                                <apex:outputtext value="{!Doc.Participant_Name__c} - {!Doc.Name}" rendered="{!IF(Doc.Participant_Name__c<>'',true,false)}"/>
+                            </apex:column>
+                            <!--
+                                <apex:column headervalue="Participant Name">
+                                    <apex:outputtext value="{!Doc.Participant_Name__c}"/>
+                                </apex:column>
+                            -->
+                            <apex:column headervalue="Instructions">
+                                <apex:outputtext value="{!Doc.HexaBPM__Document_Description_External__c}"/>
+                            </apex:column>
+                            <apex:column headervalue="Required" style="width:5%">
+                                <img src="/img/checkbox_checked.gif" style="display:{!IF(Doc.HexaBPM__Is_Not_Required__c==true,'none','')}" alt="Checked" class="checkImg" id="Active_chkbox" title="Checked" height="16" width="21"/>
+                                <img src="/img/checkbox_unchecked.gif" style="display:{!IF(Doc.HexaBPM__Is_Not_Required__c==true,'','none')}" alt="Not Checked" class="checkImg" id="InActive_chkbox" title="Not Checked" height="16" width="21"/>
+                            </apex:column>
+                            <apex:column headervalue="Status" style="width:8%; !important;">
+                                <apex:outputfield value="{!Doc.HexaBPM__Status__c}" /><!--rendered="{!isPortalUser}"-->
+                                <!-- <apex:inputfield rendered="{!!isPortalUser}" value="{!Doc.HexaBPM__Status__c}" />-->
+                                <!--
+                                <apex:selectList rendered="{!!isPortalUser}" id="DocStatus" value="{!Doc.HexaBPM__Status__c}" size="1">
+                                    <apex:selectOption itemValue="Uploaded" itemLabel="Uploaded"/>
+                                    <apex:selectOption itemValue="Re-upload" itemLabel="Re-upload"/>
+                                    <apex:selectOption itemValue="Approved" itemLabel="Approved"/>
+                                </apex:selectList>
+                                -->
+                            </apex:column>
+                            <apex:column rendered="{!!isPortalUser}" headervalue="Re-Upload" style="width:8%; !important;">
+                                <apex:inputField value="{!Doc.Re_upload__c}"/>
+                            </apex:column>
+                            <apex:column headervalue="ADGM Comments" style="width:20% !important;">
+                                <apex:outputfield rendered="{!isPortalUser}" value="{!Doc.HexaBPM__Rejection_Reason__c}"/>
+                                <apex:inputfield rendered="{!!isPortalUser}" style="min-width:250px; !important;" value="{!Doc.HexaBPM__Rejection_Reason__c}"/>
+                            </apex:column>
+                            <apex:column headervalue="Customer Comments" style="width:20% !important;">
+                                <apex:outputfield value="{!Doc.HexaBPM__Customer_Comments__c}"/>
+                            </apex:column>
+                            <apex:column headervalue="Action" style="width:155px; !important;">
+                                <apex:outputlabel value="Preview" id="btnView" styleClass="actionLink" onclick="ShowImg('{!JSENCODE(Doc.HexaBPM__Doc_ID__c)}','{!JSENCODE(Doc.Name)}')" style="cursor:pointer;float:left;display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='','','none')};"/>
+                                <!--<a data-reveal-id="myModal1"  id="lnkUpload" data-animation="fade" styleClass="actionLink" style="display:{!IF(Doc.HexaBPM__Doc_ID__c==null || Doc.HexaBPM__Doc_ID__c=='','','none')};text-decoration:none;">
+                                    <apex:outputlabel id="btnUpload" value="Upload" style="cursor:pointer;float:left;" styleClass="actionLink" onclick="ClearValues('{!JSENCODE(Doc.Id)}','{!JSENCODE(Doc.Name)}','{!JSENCODE(Doc.HexaBPM__Document_Master__r.HexaBPM__Code__c)}');"/>
+                                </a>-->
+                                <a data-reveal-id="myModal1"  id="lnkUpload" data-animation="fade" styleClass="actionLink" style="display:{!IF(isPortalUser == false,IF(Doc.HexaBPM__Doc_ID__c==null || Doc.HexaBPM__Doc_ID__c=='','','none'),IF((Doc.HexaBPM__Doc_ID__c<>null || Doc.HexaBPM__Doc_ID__c<>''),'none',IF(Doc.HexaBPM__SR_Template_Doc__r.Community_User_Upload_Not_Available__c==false,'','none')))};text-decoration:none;">
+                                    <apex:outputlabel id="btnUpload" value="Upload" style="cursor:pointer;float:left;" styleClass="actionLink" onclick="ClearValues('{!JSENCODE(Doc.Id)}','{!JSENCODE(Doc.Name)}','{!JSENCODE(Doc.HexaBPM__Document_Master__r.HexaBPM__Code__c)}');"/>
+                                </a>
+                                <apex:outputLabel id="lnkReplaceLbl" style="float:left;display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='' && (Doc.HexaBPM__Status__c=='Rejected' || Doc.HexaBPM__Service_Request__r.HexaBPM__External_Status_Name__c=='Draft' || Doc.HexaBPM__Status__c=='Re-upload'),'','none')};" >&nbsp;|&nbsp;</apex:outputLabel>
+                                <a data-reveal-id="myModal1" id="lnkReplace" data-animation="fade" styleClass="actionLink" style="display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='' && (Doc.HexaBPM__Status__c=='Rejected' || Doc.HexaBPM__Service_Request__r.HexaBPM__External_Status_Name__c=='Draft' || Doc.HexaBPM__Status__c=='Re-upload'),'','none')};text-decoration:none;">
+                                    <apex:outputlabel id="btnReplace" value="Replace" style="cursor:pointer;float:left;" styleClass="actionLink" onclick="ClearValues('{!JSENCODE(Doc.Id)}','{!JSENCODE(Doc.Name)}','{!JSENCODE(Doc.HexaBPM__Document_Master__r.HexaBPM__Code__c)}');"/>
+                                </a>
+                                <apex:outputLabel id="lnkRemoveLbl" style="float:left;display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='' && Doc.HexaBPM__Service_Request__r.HexaBPM__External_Status_Name__c=='Draft','','none')};" >&nbsp;|&nbsp;</apex:outputLabel>
+                                
+                                <apex:commandlink value="Remove" action="{!RemoveDocument}" styleClass="actionLink" style="display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='' && Doc.HexaBPM__Service_Request__r.HexaBPM__External_Status_Name__c=='Draft','','none')};text-decoration:none;">
+                                    <apex:param name="DelDocId" value="{!Doc.Id}" assignTo="{!RemoveDocumentId}"/>
+                                </apex:commandlink>
+                                <!-- 
+                                <a data-reveal-id="myModal1" id="lnkReplace" data-animation="fade" styleClass="actionLink" style="display:{!IF(Doc.HexaBPM__Doc_ID__c!=null && Doc.HexaBPM__Doc_ID__c!='' && Doc.HexaBPM__Service_Request__r.HexaBPM__External_Status_Name__c=='Draft','','none')};text-decoration:none;">
+                                    <apex:outputlabel id="btnReplace" value="Replace" style="cursor:pointer;float:left;" styleClass="actionLink" onclick="ClearValues('{!JSENCODE(Doc.Id)}','{!JSENCODE(Doc.Name)}','{!JSENCODE(Doc.HexaBPM__Document_Master__r.HexaBPM__Code__c)}');"/>
+                                </a>
+                                 -->
+                            </apex:column>
+                        </apex:pageblocktable>
+                        <div>
+                    </div>
+                    <div>
+                        <apex:pageblock title="Generated Documents" rendered="{!IF(ltGeneratedDocs!=null && ltGeneratedDocs.size>0,true,false)}">
+                            <apex:pageblocktable value="{!ltGeneratedDocs}" var="gen">
+                                <apex:column headervalue="Name">
+                                    <apex:outputfield value="{!gen.Name}"/>
+                                </apex:column>
+                                <apex:column headervalue="Instructions">
+                                    <apex:outputfield value="{!gen.HexaBPM__Document_Description_External__c}"/>
+                                </apex:column>
+                                <apex:column headervalue="Status">
+                                    <apex:outputfield value="{!gen.HexaBPM__Status__c}"/>
+                                </apex:column>
+                                <apex:column headervalue="Last Modified Date">                                    
+                                    <apex:outputfield value="{!gen.LastmodifiedDate}"></apex:outputfield>
+                                </apex:column>
+                                <apex:column headervalue="Preview">
+                                    <!--<apex:outputlabel value="Preview" id="btnView" styleClass="actionLink" onclick="ShowImg('{!JSENCODE(gen.HexaBPM__Doc_ID__c)}','{!JSENCODE(gen.Name)}')" style="cursor:pointer;float:left;display:{!IF(AND(OR(gen.HexaBPM__Service_Request__r.Letter_Available_for_Download__c,gen.HexaBPM__SR_Template_Doc__r.HexaBPM__On_Submit__c),gen.Name <> 'Invoice'),'','none')};"/>
+                                    <apex:outputlabel value="Preview" id="btnViewInvoice" styleClass="actionLink" onclick="ShowImg('{!JSENCODE(gen.HexaBPM__Doc_ID__c)}','{!JSENCODE(gen.Name)}')" style="cursor:pointer;float:left;display:{!IF(gen.Name == 'Invoice','','none')};"/>-->
+                                    <apex:outputlabel value="Preview" id="btnView" styleClass="actionLink" onclick="ShowImg('{!JSENCODE(gen.HexaBPM__Doc_ID__c)}','{!JSENCODE(gen.Name)}')" style="cursor:pointer;float:left;"/>
+                                    <!--<apex:outputlabel value="Preview" id="btnView" styleClass="actionLink" onclick="ShowImg('{!JSENCODE(gen.HexaBPM__Doc_ID__c)}','{!JSENCODE(gen.Name)}')" style="cursor:pointer;float:left;display:{!IF(gen.HexaBPM__Service_Request__r.Letter_Available_for_Download__c,'','none')};"/>
+                                    <apex:outputlabel value="{!gen.Preview_Download_Document__c}" style="cursor:pointer;float:left;display:{!IF(gen.HexaBPM__Service_Request__r.Letter_Available_for_Download__c,'none','')};"/>-->
+                                </apex:column>
+                            </apex:pageblocktable>
+                        </apex:pageblock>
+                    </div>
+                    <div id="myModal1" class="reveal-modal" style="display:block;">  
+                        <a class="close-reveal-modal">&#215;</a>
+                        <apex:outputpanel layout="block" style="display:block" id="NewDocPopUp">
+                        <div class="hd_div">Upload Required Document</div> 
+                            <div style="margin-top:20px;"  id="pg">
+                                <apex:pageBlock mode="maindetail" id="popUpPB">
+                                    <div id="dvNewDoc" style="display:block">
+                                        <apex:actionStatus id="NewDocStatus">            
+                                            <apex:facet name="start">                
+                                                    <img src="/img/loading32.gif" style="vertical-align:middle;" class="loader"/>
+                                            </apex:facet>        
+                                        </apex:actionStatus>
+                                        <table cellspacing="8" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="font-weight:bold;text-align:right;padding-right:17px;">
+                                                    File to upload
+                                                </td>
+                                                <td align="left">
+                                                <div class="requiredInput"><div class="requiredBlock"> </div>
+                                                    <apex:inputFile id="file" value="{!document.body}" fileSize="{!iFileSize}" contentType="{!document.ContentType}" filename="{!FileName}" onchange="return CheckFileFormat(this);"/> 
+                                                </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight:bold;text-align:right;padding-right:17px;">
+                                                </td>
+                                                <td align="left" class="fileStatus">
+                                                    <apex:outputtext value="" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight:bold;text-align:right;padding-right:15px;">
+                                                    Document Name
+                                                </td>
+                                                <td align="left">
+                                                     <apex:outputtext value="" id="DocumentName" style="font-weight:bold;"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight:bold;text-align:right;vertical-align:top;padding-right:15px">
+                                                    Customer Comments 
+                                                </td>
+                                                <td align="left">
+                                                    <apex:inputTextarea value="{!document.Description}" id="ExternalComments" style="width:300px;resize:none;"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <apex:pageBlockButtons id="popup1btn" location="bottom" style="float:right;" styleClass="pbButtonb">
+                                        <apex:commandButton id="cmdSave" value="Save" onclick="Validation();return false;" style="float:left;"/>
+                                        <apex:commandButton id="cmdCancel" action="{!Cancel}" value="Cancel" style="float:left;"/>
+                                    </apex:pageBlockButtons>
+                                </apex:pageBlock>
+                            </div>
+                            </apex:outputpanel>
+                     </div>
+                    <!-- End of the Light Box PopUp Starts when user clicks on the Add Line Button -->   
+                    <div id="display" style="padding:10px;display:block;width:99.2%;padding-top:20px;">
+                        <h5 id="DocTitle" value=""/>
+                        <table border="1" cellpadding="0" cellspacing="0"  style="width:100%;" height="750px" id="tblImagePane">
+                             <tr>
+                                  <td> 
+                                       <apex:outputPanel layout="block" id="detail">
+                                           <div id="PreviewDiv" style="padding:0px;display:none;">  
+                                           </div>
+                                           <div id="noDocDiv">Please click on Preview to view the Document.</div>
+                                       </apex:outputPanel>
+                                  </td>
+                             </tr>
+                        </table>
+                    </div>
+                </div>
+            </apex:pageBlock>
+        </div>
+        <script>
+            var _validFileExtensions = ["jpg", "jpeg", "bmp", "gif", "png", "pdf", "doc", "docx", "tiff"];
+            var booleanError = false;
+            function CheckFileFormat(inputFile){
+                var sFileName = inputFile.value;
+                //console.log('sFileName==>'+sFileName);
+                if(sFileName.length > 0){
+                    var blnValid = false;
+                    for(var j = 0; j < _validFileExtensions.length; j++) {
+                        var sCurExtension = _validFileExtensions[j];
+                        var chosenFileType = sFileName.split('.').pop();
+                        if(chosenFileType.toLowerCase()  == sCurExtension.toLowerCase()) {
+                            document.getElementById('DocumentUploadPage:DocUploadComp:docComponent:theForm:hdnSelectedFileType').value = chosenFileType;
+                            blnValid = true;
+                            break;
+                        }
+                    }
+                    //console.log('blnValid==>'+blnValid);
+                    //console.log('inputFile==>'+inputFile);
+                    if(blnValid){
+                        if(inputFile!=null && inputFile!=="undefined"){
+                            var iFileSize = inputFile.files[0].size;
+                            //if(iFileSize!=null && iFileSize>1048576 ){//1048576 ==1MB ; 26214400
+                            if(iFileSize!=null && iFileSize>5242880 ){//1048576 ==1MB ; 26214400 [5242880 == 5MB]
+                                $('.fileStatus').html('<label style="color:red;"><strong>Document Size should be less than 5 MB.</strong></label>');
+                                console.log('Document Size should be less than 1 MB');
+                                booleanError = true;
+                            }else{
+                                $('.fileStatus').html(inputFile.value);
+                                $('.fileStatus').html('<label style="color:#4F8A10;"><strong>Selected File is Valid.</strong></label>');
+                                booleanError = false;
+                                //$("[id='" +inputFile.id + "']").next().text('Replace');
+                            }
+                        }
+                   }else{
+                        $('.fileStatus').html('<label style="color:#c00;"><strong>Invalid File format.</strong></label>');
+                        booleanError = true;
+                        //$("[id='" +inputFile.id + "']").next().text('Replace');
+                    }
+                }else{
+                    $('.fileStatus').html('<label style="color:#c00;"><strong>Please select the file to Upload.</strong></label>');
+                    booleanError = true;
+                }
+            }
+        </script>
+    </apex:form>
+</apex:component>

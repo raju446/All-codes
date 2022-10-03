@@ -1,0 +1,112 @@
+<apex:page >
+ <style>
+    #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+        width: 40px;
+        height: 40px;
+        background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+        background-size: contain;
+        -ms-interpolation-mode: bicubic;
+    }
+    #adgmload .sp_loader, #modal-adgmload .sp_loader {
+        padding-left: 5%;
+        padding-right: 5%;
+        padding-bottom: 1%;
+        padding-top: 1%;
+        background-color: #fff;
+        position: absolute;
+        border-radius: 8px;
+        top: 40%;
+        left: 43%;
+    }
+    #adgmload, #modal-adgmload {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: 9999;
+        background: rgba(0,0,0,0.25);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type=text]{
+        width:62% !important;
+    }
+    textarea{
+        width:62% !important;
+    }
+    .dateOnlyInput input{
+        width:35%;
+    }
+    .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+        border-color: #fff;
+    }
+    .margin-bottom-bl{
+        margin-bottom: 30px;
+    }
+    .vfHelpText a            {position:relative;}
+    .vfHelpText a span       {display: none;}
+    .vfHelpText a:hover span {display: block;
+                              position:absolute;
+                              top:1.25em;
+                              padding:5px 5px;
+                              /*left:-15em; width:16em;*/
+                              left:-10em; width:10%;
+                              z-index:100; min-width:11em;
+                              border:1px solid orange;
+                              background-color:#FEFDB9;
+                              color:black;
+                             }
+</style>
+   
+<div class="menu-services">
+<apex:outputPanel layout="none">
+           <img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.AGTB_Logo}'  width="220" height="50"/><!-- width="141" height="100" width="200" height="200" --> 
+        </apex:outputPanel>
+<div class="pageTopic"><!--  Anglo-Gulf Trade Bank(AGTB)--></div>
+	<div class="pageDesc">
+		<a href="https://agtb.com" target="_blank">Anglo-Gulf Trade Bank(AGTB) Limited ("AGTB")</a> is fully digital corporate bank fundamentally rethinking the approach to banking. Charged by our purpose to make business easier. AGTB aims to 
+		build the boundaries of banking and provide simplified and intuitive solutions. We will do this through the intelligent use of data, open collaboration and an evolving ecosystem 
+		driven by our client's needs.<br/><br/>
+		Offering the biggest opportunity for disruption within corporate banking. Trade finance is AGTB's initial focus as the world's first digital bank. <br/><br/>
+		Launched in 2019 AGTB is a joint venture between AGTB Holdings Limited and the Mubadala Investment Company. The bank is licensed and regulated by the Financial services Regulatory 
+		Authority of Abu Dhabi Global Market. <br/><br/>
+	</div>
+	
+	<div id="container">
+	    <apex:outputPanel id="thePanel" layout="none">                   
+	       <apex:form id="theForm">
+	        	<apex:pageBlock ><!-- title="About the product" -->
+	        	<img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.AGTB_ProductLogo}' />
+	        	<apex:pageBlockbuttons location="bottom">
+	        		<apex:commandbutton value="Interested? Ask AGTB to get in touch with you"  onclick="window.open('{!$Site.Prefix}/apex/AGTB_ExpressionOfInterestForm','_self')" reRender="theForm"/>
+	     	</apex:pageBlockbuttons>
+	     	<br/><br/>
+	     	<div style="font-size: 12px;">
+	        	AGTB Essential is a no minimum balance corporate account that helps qualified entities in the ADGM meet their basic banking needs with greater ease. 
+	        	This account is your partner for the future as our services are designed to support your business growth and evolve to meet your needs.<br/><br/>
+	        	<div ><span >With AGTB Essential, you get:<font face="Calibri,sans-serif" size="2">*</font></span></div><br/>
+	        	<ul>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No minimum balance</li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pay, receive and deposit USD funds</li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Combine the benefits of a savings and current account to enhance your returns</li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enjoy a digital client experience</li><br/>
+	        	</ul>
+	        	<br/>
+	        	<b>Save time and effort by applying through <i>ACCESS</i>ADGM</b><br/><br/>
+	        	Fast track your application by applying for your AGTB Essential account on <i>ACCESS</i>ADGM. Avoid duplication and grant permission to ADGM to share relevant information and KYC 
+	        	documentation already submitted to ADGM during your incorporation in the free zone.<br/><br/>
+	        	For more updates on this product, please <a href="https://agtb.com/en/adgm-services/" target="_blank">Click here.</a>.<br/><br/>
+	        	
+	        	<span ><font face="Calibri,sans-serif" size="2">*</font><i>All products and services are offered at the sole discretion of Anglo-Gulf Trade Bank (AGTB) Limited (“AGTB”), are subject to satisfying the regulatory requirements,
+	        	 and AGTB’s internal criteria. Please note that AGTB’s products and services are not offered to Retail Clients. AGTB at its sole discretion may decide and change, 
+	        	 at any point, the minimum applicable threshold for an AGTB Essential Account to be eligible for interest. Rates may vary based on account balance. For more details, 
+	        	 please contact us on <a href="mailto:reachout@agtb.com" target="_blank">reachout@agtb.com</a>.</i></span>
+	        	</div>
+	        	</apex:pageBlock>
+	       </apex:form>    
+	    </apex:outputPanel> 
+	    <div class="main-content services bottom-space-20">  
+	    </div>
+	</div>
+  </div>
+</apex:page>

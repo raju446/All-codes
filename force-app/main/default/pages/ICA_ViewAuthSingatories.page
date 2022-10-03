@@ -1,0 +1,23 @@
+<apex:page standardcontroller="HexaBPM__Service_Request__c" extensions="ICA_ViewInternalAuthsigCntlr">
+	 <apex:form >
+		<apex:pageBlock >
+			<apex:pageBlockTable value="{!authsig}" var="sig">
+				<apex:column >
+                     <apex:facet name="header">Action</apex:facet>
+                     <apex:outputpanel rendered="{!IF(sig.AuthType=='External',true,false)}">
+	                     <apex:outputLink value="/{!sig.recId}/e" target="_blank" >Edit</apex:outputLink>&nbsp;|&nbsp;
+	                     <apex:outputLink value="/{!sig.recId}" target="_blank" >View</apex:outputLink>
+                     </apex:outputpanel>
+                </apex:column>
+				<apex:column value="{!sig.AuthType}" headerValue="Signatory Type"/>
+				<apex:column value="{!sig.fullName_En}" headerValue="Full Name"/>
+				<apex:column value="{!sig.fullName_Ar}" headerValue="Full Name(Arabic)"/>
+				<apex:column value="{!sig.employeeType}" headerValue="Employee Type"/>
+				<apex:column value="{!sig.nationality}" headerValue="Nationality"/>
+				<apex:column value="{!sig.mobNo}" headerValue="Mobile Number"/>
+				<apex:column value="{!sig.unifiedId}" headerValue="Unified ID"/>
+				<apex:column value="{!sig.status}" headerValue="Status"/>
+			</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

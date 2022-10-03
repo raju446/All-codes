@@ -1,0 +1,7 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false"
+     cache="false" >
+     
+    <script>
+      
+    </script>
+</apex:page>

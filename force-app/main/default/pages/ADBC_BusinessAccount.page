@@ -1,0 +1,115 @@
+<apex:page >
+ <style>
+    #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+        width: 40px;
+        height: 40px;
+        background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+        background-size: contain;
+        -ms-interpolation-mode: bicubic;
+    }
+    #adgmload .sp_loader, #modal-adgmload .sp_loader {
+        padding-left: 5%;
+        padding-right: 5%;
+        padding-bottom: 1%;
+        padding-top: 1%;
+        background-color: #fff;
+        position: absolute;
+        border-radius: 8px;
+        top: 40%;
+        left: 43%;
+    }
+    #adgmload, #modal-adgmload {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: 9999;
+        background: rgba(0,0,0,0.25);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type=text]{
+        width:62% !important;
+    }
+    textarea{
+        width:62% !important;
+    }
+    .dateOnlyInput input{
+        width:35%;
+    }
+    .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+        border-color: #fff;
+    }
+    .margin-bottom-bl{
+        margin-bottom: 30px;
+    }
+    .vfHelpText a            {position:relative;}
+    .vfHelpText a span       {display: none;}
+    .vfHelpText a:hover span {display: block;
+                              position:absolute;
+                              top:1.25em;
+                              padding:5px 5px;
+                              /*left:-15em; width:16em;*/
+                              left:-10em; width:10%;
+                              z-index:100; min-width:11em;
+                              border:1px solid orange;
+                              background-color:#FEFDB9;
+                              color:black;
+                             }
+</style>
+   
+<div class="menu-services">
+<apex:outputPanel layout="none">
+           <img  src='{!$Site.Prefix}/servlet/servlet.ImageServer?id=0151v000003n0eK&oid=00D0Y000002IemY&lastMod=1631538467000'  width="100" height="60"/><!-- width="141" height="100" width="200" height="200" --> 
+        </apex:outputPanel>
+<div class="pageTopic"><!--  Anglo-Gulf Trade Bank(AGTB)--></div>
+    <br/>
+    <div class="pageDesc">
+        <h5 style="color:black;">
+            <b style="font-size: large;">About ADCB</b>
+        </h5><br/><br/>
+        ADCB Group is a leading UAE banking group that provides over 1 million customers with a full suite of products and services, spanning Consumer Banking, Wholesale Banking, Treasury &amp; Investments and Property Management. ADCB operates a network of 54 branches and over 428 ATMs across the UAE. <br/><br/>
+        On  1  May  2019, ADCB and Union National  Bank merged  and the combined  entity acquired Al  Hilal Bank, which operates as a separate Islamic banking entity   under its own brand within the Group. The transaction reinforced ADCB’s position as the third  largest bank in the UAE by assets. As at 31 December 2020, the Group’s total assets stood at AED 411 billion.<br/><br/>
+        ADCB Group, which is 60.2% owned by the Government of Abu Dhabi through the Abu Dhabi Investment Council, trades on the Abu Dhabi Securities Exchange (ADX) under the ticker of ADCB. As at 31 December 2020, ADCB’s market capitalisation was AED 43 billion.<br/><br/>
+        Further information on ADCB can be found at <a href="http://adcb.com/" target="_blank">adcb.com</a> 
+    </div>
+    
+    <div id="container">
+        <apex:outputPanel id="thePanel" layout="none">                   
+           <apex:form id="theForm">
+               
+                <apex:pageBlock ><!-- title="About the product" -->
+                <!--img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.AGTB_ProductLogo}' /-->
+                    <h4>ADCB SmartStart Business Account:</h4>
+                <apex:pageBlockbuttons location="bottom">
+                    <apex:commandbutton value="Contact ADCB to get started."  onclick="window.open('{!$Site.Prefix}/apex/ADBC_Form','_self')" reRender="theForm"/>
+            </apex:pageBlockbuttons>
+            <br/><br/>
+            <div style="font-size: 15px;">
+                With ADCB’s SmartStart Business Account, banking is made simpler to help you achieve your business ambitions.<br/><br/>
+                Easily manage the day-to-day financial needs for your business with the utmost convenience.<br/><br/> 
+                Key Features:
+
+
+                <!--div ><span >With AGTB Essential, you get:<font face="Calibri,sans-serif" size="2">*</font></span></div><br/-->
+                <ul>
+                    <li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No minimum balance required </li><br/>
+                    <li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Free e-statement at preferred frequency</li><br/>
+                    <li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First Cheque Book free per calendar year</li><br/>
+                    <li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Free ADCB Corporate Internet Banking (ProCash access with Soft Token)</li><br/>
+                </ul>
+                Enjoy a seamless banking experience with ADCB.<br/><br/>
+                <!--To apply, click <a href="mailto:commercial@adcb.com" target="_blank">here</a> or SMS “SA” to 2626 <br/><br/>-->
+
+                For more details on ADCB SmartStart Business Account <a href='https://www.adcb.com/en/business/commercial/account-services/smartstart-business-account.aspx'>click here</a>.<br/><br/> 
+                <br/>
+                
+                </div>
+                </apex:pageBlock>
+           </apex:form>    
+        </apex:outputPanel> 
+        <div class="main-content services bottom-space-20">  
+        </div>
+    </div>
+  </div>
+</apex:page>

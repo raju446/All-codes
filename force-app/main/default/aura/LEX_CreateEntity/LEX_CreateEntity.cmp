@@ -1,0 +1,403 @@
+<!--
+  @File Name          : LEX_CreateEntity.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 7/8/2020, 4:07:45 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/3/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global"
+    controller="BillingManagementController">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="sourceSysId" type="String" />
+    <aura:attribute name="OUName" type="String" />
+    <aura:attribute name="sourceSysName" type="String" />
+    <aura:attribute type="recordtype[]" name="recTypeMap" />
+    <aura:attribute name="selectedValue" type="String" access="PRIVATE" />
+    <aura:attribute name="isPersonAcc" type="Boolean" />
+    <aura:attribute name="isOpen" type="boolean" default="false" />
+    <aura:attribute name="countryoptions" type="Object" />
+    <aura:attribute name="sourceSystem" type="Object" />
+    <aura:attribute name="OUListPerson" type="List" default=""  />
+    <aura:attribute name="isRegisteredWithTaxVal" type="Object" />
+    <aura:attribute name="newEntityObject" type="Account" default="{ 'sobjectType': 'Account', 'Is_Manually_Created__c' : true }" />
+    <aura:attribute name="newContactObject" type="Account" default="{ 'sobjectType': 'Contact' }" />
+    <aura:attribute name="newAddressObject" type="Address__c" default="{ 'sobjectType': 'Address__c' }" />
+    <aura:handler event="c:LEX_CreateEntityEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="createEntityEvent" type="c:LEX_CreateEntityEvent" />
+    <aura:attribute name="OuList" type="List" default="" />
+    <aura:attribute name="OuListSourceSys" type="List" default="" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    
+    <aura:attribute name="isOUDisabled" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!v.isOpen}">
+        <!-- ###### MODAL BOX Start###### -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            
+            <div class="slds-modal__container customContainerCss">
+                <aura:if isTrue="{!v.Spinner}">
+                    <div aura:id="spinnerId" class="slds-spinner_container">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop" id="backdrop"></div>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isPersonAcc}">
+                    <lightning:recordEditForm aura:id="recordViewForm"
+                        recordTypeId="{!$Label.c.Person_Contact_RecordTypeId}" onsubmit="{!c.handleSubmit}"
+                        onsuccess="{!c.createEntityRecord}" objectApiName="Contact">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }"
+                                alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                            <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Entity Recordtype</h2> -->
+
+                            <lightning:layout class="slds-page-header slds-page-header--object-home">
+                                <lightning:layoutItem>
+                                    <lightning:icon iconName="standard:contact" alternativeText="Contact" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem padding="horizontal-medium">
+                                    <div class="page-section page-header">
+                                        <h2 class="slds-text-heading--label customHeading"><b>Individual Customer Creation</b>
+                                        </h2>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>
+                                <!-- the messages component is for error messages -->
+                                <lightning:messages />
+
+                                <lightning:layout multipleRows="true">
+                                    
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="true" variant="label-stacked" aura:id="OUNamePer" name="colorId"
+                                                label="Operating Unit" value="{!v.OUName}" onchange="{!c.onOUChange}" disabled="{!v.isOUDisabled}">
+                                                <option text="--None--" value="" />
+                                                <aura:iteration items="{!v.OUListPerson}" var="option">
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.OUName}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="true" variant="label-stacked" aura:id="sourceSystemNamePer" name="colorId"
+                                                label="Source System" value="{!v.sourceSysName}" disabled="{!v.OUName != '101'}">
+                                                <option text="-None-" value="" />
+                                                <aura:if isTrue="{! if(v.OUName == '101',true,false)}">
+                                                    <option text="BM - Arbitration" value="BM - Arbitration" selected="{! v.sourceSysName == 'BM - Arbitration'}"></option>
+                                                    <option text="BM - ADGM" value="BM - ADGM" selected="{! v.sourceSysName == 'BM - ADGM'}"></option>
+                                                </aura:if> 
+                                                <aura:if isTrue="{! if(v.OUName != '101',true,false)}">
+                                                    <option text="BM" value="BM" selected="{! v.sourceSysName == 'BM'}"></option>
+                                                </aura:if>
+                                                <!--<aura:iteration items="{!v.OuListSourceSys}" var="option">
+                                                    <option text="-None-" value="" />
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.sourceSysName}" />
+                                                </aura:iteration>-->
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input variant="label-stacked" name="Phone" value="{!v.sourceSysId}"
+                                                label="Source System Id" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6"></lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <lightning:inputField variant="label-stacked" fieldName="FirstName" />
+                                        <!-- <lightning:input name="contact_FirstName" value="{!v.newContactObject.FirstName}" label="First Name" required="true" aura:id="formValidate" pattern="^(?=.*[\w\d]).+" messageWhenPatternMismatch="Please provide proper value"/> -->
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" fieldName="Middle_Name__c" />
+                                            <!-- <lightning:input name="contact_MiddleName" value="{!v.newContactObject.Middle_Name__c}" label="Middle Name" aura:id="formValidate" pattern="^(?=.*[\w\d]).+" messageWhenPatternMismatch="Please provide proper value"/>  -->
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" fieldName="LastName" />
+                                            <!-- <lightning:input name="contact_LastName" value="{!v.newContactObject.LastName}" label="Last Name" required="true" aura:id="formValidate" pattern="^(?=.*[\w\d]).+" messageWhenPatternMismatch="Please provide proper value"/> -->
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" fieldName="Email" />
+                                            <!-- <lightning:input type="email" name="Email" value="{!v.newContactObject.Email}" label="Email" /> -->
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" required="true" fieldName="Country__c" aura:id="concountry"/>
+                                            <!-- <lightning:input type="tel" name="country" value="{!v.newContactObject.Country__c}" label="Country" /> -->
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" fieldName="State_Province__c" />
+                                            <!-- <lightning:input type="tel" name="country" value="{!v.newContactObject.State_Province__c}" label="State/Province" /> -->
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" fieldName="City__c" />
+                                            <!-- <lightning:input type="tel" name="country" value="{!v.newContactObject.Country__c}" label="Country" /> -->
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:inputField variant="label-stacked" required="true" fieldName="Street__c" aura:id="conStreet"/>
+                                            <!-- <lightning:input type="tel" name="country" value="{!v.newContactObject.Country__c}" label="Country" /> -->
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                </lightning:layout>
+                            </p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                onclick="{! c.closeModel }" />
+
+                            <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                        </footer>
+                    </lightning:recordEditForm>
+                </aura:if>
+                <aura:if isTrue="{! !v.isPersonAcc}">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }"
+                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Entity Recordtype</h2> -->
+
+                        <lightning:layout class="slds-page-header slds-page-header--object-home">
+                            <lightning:layoutItem>
+                                <lightning:icon iconName="standard:account" alternativeText="Entity" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium">
+                                <div class="page-section page-header">
+                                    <h2 class="slds-text-heading--label customHeading"><b>Corporate Customer Creation</b>
+                                    </h2>
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>
+                            <form>
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="true" aura:id="oracleSiteId" name="colorId"
+                                                label="Operating Unit"
+                                                value="{!v.newEntityObject.Oracle_Site_Id__c}" onchange="{!c.onOUChange}" disabled="{!v.isOUDisabled}">
+                                                <option text="--None--" value="" />
+                                                <aura:iteration items="{!v.OuList}" var="option">
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.newEntityObject.Oracle_Site_Id__c}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                     <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="true" aura:id="sourceSystemName" name="colorId"
+                                                label="Source System"
+                                                value="{!v.newEntityObject.Source_System__c}" disabled="{! or(v.newEntityObject.Oracle_Site_Id__c != '101', v.isOUDisabled )}">
+                                                <option text="-None-" value="" />
+                                                <aura:if isTrue="{! if(v.newEntityObject.Oracle_Site_Id__c == '101',true,false)}">
+                                                    <option text="BM - Arbitration" value="BM - Arbitration" selected="{! v.newEntityObject.Source_System__c == 'BM - Arbitration'}"></option>
+                                                    <option text="BM - ADGM" value="BM - ADGM" selected="{! v.newEntityObject.Source_System__c == 'BM - ADGM'}"></option>
+                                                </aura:if> 
+                                                <aura:if isTrue="{! if(v.newEntityObject.Oracle_Site_Id__c != '101',true,false)}">
+                                                    <option text="BM" value="BM" selected="{! v.newEntityObject.Source_System__c == 'BM'}"></option>
+                                                </aura:if>
+                                                <!--<aura:iteration items="{!v.OuListSourceSys}" var="option">
+                                                    
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.newEntityObject.Source_System__c}" />
+                                                </aura:iteration>-->
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>   
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="SourceSys"
+                                                value="{!v.newEntityObject.Source_System_Id__c}" 
+                                                aura:id="Source_System_Id" label="Source System Id" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6" />
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Entity_Name" value="{!v.newEntityObject.Name}"
+                                                label="Customer Name" required="true" aura:id="Entity_Name"
+                                                pattern="^(?=.*[\w\d]).+"
+                                                messageWhenPatternMismatch="Please provide proper value" />
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Entity_Name_Arabic"
+                                                value="{!v.newEntityObject.Account_Name_Arabic__c}" required="false"
+                                                aura:id="Entity_Arabic_Name" label="Customer Name (Arabic)"
+                                                messageWhenValueMissing="Complete this field" />
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input type="email" name="Email"
+                                                value="{!v.newEntityObject.Email__c}" label="Email" />
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input type="tel" name="Phone" value="{!v.newEntityObject.Phone}"
+                                                label="Phone" />
+                                        </div>
+                                    </lightning:layoutItem>
+
+                                    
+
+                                  <!--  <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="true" aura:id="sourceSystemName" name="colorId"
+                                                label="Authority"
+                                                value="{!v.newEntityObject.Source_System_Name__c}">
+                                                <option text="-None-" value="" />
+                                                <aura:iteration items="{!v.sourceSystem}" var="option">
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.newEntityObject.Source_System_Name__c}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem> -->
+                                    
+                                    
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select required="false" aura:id="registeredForTax" name="colorId"
+                                                label="Registered for Vat"
+                                                value="{!v.newEntityObject.Registered_for_Tax__c}" onchange="{!c.onRegisteredFoTaxChange}">
+                                                <option text="--None--" value="" />
+                                                <aura:iteration items="{!v.isRegisteredWithTaxVal}" var="option">
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.picklistVal == v.newEntityObject.Registered_for_Tax__c}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Vat Registration Number" disabled="{! if(v.newEntityObject.Registered_for_Tax__c != 'Yes',true,false)}" required="{! if(v.newEntityObject.Registered_for_Tax__c == 'Yes',true,false)}"
+                                                value="{!v.newEntityObject.Tax_Registration_Number__c}" label="Vat Registration Number" aura:id="trnNo"/>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Building"
+                                                value="{!v.newAddressObject.Building_Name__c}" label="Building Name" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Floor" value="{!v.newAddressObject.Floor__c}"
+                                                label="Floor" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="OfficeNo"
+                                                value="{!v.newAddressObject.Office_Number__c}" label="Office Number" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <!-- <lightning:input name="Country" value="{!v.newAddressObject.Country__c}" label="Country" /> -->
+                                            <lightning:select required="true" aura:id="address_country" name="colorId"
+                                                label="Country" value="{!v.newAddressObject.Country__c}">
+                                                <option text="--None--" value="" />
+                                                <aura:iteration items="{!v.countryoptions}" var="option">
+                                                    <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                        selected="{!option.selected}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="state" value="{!v.newAddressObject.State__c}"
+                                                label="State / Province" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="County" value="{!v.newAddressObject.County__c}"
+                                                label="County" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="City" value="{!v.newAddressObject.Emirates__c}"
+                                                label="Emirates / City" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Street" required="true" aura:id="address_Street"
+                                                value="{!v.newAddressObject.Street_Name_of_Cluster_on_the_Island__c}"
+                                                label="Street Name" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input name="Postal code"
+                                                value="{!v.newAddressObject.POBoxNumber__c}" label="Postal Code" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                </lightning:layout>
+                            </form>
+                        </p>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
+
+                        <lightning:button variant="brand" label="Save" title="Save"
+                            onclick="{! c.createEntityRecord }" />
+                    </footer>
+                </aura:if>
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!-- ###### MODAL BOX Part END Here ######-->
+    </aura:if>
+</aura:component>

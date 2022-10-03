@@ -1,0 +1,32 @@
+<apex:component controller="PortalInvoiceTemplateController" access="global">
+    <apex:attribute type="string" name="ServiceRequestId" assignTo="{!SRID}" required="false" description="Service Request Id to Calculate the Rollup"/>
+    <apex:outputPanel style="margin:0px !important; padding:0px !important;">
+    
+    
+        <table cellspacing="0" cellpadding="0" width="600" style=" font: normal 12px Arial, Helvetica, sans-serif; solid #D4DADC; border-left: none; border-bottom: none;">
+           
+            <tr>
+               <th style="width:210px; padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC; border-top: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#002A3A; font-size: 12px; color: #FFFFFF; text-align:left">Service(s) Required:</th>
+               <th style="width:40px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-top: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#002A3A; font-size: 12px; color: #FFFFFF; text-align:left">Fees in AED</th>
+               <th style="width:40px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-top: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#002A3A; font-size: 12px; color: #FFFFFF; text-align:left">Tax in AED</th>
+            </tr>
+            <apex:repeat value="{!PaymentLines}" var="item" id="theRepeat">
+                <tr>
+                    <td style="width:250px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC; border-right: 1px solid #D4DADC; border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px; text-align:left;"><apex:outputText value="{!item.ItemDescription}"/></td>
+                    <td style="width:40px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px;"><apex:outputText style="font-weight:bold;" value="{!item.Price}"/></td>
+                    <td style="width:40px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px;"><apex:outputText style="font-weight:bold;" value="{!item.TaxAmount}"/></td>
+                
+                </tr>
+            </apex:repeat>
+            <tr>
+                <!--<td style="width:250px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC; border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px ;text-align:right;"><apex:outputText style="font-weight:bold;" value="Total Amount:"/></td>-->
+                <td style="width:210px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px; text-align:right;"><b>Total Amount</b></td>
+                <td colspan="2" style="width:40px;padding: 5px 2px 4px 5px; border-left: 1px solid #D4DADC;  border-right: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC;border-bottom: 1px solid #D4DADC; background:#FFF; font-size:12px;"><apex:outputText style="font-weight:bold" value="{!TotalAmount}"/></td>
+
+            </tr>
+        </table>
+     
+        
+        
+    </apex:outputPanel>
+</apex:component>

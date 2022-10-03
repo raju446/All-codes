@@ -1,0 +1,66 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" controller="ChartController" action="{!prepareVisaExpiring_Due_Chart}">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+</head>
+<body>
+    <div id="dueVisa-container"></div>
+</body>
+<script>
+    /*
+    (function() {
+    // your page initialization code here
+    // the DOM will be available here...
+      setTimeout(function () {
+            $(".case-load").hide();  //Hides the loader , a delay is given for the loader to hide since graph has to plot the points via google api
+        }, 1200);
+       
+    })();
+    */
+    //Invoke the draw chart to plot the points...
+    function drawChart() {
+        drawVisaColumnChart();
+    }
+    function drawVisaColumnChart()
+    {
+        var colorValues = [];
+        colorValues.push('#FFC526');
+        colorValues.push('#ADCCCF');
+        var rows = new Array();
+        var visaExpiringCountJSONString = '{!expiringVisaJSON}' ;
+        if(visaExpiringCountJSONString){
+            //console.log(visaExpiringCountJSONString);
+            var visaExpiringCountJSON = JSON.parse(visaExpiringCountJSONString);
+            //console.log(visaExpiringCountJSON );
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Days');
+            data.addColumn('number', 'Visas');
+            for(var key in visaExpiringCountJSON){
+            if (visaExpiringCountJSON.hasOwnProperty(key)) {
+               rows.push([key, visaExpiringCountJSON[key]]);
+            }
+            }
+            data.addRows(rows);
+            var options = {
+                chart: {
+                    title: 'Expiring Visa'
+                },
+                legend: {
+                    position: 'bottom',
+                    alignment: 'center'
+                },
+                'height':'250',
+                colors: colorValues,
+                vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }}
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('dueVisa-container'));
+
+            chart.draw(data, options);
+        }
+    }
+    google.charts.setOnLoadCallback(drawChart);
+</script>
+</apex:page>

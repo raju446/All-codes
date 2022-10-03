@@ -1,0 +1,62 @@
+.THIS .label-hidden > label {
+    display: none;
+}
+
+.THIS .slds-checkbox_standalone {
+    margin-top: 5%;
+}
+.THIS .slds-spinner_container{
+    z-index: 9999 !important;
+}
+
+.THIS .serviceTypeClass{
+    width: 20px;
+}
+
+.THIS .actionclass{
+    width: 20px;
+}
+
+.THIS .totalamtclass{
+    width: 30px;
+}
+
+.THIS .taxamntclass{
+    width: 20px;
+}
+
+.THIS .quantityclass{
+    width: 58px;
+}
+
+.THIS .discAmnt{
+    width: 20px;
+}
+
+.THIS .amountclass{
+    width: 140px;
+}
+
+.THIS .itemTypeClass{
+    width: 150px;
+}
+
+.THIS .serclass{
+    width: 100px;
+}
+
+.THIS .trainingschoolclass{
+    width: 100px;
+}
+
+.THIS .discDescClass{
+    width: 200px;
+}
+
+.THIS .tableClass{
+    width : 100%;
+}
+
+.THIS .actClass{
+    width:20px;
+}

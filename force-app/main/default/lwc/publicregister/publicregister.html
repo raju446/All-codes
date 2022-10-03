@@ -1,0 +1,76 @@
+<template>
+    <div class="all">
+      <br>
+      <lightning-layout>
+              <lightning-layout-item>
+                  <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                      <a class="link" href="/ADGMMOBILE/s/services-help"><span style="color: #000; font-size:15px;">&#8592;</span></a>
+                  </div>
+                  <p class="text">public register</P>
+              </lightning-layout-item>
+          </lightning-layout>
+        <div class="search">
+            <lightning-input type="search" placeholder="Search companies by name or FSPN" value={textvalue} onkeyup={handleKeyUp} style="border-radius:20%"></lightning-input>      
+          </div>
+          <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" padding="around-small">
+                <div class="custom-box1 slds-box slds-p-around_medium slds-text-align_center">
+                    <div class="foundation1">
+                       Company A
+                        <div class="text1">
+                            Banking
+                            <br>
+                            <br>
+                            <li>Status
+                                <a href="/ADGMMOBILE/s/company-B" ><span style="color: #000; font-size:18px;float:right;">see details →</span></a></li> 
+                      </div>  
+                    </div>
+                </div>
+            </lightning-layout-item>
+           <lightning-layout-item size="12" padding="around-small">
+                <div class="custom-box1 slds-box slds-p-around_medium slds-text-align_center">
+                    <div class="foundation1">
+                        Company B
+                        <div class ="text1">
+                       Fintech
+                         <br>
+                         <br>
+                        <li>Status
+                                <a href="/ADGMMOBILE/s/company-B" ><span style="color: #000; font-size:18px;float:right;">see details →</span></a></li> 
+                        </div>
+                    </div>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" padding="around-small">
+                <div class="custom-box1 slds-box slds-p-around_medium slds-text-align_center">
+                    <div class="foundation1">
+                        Company C
+                        <div class="text1">
+                            Retail
+                             <br>
+                            <br>
+                           <li>Status
+                                <a href="/ADGMMOBILE/s/company-B" ><span style="color: #000; font-size:18px;float:right;">see details →</span></a></li> 
+                        </div>
+                    </div>
+                </div>
+            </lightning-layout-item>
+             <lightning-layout-item size="12" padding="around-small">
+                <div class="custom-box1 slds-box slds-p-around_medium slds-text-align_center">
+                    <div class="foundation1">
+                        Company D
+                        <div class="text1">
+                            Subtitle
+                             <br>
+                            <br>
+                           <li>Status
+                                <a href="/ADGMMOBILE/s/company-B" ><span style="color: #000; font-size:18px;float:right;">see details →</span></a></li> 
+                        </div>
+                    </div>
+                </div>
+            </lightning-layout-item>
+                </lightning-layout>
+                <br><br>
+                <br>
+      </div>
+  </template>

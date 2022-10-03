@@ -1,0 +1,106 @@
+<apex:page id="pg" controller="SubmitRequestController" tabstyle="HexaBPM__Service_Request__c" action="{!CheckPriceLines}" sidebar="false">
+    <style>
+        .pricing-table{
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        .message table td {padding: 0;}
+        .message {margin: 8px 0px;}
+        body .bPageBlock .pbBody .labelCol, body .bPageBlock .pbBody .dataCol, body .bPageBlock .pbBody .data2Col, body .print .topics-label, body .print .topics-list{
+            padding-top: 10px; !important;
+        }
+        .btn-margin-right{ margin-right: 10px;}
+    </style>
+    <div style="width:100%;float:left;">
+        <apex:sectionheader title="Service Request" subtitle="{!objSR.Name} for {!objSR.HexaBPM__Ultimate_SR_Menu_Text__c}"/>
+        <apex:form id="frm">
+            <apex:pagemessages id="msg"/>
+            <apex:pageblock id="pb" title="Service Request Details">
+                <apex:pageblockbuttons id="pbbtns" location="top">
+                    <apex:commandbutton id="btnback" styleClass="btn-margin-right" value="Cancel" onclick="disableButtons();" action="{!BacktoSR}" rerender="msg,pb"/>
+                    <!--<apex:commandbutton id="btncnf" value="Confirm" action="{!SubmitSR}" onclick="disableButtons();" rerender="msg,pb" rendered="{!IF(isAllowed_to_Submit==true,true,false)}"/>-->
+                    <apex:commandbutton id="btncnf" value="Confirm and Pay" disabled="{!isSubmitNotAllowed}" action="{!SubmitSR}" onclick="disableButtons();" rerender="msg,pb" rendered="{!IF(isAllowed_to_Submit==true,IF(DefBalStr=='',true,false),false)}"/>
+                    <apex:commandbutton id="btntopUp" value="Topup Balance" onclick="openWindow();return false;"  rerender="msg,pb" rendered="{!IF(DefBalStr<>'',true,false)}"/>
+                    
+                </apex:pageblockbuttons>
+                <apex:pageblocksection columns="2">
+                    <apex:outputfield value="{!objSR.Name}"/>
+                    <apex:outputfield value="{!objSR.HexaBPM__Customer__c}"/> 
+                    <apex:outputfield label="Status" value="{!objSR.HexaBPM__External_Status_Name__c}" />
+                    <apex:outputfield value="{!objSR.CreatedDate}"/>
+                </apex:pageblocksection>
+            </apex:pageblock>
+            
+            <apex:pageblock id="SRPriceItemPB" title="SR Price Items" rendered="{!lstSRPriceItems.size>0}"><!-- rendered="{!IF(isAllowed_to_Submit==true,hasPriceItems,false)}" -->
+                <apex:pageblocktable id="pbt" value="{!lstSRPriceItems}" var="PI">
+                    <apex:column headervalue="Item Number" value="{!PI.Name}"/>
+                    <apex:column headervalue="Item Name" value="{!PI.HexaBPM__Product__r.Name}"/>
+                    <!-- <apex:column headervalue="Item Line" value="{!PI.HexaBPM__Pricing_Line__c}"/> 
+                    <apex:column headervalue="Item Status" value="{!PI.HexaBPM__Status__c}"/>-->
+                    <apex:column headervalue="Fee (AED)" value="{!PI.Fee__c}"/>
+                    <apex:column headervalue="Tax (AED)" value="{!PI.Tax_Amount__c}"/>
+                </apex:pageblocktable>
+            </apex:pageblock>
+            
+            <apex:outputpanel id="AmountPnl" style="display:{!IF(isAllowed_to_Submit==true,'','none')};">
+                    <div style="overflow: hidden;">
+                        <apex:pageblock id="TotalValues" title="Summary" >
+                            <apex:pageblocktable id="pbtTotalAmount" value="{!isAllowed_to_Submit}" var="a" >
+                                <apex:column headervalue="Available Balance (AED)" >
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!AvailablePortalBalance}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(AvailablePortalBalance)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((AvailablePortalBalance * 100)),2)=='0','00',RIGHT(TEXT((AvailablePortalBalance * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </apex:column>
+                                <apex:column headervalue="Total Amount (AED)" >
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!TotalPriceItemVal}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(TotalPriceItemVal)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((TotalPriceItemVal * 100)),2)=='0','00',RIGHT(TEXT((TotalPriceItemVal * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </apex:column>
+                            </apex:pageblocktable>
+                        </apex:pageblock>
+                    </div>
+            </apex:outputpanel>
+            
+            <apex:outputPanel rendered="{!objSR.Has_Female_Sponsor__c}" style="margin-top:10%">
+                <apex:pageblock >
+                    <apex:pageBlockSection columns="1">
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="I Agree" />
+                            <apex:inputCheckbox value="{!femaleSponsorDisclaimer}" style="padding-top:10px !important;"/>
+                        </apex:pageBlockSectionItem>
+                        <apex:outputField value="{!objSr.Disclaimer__c}" style="padding-top:10px !important;"/>
+                    </apex:pageBlockSection>
+                </apex:pageblock>
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+    <script>
+        $("[id$='btnback']").removeClass("btn"); // 
+        $("[id$='btncnf']").removeClass("btn");
+        $("[id$='btntopUp']").removeClass("btn");
+        function disableButtons(){
+            if(document.getElementById('pg:frm:pb:pbbtns:btncnf')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btncnf').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btncnf').value = 'Processing..';
+            }
+            if(document.getElementById('pg:frm:pb:pbbtns:btnback')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btnback').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btnback').value = 'Processing..';
+            }
+            if(document.getElementById('pg:frm:pb:pbbtns:btntopUp')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btntopUp').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btntopUp').value = 'Processing..';
+            }
+        }
+        function openWindow(){
+            var balStr = "{!DefBalStr}";
+            var srIdStr = "{!strSRID}";
+            //window.open("apex/PaymentFormTopUp?amount="+balStr+"&srId="+srIdStr, '_blank');
+            window.open("apex/PaymentFormTopUp?amount="+balStr+"&srId="+srIdStr, '_parent');
+        }
+    </script>
+</apex:page>

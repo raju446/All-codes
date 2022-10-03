@@ -1,0 +1,376 @@
+<!--
+  @File Name          : LEX_Billing_Management_Component.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 11-15-2020
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/1/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component controller="BillingManagementController">
+    <!-- attributes Start  -->
+    <aura:attribute name="isOpenSFAModal" type="Boolean" default="false" />
+    <aura:attribute name="selectedEntityId" type="String" default="null" />
+    <aura:attribute name="selectedEntityRecTypeName" type="String" default="null" />
+    <aura:attribute name="selectedEntityOracleId" type="String" default="null" />
+    <aura:attribute name="currentProfileName" type="String" default="" />
+    <aura:attribute name="dynamicBtnName" type="String" default="Submit To Finance" />
+    <aura:attribute name="todayDate" type="String" default="" />
+    <aura:attribute name="url" type="String" default="" />
+    <aura:attribute name="showCloneEntity" type="Boolean" default="false" />
+    <aura:attribute name="selectedCloneEntityAuth" type="string" default="" />
+    <aura:attribute name="newEntity" type="Account" />
+    <aura:handler name="change" value="{!v.newEntity}" action="{!c.changeEntity}" />
+    <!-- search box -->
+    <aura:attribute name="entityname" type="String" />
+    <aura:attribute name="ADGMID" type="String" />
+    <aura:attribute name="SITEID" type="String" />
+    <aura:attribute name="entitySourceSys" type="String" />
+    <aura:attribute type="Integer" name="startIndex" default="0" />
+    <aura:attribute type="Integer" name="endIndex" default="0" />
+    <aura:attribute type="Integer" name="pageNumber" default="1" />
+    <aura:attribute type="Integer" name="maxPage" default="1" />
+    <aura:handler name="change" value="{!v.pageNumber}" action="{!c.renderPage}" />
+    <!-- search result attributes -->
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+    <aura:attribute name="showCreateButtons" type="Boolean" default="false" />
+    <aura:attribute name="listEntityWrapper" type="object[]" />
+    <aura:attribute name="selectAll" type="Boolean" default="false" />
+    <aura:attribute name="selectedIndex" type="Integer" default="-1" />
+    <aura:attribute name="isNoSearchDataFound" type="Boolean" default="false" />
+    <aura:attribute name="selectedCloneEntityID" type="String" default="" />
+    <!-- Show Receipt List attributes -->
+    <aura:attribute name="listReceiptsWrapper" type="object[]" />
+    <aura:attribute name="showReceiptTable" type="Boolean" default="false" />
+    <aura:attribute name="oracleSiteIdPicklist" type="object[]" />
+    <aura:attribute name="PaymentCurrencyPicklist" type="object[]" />
+    <aura:attribute name="paymentModePicklist" type="object[]" />
+    <aura:attribute name="selectedEntityName" type="String" />
+    <!-- Show Invoice List attributes -->
+    <aura:attribute name="isInvoiceSaved" type="Boolean" default="False" />
+    <aura:handler name="change" value="{!v.isInvoiceSaved}" action="{!c.callInvoiceTable}" />
+    <aura:attribute name="isReceiptSaved" type="Boolean" default="False" />
+    <aura:handler name="change" value="{!v.isReceiptSaved}" action="{!c.callReceiptTable}" />
+    <aura:attribute name="isReceiptPushed" type="Boolean" default="False" />
+    <aura:handler name="change" value="{!v.isReceiptPushed}" action="{!c.callInvoiceTable}" />
+    <aura:attribute name="isInvoicePushed" type="Boolean" default="False" />
+    <aura:handler name="change" value="{!v.isInvoicePushed}" action="{!c.callReceiptTable}" />
+    <lightning:navigation aura:id="navService" />
+    <aura:attribute name="listInvoiceWrapper" type="object[]" />
+    <aura:attribute name="showInvoiceTable" type="Boolean" default="false" />
+    <aura:handler event="force:refreshView" action="{!c.clear}" />
+    <aura:attribute name="bmMdt" type="object" />
+
+    <!-- Show Invoice line item List attributes -->
+    <aura:attribute name="listInvoiceLineItemWrapper" type="object[]" />
+    <aura:attribute name="showInvoiceLineItemTable" type="Boolean" default="false" />
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!-- Handler Start -->
+    <!-- <aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" /> -->
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+    <aura:handler event="c:LEX_CreateEntityEvent" action="{!c.handleComponentEvent}" />
+    <!-- Event start -->
+    <aura:registerEvent name="cmpEvent" type="c:LEX_CreateEntityEvent" />
+    <aura:method name="passRecordId" action="{!c.enablePage}" access="public">
+        <aura:attribute name="entityRecordId" type="String" default="Detail" />
+    </aura:method>
+
+    <aura:attribute name="isOUDisabled" type="Boolean" default="false" />
+    <aura:attribute name="isSSDisabled" type="Boolean" default="false" />
+
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner }">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop" id="backdrop"></div>
+    </aura:if>
+
+    <!-- External Css for toast message -->
+    <ltng:require styles="{!$Resource.multilineToastCSS}" />
+
+
+    <!-- Page body Start -->
+    <lightning:card variant="Narrow" title="Bill ADGM" iconName="standard:account">
+        <aura:set attribute="actions">
+            <aura:if isTrue="{! v.selectedEntityId != null}">
+                <lightning:button variant="brand" label="Back" iconName="utility:back" onclick="{!c.navigateBack}"
+                    iconPosition="right" />
+            </aura:if>
+        </aura:set>
+
+        <div class="slds-border_top"></div>
+        <!--New change starts here-->
+        <div class="slds-clearfix slds-m-horizontal_small slds-m-top_medium">
+            <div class="slds-box slds-grid slds-float_left column-box ">
+                <div class="col-block">
+                    <div class="custom-box">
+                        <lightning:select name="SITEID" label="Operating Unit" value="{!v.SITEID}" aura:id="SITEIDinput"
+                            disabled="{! v.isOUDisabled}">
+                            <aura:iteration items="{!v.oracleSiteIdPicklist}" var="groupVal">
+                                <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}"
+                                    selected="{!groupVal.picklistVal == v.SITEID}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                <!--    ****************** Source System to Hide ********************
+                    <div class="custom-box slds-m-top_medium">
+                        <lightning:select name="sourceSystem" label="Source System" value="{!v.entitySourceSys}"
+                            aura:id="sourceSys" disabled="{! v.isSSDisabled}">
+                            <option text="-|-None-|-" value="" />
+                            <aura:if isTrue="{! v.SITEID == '101'}">
+                                <option text="BM - Arbitration" value="BM - Arbitration"
+                                    selected="{! v.entitySourceSys == 'BM - Arbitration'}"></option>
+                                <option text="BM - ADGM" value="BM - ADGM"
+                                    selected="{! v.entitySourceSys == 'BM - ADGM'}"></option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID != '101'}">
+                                <option text="BM" value="BM" selected="{! v.entitySourceSys == 'BM'}"></option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '501'}">
+                                <option text="Academy" value="Academy" selected="{! v.entitySourceSys == 'Academy'}">
+                                </option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '502'}">
+                                <option text="Fintech" value="Fintech" selected="{! v.entitySourceSys == 'Fintech'}">
+                                </option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '701'}">
+                                <option text="Bridge Property" value="Bridge Property"
+                                    selected="{! v.entitySourceSys == 'Bridge Property'}"></option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '102'}">
+                                <option text="Courts" value="Courts" selected="{! v.entitySourceSys == 'Courts'}">
+                                </option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '103'}">
+                                <option text="FSRA" value="FSRA" selected="{! v.entitySourceSys == 'FSRA'}"></option>
+                            </aura:if>
+                            <aura:if isTrue="{! v.SITEID == '104'}">
+                                <option text="Catalyst" value="Catalyst" selected="{! v.entitySourceSys == 'Catalyst'}">
+                                </option>
+                                <option text="Access" value="Access" selected="{! v.entitySourceSys == 'Access'}">
+                                </option>
+                            </aura:if>
+                        </lightning:select>
+                    </div>
+                -->
+                    <div class="custom-box slds-m-top_medium">
+                        <lightning:input name="entityname" aura:id="entitynameinput" value="{!v.entityname}"
+                            label="Customer Name" minlength="2" />
+                    </div>
+                    <div class="custom-box slds-m-top_medium">
+                        <lightning:input name="ADGMID" value="{!v.ADGMID}" aura:id="ADGMIDinput" label="Customer Id"
+                            minlength="5" />
+                    </div>
+                    
+                    <div class="button-area slds-float_left slds-text-align_center slds-m-top_medium">
+                        <lightning:button variant="brand" label="Clear" iconName="utility:clear" iconPosition="left"
+                            onclick="{!c.clear}" class="slds-m-right_x-small font-format"/>
+                        <lightning:button variant="brand" label="Search" iconName="utility:search" iconPosition="left"
+                            onclick="{!c.searchButtonClick}" class="font-format" />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-box slds-grid slds-float_right column-box">
+                <!--Right Column-->
+
+                <div class="slds-grid slds-gutters slds-wrap" Style="Width:100%">
+
+                    <aura:if isTrue="{! v.bmMdt.Corporate_Customer__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                            <lightning:button variant="brand" label="Create Corporate Customer"
+                                iconName="utility:record_create" iconPosition="left" onclick="{!c.openCE}"
+                                class="slds-m-right_x-small full-width" />
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! v.bmMdt.Individual_Customer__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                            <lightning:button variant="brand" label="Create Individual Customer"
+                                iconName="utility:record_create" iconPosition="left" onclick="{!c.openPersonAcc}"
+                                class="slds-m-right_x-small full-width" />
+                        </div>
+                    </aura:if>
+                    
+                    
+                    <aura:if isTrue="{! v.bmMdt.Add_Invoice__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                            <lightning:button variant="brand" label="Create Invoice" iconName="utility:record_create"
+                                iconPosition="left" class="full-width" onclick="{!c.onInitializeInvoice}" />
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{! v.bmMdt.Add_Receipt__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                            <lightning:button variant="brand" label="Create Receipt" iconName="utility:record_create"
+                                iconPosition="left" class="slds-m-right_x-small full-width" onclick="{!c.onInitializeReceipt}" />
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{! v.bmMdt.Refund_Request__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                        <lightning:button variant="brand" label="Create Refund Request" iconName="utility:record_create"
+                            iconPosition="left" class="slds-m-right_x-small full-width" onclick="{!c.navigateRefundRequest}" />
+                        </div>
+                    </aura:if>
+                    <!--<aura:if isTrue="{! v.bmMdt.Fund_Transfer__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                        <lightning:button variant="brand" label="Create Fund Transfer" iconName="utility:record_create"
+                            iconPosition="left" class="slds-m-right_x-small fundTransfer full-width"
+                            onclick="{!c.navigateFundTransfer}" />
+                        </div>
+                    </aura:if>-->
+                    <aura:if isTrue="{! v.bmMdt.Fund_Transfer__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                        <lightning:button variant="brand" label="Create Fund Transfer" iconName="utility:record_create"
+                            iconPosition="left" class="slds-m-right_x-small fundTransfer full-width"
+                            onclick="{!c.navigateFundTransferNew}" />
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! v.bmMdt.Credit_Memo__c}">
+                        <div class="slds-col slds-size_6-of-12 slds-m-top_medium">
+                        <lightning:button variant="brand" label="Create Credit Memo" iconName="utility:record_create"
+                            iconPosition="left" class="full-width" onclick="{!c.navigateCreditMemo}" />
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+        <!--New change ends here-->
+        <br />
+        <div class="entityTable">
+
+            <aura:if isTrue="{!v.showTable}">
+                <!-- Possible Match Details start -->
+                <h3 class="slds-section-title--divider headerCss">Search Results</h3>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col">
+                                <div class="slds-truncate" title="Action">Select</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Name" style="text-transform: capitalize;">Customer
+                                    Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Oracle_Party_Id">Customer Id</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Oracle_Site_Id">Operating Unit</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Goldan_Entity">Source System</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title=""></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.listEntityWrapper}" var="objEntityWrapper" indexVar="tableIndex"
+                            start="{!v.startIndex}" end="{!v.endIndex}">
+                            <!-- Child Lightning Component -->
+                            <tr>
+                                <td scope="col" width="5%">
+                                    <div class="slds-truncate" title="Action">
+
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <ui:inputRadio aura:id="checkbox + {!tableIndex}"
+                                            value="{! tableIndex == v.selectedIndex}" name="{!tableIndex}"
+                                            change="{!c.onRadionButtonSelection}" />
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Name">
+                                        <a href="{!'/one/one.app?#/sObject/'+ objEntityWrapper.accountRec.Id + '/view'}"
+                                            target="_blank">
+                                            <ui:outputText value="{!objEntityWrapper.accountRec.Name}" /> </a>
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Oracle_Party_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Oracle_Party_Id__c}" />
+                                    </div>
+                                </td>
+                                <td scope="col" width="35%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Oracle_Site_Id__c}" />
+
+                                    </div>
+                                </td>
+                                <td scope="col" width="20%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <!--<ui:outputText value="{!objEntityWrapper.accountRec.Parent.Name}"/>-->
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Source_System__c}" />
+                                    </div>
+                                </td>
+                                <td scope="col" width="10%">
+                                    <aura:if isTrue="{! v.bmMdt.Default_OU__c == 'All'}">
+                                        <a onclick="{!c.cloneEntity}" data-record="{!tableIndex}">
+                                            <lightning:icon iconName="utility:copy" size="small"
+                                                alternativeText="Clone" />
+                                            <span class="slds-assistive-text">Clone</span>
+                                        </a>
+                                    </aura:if>
+                                </td>
+
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                <c:LEX_Pagination currentPageNumber="{!v.pageNumber}" maxPageNumber="{!v.maxPage}" />
+                <aura:If isTrue="{!v.showCloneEntity}">
+                    <c:LEX_CloneEntity aura:id="cloneEntityComp" showCloneEntity="{!v.showCloneEntity}"
+                        selectEntityId="{!v.selectedCloneEntityID}" selectEntityAuth="{!v.selectedCloneEntityAuth}"
+                        newEntity="{!v.newEntity}" />
+                </aura:If>
+                <aura:If isTrue="{!empty(v.listEntityWrapper)}">
+                    <!--isNoSearchDataFound-->
+                    <h1><b class="noDataFoundCss">
+                            <center>No Records Found</center>
+                        </b></h1>
+                </aura:If>
+                <br /><br />
+                <div class="slds-m-vertical_medium">
+                    <aura:If isTrue="{!and(v.selectedEntityOracleId != '', v.selectedEntityOracleId != null)}">
+                        <aura:if isTrue="{!v.showCreateButtons}">
+                            <!-- <lightning:button variant="brand" label="Add Receipt" iconName="utility:record_create" iconPosition="right"  class="clearbutton"  onclick="{!c.onInitializeReceipt}" />
+                            <aura:if isTrue="{!v.selectedEntityRecTypeName != 'ADGM Guest'}">	
+                                <lightning:button variant="brand" label="Add Invoice" iconName="utility:record_create" iconPosition="right"  class="mergeButton" onclick="{!c.onInitializeInvoice}" />
+                            </aura:if> -->
+                            <!-- <lightning:button variant="brand" label="{!v.dynamicBtnName}" iconName="utility:approval" iconPosition="right"  class="mergeButton" onclick="{!c.toggleSFAModal}" /> -->
+                        </aura:if>
+                        <br /><br />
+                    </aura:If>
+                </div>
+            </aura:if>
+            <aura:If isTrue="{!and(v.selectedEntityOracleId != '', v.selectedEntityOracleId != null)}">
+                <aura:If isTrue="{!v.showReceiptTable}">
+                    <div class="slds-m-vertical_medium">
+                        <c:LEX_Show_Receipt aura:id="receiptComp" isRecPushed="{!v.isReceiptPushed}" />
+                    </div>
+                </aura:If>
+
+                <br />
+                <aura:If isTrue="{!v.showInvoiceTable}">
+                    <div class="slds-m-vertical_medium">
+                        <c:LEX_Show_Invoices aura:id="invoiceComp" isRecPushed="{!v.isInvoicePushed}" />
+                    </div>
+                </aura:If>
+                <c:LEX_CreateInvoice aura:id="invoiceCreateComp" isRecordSaved="{!v.isInvoiceSaved}" />
+                <c:LEX_CreateReceipt aura:id="receiptCreateComp" isRecordSaved="{!v.isReceiptSaved}" />
+            </aura:If>
+
+        </div>
+    </lightning:card>
+
+</aura:component>

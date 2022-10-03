@@ -1,0 +1,31 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" standardController="Appointment__c">
+    <script>
+        //document.getElementById('adgmload').style.visibility="hidden";
+        window.onload = function() {
+            var appointmentId = "{!Appointment__c.Id}";
+            document.getElementById('modal-adgmload').style.visibility="hidden";
+            clearModalContent();            
+            //document.getElementById('modal-adgmload').style.visibility="visible";    
+            if(appointmentId != ''){     
+                var strURL = "/apex/createappointment?id="+appointmentId;
+                $("#modalBox").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }); 
+                $("#modalBox .modal-title").text('Make An Appointment');
+                $("#modalBox .modal-main-content").load(strURL,function(){
+                   // document.getElementById('modal-adgmload').style.visibility="hidden";
+                });
+            } else{
+                $("#modalBox").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }); 
+                $("#modalBox .modal-title").text('Make An Appointment');
+                $("#modalBox .modal-main-content").load("/apex/createappointment",function(){
+                   // document.getElementById('modal-adgmload').style.visibility="hidden";
+                });
+            }
+        }
+    </script>
+</apex:page>

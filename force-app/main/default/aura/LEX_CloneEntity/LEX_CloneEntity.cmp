@@ -1,0 +1,85 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global" controller="BillingManagementController">
+	<aura:attribute name="ouList" type="Object" />
+    <aura:attribute name="OuListSourceSys" type="Object" />
+    <aura:attribute name="selectedSourceSystem" type="string" default="" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="selectEntityId" type="String" default="" />
+    <aura:attribute name="OUName" type="String" />
+    <aura:attribute name="selectEntityAuth" type="String" default="" />
+    <aura:attribute name="showCloneEntity" type="Boolean" default="false" />
+    <aura:attribute name="newEntity" type="Account" />
+    <aura:registerEvent name="createEntityEvent" type="c:LEX_CreateEntityEvent" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" id="backdrop"></div>
+    </aura:if>
+    
+    <!-- ###### MODAL BOX Start###### -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container customContainerCss">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }"
+                                      alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                <lightning:layout class="slds-page-header slds-page-header--object-home">
+                    <lightning:layoutItem>
+                        <lightning:icon iconName="standard:account" alternativeText="Entity" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="horizontal-medium">
+                        <div class="page-section page-header">
+                            <h2 class="slds-text-heading--label customHeading"><b>Clone Entity</b>
+                            </h2>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p>
+                    <form>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <div class="custom-box">
+                                    <lightning:select required="true" aura:id="sourceSystemName" name="colorId"
+                                                      label="Operating Unit"
+                                                      value="{!v.OUName}" onchange="{!c.onOUChange}">
+                                        <option text="--None--" value="" />
+                                        <aura:iteration items="{!v.ouList}" var="option">
+                                            <option text="{!option.picklistLabel}" value="{!option.picklistVal}" />
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="around-small" size="6">
+                                <div class="custom-box">
+                                    <lightning:select required="true" variant="label-stacked" aura:id="sourceSystemNamePer" name="colorId"
+                                                      label="Source System" value="{!v.selectedSourceSystem}">
+                                        <aura:iteration items="{!v.OuListSourceSys}" var="option">
+                                            <option text="-None-" value="" />
+                                            <option text="{!option.picklistLabel}" value="{!option.picklistVal}"
+                                                    selected="{!option.picklistVal == v.selectedSourceSystem}" />
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </form>
+                </p>
+            </div>
+            <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
+
+                        <lightning:button variant="brand" label="Save" title="Save"
+                            onclick="{! c.createEntityRecord }" />
+                    </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+        <!-- ###### MODAL BOX Part END Here ######-->
+</aura:component>

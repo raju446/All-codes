@@ -1,0 +1,129 @@
+<apex:page standardController="AGTB_Client_On_Board__c" extensions="AGTB_ExpressionOfInterstCntlr">
+  
+    <style>
+        #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+            width: 40px; 
+            height: 40px;
+            background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+            background-size: contain;
+            -ms-interpolation-mode: bicubic;
+        }
+        #adgmload .sp_loader, #modal-adgmload .sp_loader {
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-bottom: 1%;
+            padding-top: 1%;
+            background-color: #fff;
+            position: absolute;
+            border-radius: 8px;
+            top: 40%;
+            left: 43%;
+        }
+        #adgmload, #modal-adgmload {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: 9999;
+            background: rgba(0,0,0,0.25);
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        input[type=text]{
+            width:62% !important;
+        }
+        textarea{
+            width:62% !important;
+        }
+        .dateOnlyInput input{
+            width:35%;
+        }
+        .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+            border-color: #fff;
+        }
+        .margin-bottom-bl{
+            margin-bottom: 30px;
+        }
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+      </style>
+    <div class="pageTopic" > Corporate Bank Account Opening > Expression Of Interest</div>
+    <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <apex:form id="theForm">
+        <apex:pageMessages />
+        <apex:outputpanel >
+            <script type="text/javascript">
+                
+            </script>
+        </apex:outputpanel>
+        <apex:pageBlock >
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandbutton value="Submit to AGTB" action="{!doSave}" reRender="theForm" rendered="{!!isReadonly}" status="loadingStatus"/>
+            <apex:commandbutton value="Cancel" rendered="{!!isReadonly}" onclick="window.open('{!$Site.Prefix}/apex/AGTB_ThirdPartyServices','_self')" reRender="theForm"/>
+            <apex:commandbutton value="Back" rendered="{!isReadonly}" onclick="window.open('{!$Site.Prefix}/apex/AGTB_ThirdPartyServices','_self')" reRender="theForm"/>
+        </apex:pageBlockButtons>
+        <img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.AGTB_ProductLogo}' />
+            <apex:pageBlockSection title="Entity details" collapsible="false" columns="2">
+                <apex:outputField value="{!sr.Account_Name__c}" label="Entity name"/>
+                <apex:outputField value="{!sr.License_number__c}" label="License number"/>
+                <apex:outputField value="{!sr.Legal_entity_type__c}" label="Legal entity type"/>
+                
+                 <apex:inputField value="{!sr.Principal_country_of_business__c}" required="true" label="Principal country of business" rendered="{!!isReadonly}"/>  
+                 <apex:outputField value="{!sr.Principal_country_of_business__c}" rendered="{!isReadonly}" />
+                 
+                <apex:outputField value="{!sr.Nature_of_business__c}"  label="Nature of business" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Contact Details" collapsible="false" columns="2" rendered="{!!isReadonly}">
+                <apex:inputfield value="{!sr.First_name__c}" required="true" label="First name"/>
+                <apex:inputfield value="{!sr.Last_name__c}" required="true" label="Last name"/>
+                <apex:inputfield value="{!sr.Contact_number__c}" required="true" label="Contact number"/>
+                <apex:inputfield value="{!sr.Email__c}" required="true"/>
+                <apex:inputfield value="{!sr.Preferred_method_of_contact__c}" required="true" label="Preferred method of contact"/>
+                <apex:inputfield label="Preferred time in case of call" value="{!sr.Preferred_time_in_case_of_call__c}"  id="con"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Contact Details" collapsible="false" columns="2" rendered="{!isReadonly}">
+                <apex:outputField value="{!sr.First_name__c}"  label="First name"/>
+                <apex:outputField value="{!sr.Last_name__c}"  label="Last name"/>
+                <apex:outputField value="{!sr.Contact_number__c}"  label="Contact number"/>
+                <apex:outputtext value="{!sr.Email__c}" label="Email"/>
+                <apex:outputField value="{!sr.Preferred_method_of_contact__c}" label="Preferred method of contact"/>
+                <apex:outputField label="Preferred time in case of call" value="{!sr.Preferred_time_in_case_of_call__c}"  />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Alternate Contact Details" collapsible="false" columns="2" rendered="{!!isReadonly}">
+                <apex:inputfield value="{!sr.Alt_First_name__c}" required="true" label="First name"/>
+                <apex:inputfield value="{!sr.Alt_Last_name__c}" required="true" label="Last name"/>
+                <apex:inputfield value="{!sr.Alt_Phone_number__c}" required="true" label="Phone number"/>
+                <apex:inputfield value="{!sr.Alt_Email__c}" required="true" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Alternate Contact Details" collapsible="false" columns="2" rendered="{!isReadonly}">
+                <apex:outputField value="{!sr.Alt_First_name__c}"  label="First name"/>
+                <apex:outputField value="{!sr.Alt_Last_name__c}"  label="Last name"/>
+                <apex:outputField value="{!sr.Alt_Phone_number__c}"  label="Phone number"/>
+                <apex:outputtext value="{!sr.Alt_Email__c}" label="Email"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Notes/Comments" collapsible="false" columns="2">
+                <apex:inputfield value="{!sr.Notes_comments__c}" label="Notes/comments" rendered="{!!isReadonly}"/>
+                <apex:outputField value="{!sr.Notes_comments__c}" label="Notes/comments" rendered="{!isReadonly}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form> 
+</apex:page>

@@ -1,0 +1,18 @@
+<apex:page standardStylesheets="false" showHeader="false" controller="DeleteProfilePicController">
+   <apex:form id="confirmform">
+   <apex:actionFunction name="proceedDeletion" action="{!deleteProfilePic}" />
+  <div class="stat_block">Please click on Delete to proceed.</div>
+  <div class="center">
+      <!--<apex:commandButton value="Delete" action="{!deleteProfilePic}"  />-->
+      <input type="submit" value="Delete" onclick="confirmDelete();return false;" class="margin-right:4px;" /> 
+      <input type="submit" data-dismiss="modal" value="Cancel" />
+  </div>
+  </apex:form>
+  <script>
+  
+  //$("[id$='confirmform']").attr('action', '/adgm/home');
+  function confirmDelete(){
+      proceedDeletion();
+  }
+  </script>
+</apex:page>

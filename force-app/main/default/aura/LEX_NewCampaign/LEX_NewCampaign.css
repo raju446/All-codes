@@ -1,0 +1,12 @@
+.THIS .radioButton{
+    padding-left: 81px;
+    padding-bottom: 10px;
+}
+.THIS .recordTypeCss{
+    padding-left: 104px;
+    
+}
+.THIS .typeDescriptionCss {
+    padding-left: 24px;
+    -webkit-box-decoration-break: clone;
+}

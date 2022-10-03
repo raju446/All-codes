@@ -1,0 +1,92 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" StandardController="Case" extensions="CaseSelectionController">
+<head>
+    <style>
+        .pageTopic {
+            font-size: 1.2em;
+            text-transform: uppercase;
+            margin-bottom: 13px;
+            margin-top: 13px;
+        }
+        .pageDesc {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        .case-type-title {
+            font-size: 1.2em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .case-block {
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .case-block .col-box a {
+            text-decoration: none;
+        }
+        .case-block .case-box {
+            height: 250px;
+            background-color: #e5e9ea;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .case-block .case-box .type-block {
+            margin-bottom: 10px;
+        }
+        .tabular {
+            display: table;
+            width: 100%;
+        }
+        .case-block .case-box .title-detail {
+            font-size: 1.1em;
+            color: #505050;
+        }
+        .type-logo.tabular-cell {
+            width: 10%;
+            font-size: 35px;
+            color: #198983;
+            padding-right: 10px;
+        }
+        .tabular-cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .case-block .case-box .type-title {
+            font-size: 1.2em;
+            color: #505050;
+        }
+    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/main.css')}"/>
+</head>
+<body>
+     <div class="main-block adgm">
+        <div class="pageTopic">RAISE A NEW CASE</div>
+        <div class="pageDesc">
+            Before raising a new case please ensure that you have read the Knowledge articles shared by ADGM.  You can access the knowledge articles by clicking on the "Knowledge" Tab.  Also available are tutorial videos that provide guidance on how to access the portal, please reference them.          </div>
+        <div class="detail">
+            <div class="case-type-title">Select a Case Type</div>
+            <div class="case-block">
+                <div class="container-fluid">
+                    <div class="row">
+                        <apex:repeat value="{!lstCaseRecordTypes}" var="caseType">
+                            <div class="col-sm-3 col-box">
+                                <a href="{!$Site.Prefix}{!caseType.CaseUrl}">
+                                    <div class="case-box">
+                                        <div class="type-block tabular">
+                                            <span class="type-logo {!caseType.IconName} tabular-cell"></span>
+                                            <span class="type-title tabular-cell">{!caseType.Title}</span>
+                                        </div>
+                                        <div class="title-detail">
+                                            {!caseType.Description}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

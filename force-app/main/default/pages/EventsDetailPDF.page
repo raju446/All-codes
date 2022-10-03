@@ -1,0 +1,122 @@
+<apex:page showHeader="false" sidebar="false" applyHtmlTag="false" standardStylesheets="false" applyBodyTag="false" renderAs="pdf"  controller="EventsDetailPDFController" action="{!fetchEvents}" >
+    <head>
+        <style>
+            body{
+            font-family: sans-serif;
+            font-size: 11px;
+            }
+            @page {
+            size: 14in 8.5in;
+            }
+            .summary-table{
+            width:100%;
+            
+            } 
+            .col-eq{
+            width:33.33%;
+            }  
+            .col-header{
+            background-color: #44939c;
+            color: #fff;
+            padding: 10px;
+            }
+            .left-header{
+            border: 1px solid black;
+            border-collapse: collapse;
+            }
+            .col-header-val{
+            
+            }
+            .col-header-spacer{
+            width: 20%;
+            }
+            .header-val{
+            text-align:center;
+            }
+            .col-td-val{
+            width:10%;
+            }
+            .tab-values{
+            border: 1px solid black;
+            border-collapse: collapse;
+            margin-top: 20px;
+            width:100%;
+            }
+            .tab-values thead{
+            background-color:#adcccf;
+            }
+            .total-header{
+            background-color: #44939c;
+            color: #fff;
+            }
+            .tab-values th{
+            color: black;
+            border: 1px solid black;
+            }
+            .tab-values td{
+            border: 1px solid black;
+            }
+            .summary-table .left-header td{
+            border: 1px solid black;
+            }
+            .sum-bal{padding-top:10px;text-align:center; font-weight: 700 }
+        </style>
+    </head>
+    <body>
+        <table class="summary-table">
+            <tr>
+                <td class="col-eq"> <!--EntityName, License and Statement Issue Date Block -->
+                    <h2>Events Detail </h2>
+                    <h3>From: &nbsp;<apex:outputText value="{0,date,dd/MM/yy}"> 
+                        <apex:param value="{!fromDateToShow}" />
+                        </apex:outputText> - To: &nbsp;<apex:outputText value="{0,date,dd/MM/yy}"> 
+                        <apex:param value="{!toDateToShow}" />
+                        </apex:outputText> </h3>
+                </td>
+                <td class="col-eq header-val">
+                    
+                </td>
+                <td class="col-eq header-val">
+                    <img src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/ADGM_logo.png')}" />
+                </td>
+            </tr>
+        </table>
+        <apex:outputPanel id="thePanel" rendered="{!!isTableShow}">
+            No Data Avaliable
+        </apex:outputPanel>
+        <apex:outputPanel id="tablePanel" rendered="{!isTableShow}">
+            
+            <table class="tab-values">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Main Category</th>
+                        <th>Event Start Date</th>
+                        <th>Event End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!listCampaigns}" var="objCamp">
+                        <tr>
+                            <td class="col-td-val">{!objCamp.Name}</td>
+                            <td class="col-td-val">{!objCamp.Status}</td>
+                            <td class="col-td-val" >{!objCamp.Type}</td>
+                            <td class="col-td-val">{!objCamp.Main_Category__c }</td>
+                            <td class="col-td-val">
+                                <apex:outputField value="{!objCamp.CRM_Meeting_Date_Time__c}" id="FillStartDate"/>
+                            </td>
+                            
+                            <td class="col-td-val">
+                                <apex:outputField value="{!objCamp.CRM_End_Date__c}" id="FillEndDate"/>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    
+                    
+                </tbody>
+            </table>
+        </apex:outputPanel>
+    </body>
+</apex:page>

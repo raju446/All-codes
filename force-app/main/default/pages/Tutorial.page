@@ -1,0 +1,171 @@
+<apex:page docType="html-5.0" title="Tutorial Videos" controller="TutorialController" applyBodyTag="false" standardStylesheets="false">
+  <head>
+    <style>
+
+        .video-box{
+            height:172px;
+            background-size: 100% 100% !important;
+        }
+        .video_guest{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/ACCESSADGM_Video3_guest.png' ) } ) no-repeat;
+        }
+        .video_company{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/ACCESSADGM_Video2_company.png' )} ) no-repeat;
+        }
+        .video3{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/video3.png' )} ) no-repeat;
+        }
+        .company-manual{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/accessadgm-company-user-manual.png' )} ) no-repeat;
+        }
+        .guest-manual{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/accessadgm-guest-user-manual.png' )} ) no-repeat;
+        }
+        .common_Thumbnail{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/Video5_Thumbnail.png' )} ) no-repeat;
+        }
+        .emp_visa_Thumbnail{
+            background: #fff url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/employment_visa_thumbnail.png' )} ) no-repeat;
+        }
+        .video-topic{
+            font-size: 1.2em;
+            color: #44939C;
+            padding: 10px;
+            background-color: #fff;
+            text-align: center;
+            position: relative;
+        }
+        .video-box img{
+            width: 100%;
+            height: auto;
+            opacity: 0.7;
+        }
+        .video-box:hover {
+        cursor: pointer;
+        }
+        .video-box .middle {
+        transition: .5s ease;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        cursor: pointer;
+        }
+        .video-box:hover .middle {
+        opacity: 1;
+        }
+        .video-box .text{
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 15px 0 15px 30px;
+            border-color: transparent transparent transparent #fff;
+        }
+        .video-box .pdflogo{
+            width: 34px;
+            height: 39px;
+        }
+        .video-box .pdflogo img{width:100%; height:100%; opacity:1}
+        .t-margin{ margin-top: 55px;}
+    </style>
+  </head>
+  <body>
+      <div class="main-block">
+        <div class="pageTopic">Tutorial Videos</div>
+        <div class="pageDesc">
+            For guidance on navigating your homepage and services available under each tab on ACCESSADGM, please refer to one of the tutorial videos below.
+        </div>
+        <div>
+            <div >
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="video-box {!IF(isGuestUser,'video_guest','video_company')}" onclick="openvideo('{!IF(isGuestUser,'video_guest','video_company')}');" >
+                            <div class="img-overlay">
+                            </div>
+                            <div class="middle">
+                                <div class="text"></div>
+                            </div>
+                        </div>
+                        <div class="video-topic">SERVICES OVERVIEW</div>
+                    </div>
+                    <apex:outputPanel rendered="{!!isGuestUser}" layout="none"> <!-- Show the below video for only "Company User" -->
+                        <div class="col-sm-4">
+                            <div class="video-box emp_visa_Thumbnail" onclick="openvideo('emp_visa_Thumbnail');" >
+                                <div class="img-overlay">
+                                </div>
+                                <div class="middle">
+                                    <div class="text"></div>
+                                </div>
+                            </div>
+                            <div class="video-topic">EMPLOYMENT VISA SERVICES OVERVIEW</div>
+                        </div>
+                    </apex:outputPanel>
+                    <div class="col-sm-4">
+                        <div class="video-box common_Thumbnail" onclick="openvideo();">
+                            <div class="img-overlay">
+                            </div>
+                            <div class="middle">
+                                <div class="text"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="video-topic">EVENTS AND EXHIBITION PERMIT OVERVIEW</div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="main-block t-margin">
+        <div class="pageTopic">User Manual</div>
+        <div class="pageDesc">
+            For additional guidance on user registration, navigation of ACCESSADGM and raising service requests, please refer to the training manual below.
+        </div>
+        <div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <a href="{!IF(isGuestUser,'https://www.adgm.com/media/287105/accessadgm-guest-user-manual.pdf','https://www.adgm.com/media/287100/accessadgm-company-user-manual.pdf')}" target="_blank">
+                        <div class="video-box {!IF(isGuestUser,'guest-manual','company-manual')}"  >
+                            <div class="img-overlay">
+                            </div>
+                            <div class="middle">
+                                <div class="pdflogo">
+                                    <img src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/pdf.png' ) }" />
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="video-topic">TRAINING MANUAL</div>
+                </div>
+            </div>
+        </div>
+      </div>
+  </body>
+  <script>
+    function openvideo(param_video){
+        var videoLink;
+        clearModalContent();
+        $("#modalBox").modal(); 
+        document.getElementById('modal-adgmload').style.visibility="visible";
+        $("#modalBox .modal-iframe").css({"display":"block"});
+        if(param_video && param_video == "video_guest")
+            videoLink = "https://player.vimeo.com/video/267758111";//"https://vimeo.com/115045370";
+        else if(param_video == "video_company")
+            videoLink = "https://player.vimeo.com/video/266657149";
+        else if(param_video == 'emp_visa_Thumbnail')
+            videoLink = "https://player.vimeo.com/video/311401482";
+        else
+            videoLink = "https://player.vimeo.com/video/277842610";
+        $("#modalBox .modal-iframe").attr("src",videoLink);
+        $('#modalBox .modal-iframe').load( function() {
+            document.getElementById('modal-adgmload').style.visibility="hidden";
+        });
+        $('#modalBox').on('hidden.bs.modal', function () {
+            $("#modalBox .modal-iframe").attr("src","");
+        })
+        
+    }
+    
+  </script>
+</apex:page>

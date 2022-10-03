@@ -1,0 +1,56 @@
+<apex:page standardController="Receipt__c" extensions="ReceiptsAttachmentController">
+    <link rel="stylesheet" type="text/css" href="{!$Site.prefix}/apex/FZPortalCSSMain" />
+    <style>
+        #rec-block .bPageBlock {
+       border:none !important;
+       margin-bottom:0 !important;
+        }
+        .pgOutputBlock{
+            margin-left: -10px;
+        }
+        html .brandQuaternaryBgr{
+            background: #fff !important;
+            }
+        #rec-block{
+            padding-left: 13px;
+            padding-right: 5px;
+        }
+    </style>
+    <div id="rec-block">
+    <div class="description">
+        <strong>{!$Label.Receipt_Disclaimer}</strong>
+    </div>
+   <apex:pageBlock >
+       
+      <apex:outputPanel rendered="{!lstAttachment.size > 0}" styleClass="pgOutputBlock" layout="block" >
+     <apex:pageBlockTable value="{!lstAttachment}" var="attachment">
+            <apex:column >
+                <apex:facet name="header">Action</apex:facet>
+                <apex:outputText ><a class="a-bold" href="{!$Site.Prefix}/servlet/servlet.FileDownload?file={!attachment.id}" target="_blank" >View</a></apex:outputText>
+            </apex:column>       
+            <apex:column >
+                <apex:facet name="header">Title</apex:facet>
+                <apex:outputText >{!attachment.Name}</apex:outputText><!--<a href="{!$Site.Prefix}/{!attachment.id}?btdid=">-->
+            </apex:column> 
+            <apex:column >
+                <apex:facet name="header">Last Modified</apex:facet>
+                <apex:outputText value="{0, date, dd/MM/yyyy hh:mm a}"><apex:param value="{!attachment.LastModifiedDate}" /></apex:outputText>
+            </apex:column> 
+            <apex:column >
+                <apex:facet name="header">Created By</apex:facet>
+                <apex:outputText >{!attachment.createdby.Name}</apex:outputText>
+            </apex:column>
+          
+        </apex:pageBlockTable> 
+       </apex:outputPanel>
+       <apex:outputPanel rendered="{!lstAttachment.size = 0}" >
+           <apex:pageBlockTable value="{!lstAttachment}" var="attachment">
+               <apex:column >
+               <apex:facet name="header"></apex:facet>
+                <apex:outputText >No records to display</apex:outputText>
+            </apex:column>
+           </apex:pageBlockTable>
+       </apex:outputPanel>
+    </apex:pageBlock> 
+    </div>
+</apex:page>

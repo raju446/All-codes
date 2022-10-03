@@ -1,0 +1,92 @@
+<!--
+  @File Name          : LEX_EditReceipt.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 11-17-2020
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    4/4/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="Lex_EditReceiptController" access="global" >
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:attribute name="receiptObj" type="Receipt__c"/>
+    <aura:attribute name="invoiceLineItems" type="object[]" />
+    <aura:attribute name="todaysDate" type="String" default="" />
+    <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." variant="brand" size="large" class="slds-hide"/>
+    <!--<aura:if isTrue="{!if(and(v.receiptObj.Oracle_Receipt_Id__c != null, v.receiptObj.Oracle_Receipt_Id__c != ''),true,false)}">-->
+        <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Opportunity Name">Invoice No</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Opportunity Name">Balance</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Account Name">Amount Applied</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Account Name">Applied Date</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Close Date">Action</div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <aura:iteration items="{!v.invoiceLineItems}" var="invoiceLineObj" indexVar="tableIndex">
+                    <tr class="slds-hint-parent">
+                        <td data-label="Account Name"> 
+                            <c:CustomLookupCmp objectName="Invoice__c" filter="{! 'AND (Invoice_Balance__c > 0 OR (Is_Refundable__c = true AND Invoice_Balance__c != 0)) AND Entity__c =\''+ v.receiptObj.Entity__c+'\' AND Journal_Created__c = True AND Payment_Currency__c = \'' + v.receiptObj.Payment_Currency__c + '\''}" fieldName="Invoice_Search_Lookup__c" selectRecordName="{!invoiceLineObj.invoiceNo}" selectRecordId="{!invoiceLineObj.invoiceId}" selectRecordAmnt="{!invoiceLineObj.invoiceBalAmt}" iconName="custom:custom18"/>
+                        </td>
+                        <td data-label="Close Date">
+                            {!v.receiptObj.Payment_Currency__c} &nbsp; {!invoiceLineObj.invoiceBalAmt}
+                        </td>
+                        <td data-label="Close Date">
+                            <lightning:input step="0.01" aura:id="ipAmount" type="number" variant = "label-hidden" value="{!invoiceLineObj.Amount}"></lightning:input>
+                        </td>
+                        <td data-label="Applied Date">
+                            <lightning:input type="date" variant = "label-hidden" name="appliedDate" value="{!invoiceLineObj.AppliedDate}" max="{!v.todaysDate}" aura:id="appliedDate"/> 
+                        </td>
+                        <td data-label="Prospecting">
+                            <a onclick="{!c.removeRow}" data-record="{!tableIndex}">
+                                <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                <span class="slds-assistive-text">Delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+        <div class="slds-m-around_medium">
+            <lightning:button variant="brand" label="Add Related Invoice" title="Add Related Invoice" onclick="{! c.doAddRelatedInvoice }"/>
+            <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.doUpdate }"/>
+        </div>
+
+        <!--<aura:set attribute="else">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning" role="alert">
+                <span class="slds-assistive-text">warning</span>
+                <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" title="Description of icon when needed">
+                    <lightning:icon iconName="utility:warning" alternativeText="Warning!" title="Warning" />
+                </span>
+                <h2>
+                    Receipt is not synced with ERP !
+                </h2>
+            </div>
+        </aura:set>
+    </aura:if>-->
+    
+    <aura:html tag="style">
+        
+        .slds-modal__container {
+            margin: 0 auto;
+            width: unset;
+            max-width: 58rem;
+            min-width: 20rem;
+        }
+    </aura:html>
+</aura:component>

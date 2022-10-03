@@ -1,0 +1,60 @@
+<!--
+  @File Name          : LEX_PushInvoice.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 4/22/2020, 3:36:51 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    4/22/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component implements="force:lightningQuickActionwithoutheader,force:hasRecordId"  controller="BM_JournalEntryEngine">
+    <aura:attribute name="showError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="showSucess" type="Boolean" default="false" />
+    <aura:attribute name="sucessMessage" type="String" />
+    
+    <!-- Handler Start -->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+ <aura:if isTrue="{!v.Spinner}">
+    <div aura:id="spinnerId" class="slds-spinner_container">
+       <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+         <span class="slds-assistive-text">Loading</span>
+         <div class="slds-spinner__dot-a"></div>
+         <div class="slds-spinner__dot-b"></div>
+       </div>
+    </div>
+ </aura:if>
+  <!-- Loading spinner end--> 
+    
+    <aura:if isTrue="{!v.showError}"> 
+        <!-- Show the message to ui -->
+        
+        
+        <div class="slds-notify slds-notify_toast slds-theme_error">
+            <span class="slds-assistive-text">error</span>
+            <div class="slds-notify__content">
+                <h5 class="slds-text-heading_small ">Error!</h5>
+                <p class="slds-align_absolute-center">{!v.errorMessage}</p>                
+            </div>
+        </div>
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showSucess}"> 
+        
+        <!-- Show the message to ui -->
+        <div class="slds-notify slds-notify_toast slds-theme_success">
+            <span class="slds-assistive-text">success</span>
+            <div class="slds-notify__content">
+                <h5 class="slds-text-heading_small ">Success!</h5>
+                <p class="slds-align_absolute-center">{!v.sucessMessage}</p>                
+            </div>
+        </div>
+        
+    </aura:if>    
+</aura:component>

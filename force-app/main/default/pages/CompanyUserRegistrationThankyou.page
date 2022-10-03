@@ -1,0 +1,84 @@
+<apex:page id="UserRegPgThankyou" sidebar="false" standardstylesheets="true" showheader="false" >
+    <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+    <apex:composition template="UserRegistrationHeader"/>
+    <style>
+        .page-title.row h4, .page-title.row h5, h3{
+            color: #fff !important;
+        }
+        .pbSubheader{
+            background-color : #AD9961 !important;
+        }
+        /*body button, body .x-btn, body .btn, body .btnDisabled, body .menuButton .menuButtonButton{
+            background :  #AD9961 !important;
+        }*/
+        .bPageBlock{
+            border-top :  #ac975e !important;
+            width: 80%;
+            margin-top: 10px;
+            background-color: #fff !important;
+        }
+        .pageSpanContainer{
+            background-image: url("{!URLFOR($Resource.banner_images, '/img.png')}");
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 240px;
+            background-size: cover;
+            position: relative;
+        }
+        .imgContainer{
+            width: 20%;
+            height: 100px;
+        }
+        .pageSpanContainer h1{
+            font-size: 24px;
+            line-height: 36px;
+            /*text-align: left;*/
+            color: #fff;
+            margin-bottom: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 150px;
+        }
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+            color: #fff !important;
+        }
+        .headerTY{
+            font-size: 25px;
+            color: #008375 !important;
+        }
+        .emailText{
+            font-size: 14px;
+            color: #8C9CA0 !important;
+        }
+        body{
+            background-color: #F5F5F5 !important;
+            margin: 0px;
+        }
+    </style>
+    <apex:form id="UserRegFrm">
+        <div class="pageSpanContainer">
+            <div id="header-content"><h1>CUSTOMER REGISTRATION</h1></div>
+        </div>
+        <center>
+        <apex:pageblock id="InfoPB">
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <img class="imgContainer" src="{!$Resource.tick_icon}" />
+            <br/><br/>
+            <!--<h1 class="headerTY">Thank you for registering with ADGM</h1>
+            <h4 class="emailText">An email will be sent to you with the details of the registration.</h4>
+            <h4 class="emailText">Your request {!$CurrentPage.parameters.srNumber} has been submitted to ADGM for approval. We will get back to you shortly.</h4>-->
+            <h1 class="headerTY">Thank you for submitting your company user registration request.</h1>
+            <h4 class="emailText">Your request {!$CurrentPage.parameters.srNumber} will be reviewed for approval. An email notification will be sent to you containing your registration details. </h4>
+            <h4 class="emailText">Kindly click this <a href="{!$Label.ADGM_Login_Homepage}">link</a> to go back to the home page. </h4>
+            <br/>
+            <br/>
+            <hr />
+            <br/>
+            <br/>
+        </apex:pageblock>
+        </center>
+    </apex:form>
+</apex:page>

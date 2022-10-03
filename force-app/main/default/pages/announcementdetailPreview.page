@@ -1,0 +1,32 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" standardController="Notice__c" >
+<head>
+    <style>
+        .close-area{ 
+            border-bottom: 1px solid #183E4D;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="announce-block">
+        <div class="pageTopic">Announcement</div>
+        <div class="pageDesc"><apex:outputText value="{!Notice__c.Title__c}" escape="false" /></div>
+        <div class="announce-detail">
+            <div class="close-area">
+                
+                <input value="Close" class="btnCancel right" name="cancel" title="Cancel" type="submit" onclick="goBack();" />
+            </div>
+            <div class="announce-detail-area">
+                 <apex:outputText value="{!Notice__c.Announcement_Content__c}" escape="false" />
+                
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+    
+</script>
+</apex:page>

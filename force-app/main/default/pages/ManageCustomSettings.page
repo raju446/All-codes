@@ -1,0 +1,320 @@
+<apex:page controller="ManageCustomSettingsController" sideBar="false">
+     <apex:actionstatus id="Processing">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <apex:form id="mainForm">
+        <apex:sectionHeader title="Manage Custom Settings" />
+        <apex:actionFunction name="populateSetName" action="{!selectedSettingName}" rerender="mainPanel,mainBlock" immediate="true" status="Processing">
+            <apex:param value="" name="csName" assignTo="{!selectedCustomSetting}" />
+        </apex:actionFunction>
+        <script>
+            function selectCS(){
+                var selCS = document.getElementById("selectedCSName").value;
+                //alert(selCS);
+                populateSetName(selCS);
+            }
+        </script>
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1">
+                <apex:pageBlockSectionItem >
+                    <apex:outputPanel >
+                        <apex:outputLabel value="Select Custom Setting Name:" style="font-weight: bold;"/>
+                        <select id="selectedCSName" name="CustomSettingName" onchange="selectCS();return false;">
+                            <option value="">--None--</option>
+                            <option value="Appointment_Timings__c">Appointment Timings</option>
+                            <option value="Case_Types__c">Case Types</option>
+                            <option value="Fines__c">Manage Fines</option>
+                            <option value="SLA_Configuration__c">SLA Configurations</option>
+                            <option value="Visa_Check_Availability_API__c">Visa Check Availability API</option>
+                        </select>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <br/>
+        <apex:outputPanel id="mainPanel">
+            <apex:pageMessages ></apex:pageMessages>
+            <apex:outputPanel id="subPanel" rendered="{!isCSSelected}">
+            <apex:pageBlock id="mainBlock" >
+                <apex:outputLabel value="List of {!selSettingname}" style="font-weight:bold;font-size:15px;" rendered="{!isCSSelected}" />
+                <br/>
+                <apex:pageBlockSection columns="1">
+                        <apex:outputPanel id="appointmentPanel" rendered="{!isShowAppointment}">
+                            <apex:outputpanel id="appointmentTable">
+                                <apex:pageBlockTable value="{!appointmentList}" var="appt">
+                                    <apex:column headervalue="Action" width="7%">
+                                        <!--<apex:commandLink value="Edit" reRender="mainPanel" rendered="{!NOT(isNewRecord)}" action="{!editCSRecord}" status="Processing">-->
+                                        <apex:commandLink value="Edit" reRender="mainPanel" action="{!editCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecordEdit" value="{!appt.Name}" assignTo="{!csRecordToBeEdited}" />
+                                        </apex:commandLink>
+                                        <!--&nbsp;|&nbsp;
+                                        <apex:commandLink value="Delete" reRender="mainPanel" action="{!deleteCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecord" value="{!appt.Name}" assignTo="{!csRecordToBeDeleted}" />
+                                        </apex:commandLink>-->
+                                    </apex:column>
+                                    <apex:column value="{!appt.Name}"/>
+                                    <apex:column value="{!appt.Time__c}"/>
+                                    <apex:column value="{!appt.Active__c}"/>
+                                </apex:pageBlockTable>
+                                <apex:commandButton value="Add New" reRender="mainPanel" action="{!newCSRecord}" rendered="{!NOT(isNewRecord)}" status="Processing"/> 
+                            </apex:outputPanel>
+                            <br/>
+                            <apex:outputpanel id="appointmentNew" rendered="{!isNewRecord}">
+                                <br/>
+                                <apex:pageBlockSection title="New Custom Setting Record" collapsible="false">
+                                    <apex:pageblockSectionitem >
+                                        <apex:outputLabel value="Name" />
+                                        <apex:inputText value="{!appoinmentNewWrap.appname}"/>
+                                    </apex:pageblockSectionitem>
+                                    <apex:pageblockSectionitem >
+                                        <apex:outputLabel value="Time" />
+                                        <apex:inputText value="{!appoinmentNewWrap.apptime}"/>
+                                    </apex:pageblockSectionitem>
+                                    <apex:pageblockSectionitem >
+                                        <apex:outputLabel value="Active" />
+                                        <apex:inputCheckbox value="{!appoinmentNewWrap.appactive}"/>
+                                    </apex:pageblockSectionitem>
+                                </apex:pageBlockSection>
+                                <apex:outputPanel layout="block" style="text-align:center;">
+                                    <apex:commandButton value="Save" action="{!saveRecord}" reRender="mainPanel" status="Processing"/>
+                                    <apex:commandButton value="Cancel" action="{!cancelEdit}" reRender="mainPanel" immediate="true" status="Processing"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="caseTypePanel" rendered="{!isShowCaseType}">
+                            <apex:outputpanel id="caseTypeTable">
+                                <apex:pageBlockTable value="{!caseTypeList}" var="caseType">
+                                    <apex:column headervalue="Action" width="7%">
+                                        <apex:commandLink value="Edit" reRender="mainPanel" action="{!editCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecordEdit" value="{!caseType.Name}" assignTo="{!csRecordToBeEdited}" />
+                                        </apex:commandLink>
+                                        <!--&nbsp;|&nbsp;
+                                        <apex:commandLink value="Delete" reRender="mainPanel" action="{!deleteCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecord" value="{!caseType.Name}" assignTo="{!csRecordToBeDeleted}" />
+                                        </apex:commandLink>-->
+                                    </apex:column>
+                                    <apex:column value="{!caseType.Name}"/>
+                                    <apex:column value="{!caseType.Seq_No__c}"/>
+                                    <apex:column value="{!caseType.Case_Description__c}"/>
+                                    <apex:column value="{!caseType.Case_Title__c}"/>
+                                    <apex:column value="{!caseType.Icon_Name__c}"/>
+                                    <apex:column value="{!caseType.Record_Type_API_Name__c}"/>
+                                </apex:pageBlockTable>
+                                <apex:commandButton value="Add New" reRender="mainPanel" action="{!newCSRecord}" rendered="{!NOT(isNewRecord)}" status="Processing"/>
+                            </apex:outputPanel>
+                            <br/>
+                            <apex:outputpanel id="caseTypeNew" rendered="{!isNewRecord}">
+                                <br/>
+                                <apex:pageBlockSection title="New Custom Setting Record" collapsible="false">
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Name" />
+                                    <apex:inputText value="{!caseNewWrap.appname}"/>
+                                    </apex:pageblockSectionitem>
+                                   
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Case Description" />
+                                    <apex:inputText value="{!caseNewWrap.appdesc}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Case Title" />
+                                    <apex:inputText value="{!caseNewWrap.apptitle}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Icon Name" />
+                                    <apex:inputText value="{!caseNewWrap.appicon}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Record Type API Name" />
+                                    <apex:inputText value="{!caseNewWrap.apprec}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Sequence No" />
+                                    <apex:inputText value="{!caseNewWrap.appSeqnum}"/>
+                                    </apex:pageblockSectionitem>
+                                </apex:pageBlockSection>
+                                <apex:outputPanel layout="block" style="text-align:center;">
+                                    <apex:commandButton value="Save" action="{!saveRecord}" reRender="mainPanel" status="Processing"/>
+                                    <apex:commandButton value="Cancel" action="{!cancelEdit}" reRender="mainPanel" immediate="true" status="Processing"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="finesPanel" rendered="{!isShowFines}">
+                            <apex:outputpanel id="finesTable">
+                                <apex:pageBlockTable value="{!finesList}" var="fines">
+                                    <apex:column headervalue="Action" width="7%">
+                                        <apex:commandLink value="Edit" reRender="mainPanel" action="{!editCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecordEdit" value="{!fines.Name}" assignTo="{!csRecordToBeEdited}" />
+                                        </apex:commandLink>
+                                        <!--&nbsp;|&nbsp;
+                                        <apex:commandLink value="Delete" reRender="mainPanel" action="{!deleteCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecord" value="{!fines.Name}" assignTo="{!csRecordToBeDeleted}" />
+                                        </apex:commandLink>-->
+                                    </apex:column>
+                                    <apex:column value="{!fines.Name}"/>
+                                    <apex:column value="{!fines.Document_Type__c}"/>
+                                    <apex:column value="{!fines.Fine_Amount__c}"/>
+                                    <apex:column value="{!fines.Fine_Amount_Per_Month__c}"/>
+                                    <apex:column value="{!fines.First_Month_Amount__c}"/>
+                                    <apex:column value="{!fines.Grace_Period__c}"/>
+                                    <apex:column value="{!fines.Maximum_Fine_Amount__c}"/>
+                                    <apex:column value="{!fines.SR_Record_Type_Name__c}"/>
+                                </apex:pageBlockTable>
+                                <apex:commandButton value="Add New" reRender="mainPanel" action="{!newCSRecord}" rendered="{!NOT(isNewRecord)}" status="Processing"/>
+                            </apex:outputPanel>
+                            <br/>
+                            <apex:outputpanel id="finesNew" rendered="{!isNewRecord}">
+                                <br/>
+                                <apex:pageBlockSection title="New Custom Setting Record" collapsible="false">
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Name" />
+                                    <apex:inputText value="{!fineNewWrap.appname}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Document Type" />
+                                    <apex:inputText value="{!fineNewWrap.appdoc}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Fine Amount (Per Day)" />
+                                    <apex:inputText value="{!fineNewWrap.appfineday}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Fine Amount (Per Month)" />
+                                    <apex:inputText value="{!fineNewWrap.appfinemonth}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="First Month Amount" />
+                                    <apex:inputText value="{!fineNewWrap.appfineamountmonth}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Grace Period (in days)" />
+                                    <apex:inputText value="{!fineNewWrap.appgrace}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Maximum Fine Amount" />
+                                    <apex:inputText value="{!fineNewWrap.appmax}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                     <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="SR Record Type Name" />
+                                    <apex:inputText value="{!fineNewWrap.appsr}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                </apex:pageBlockSection>
+                                <apex:outputPanel layout="block" style="text-align:center;">
+                                    <apex:commandButton value="Save" action="{!saveRecord}" reRender="mainPanel" status="Processing"/>
+                                    <apex:commandButton value="Cancel" action="{!cancelEdit}" reRender="mainPanel" immediate="true" status="Processing"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="slaPanel" rendered="{!isShowSLA}">
+                            <apex:outputpanel id="slaTable">
+                                <apex:pageBlockTable value="{!slaList}" var="sla">
+                                    <apex:column headervalue="Action" width="7%">
+                                        <apex:commandLink value="Edit" reRender="mainPanel" action="{!editCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecordEdit" value="{!sla.Name}" assignTo="{!csRecordToBeEdited}" />
+                                        </apex:commandLink>
+                                        <!--&nbsp;|&nbsp;
+                                        <apex:commandLink value="Delete" reRender="mainPanel" action="{!deleteCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecord" value="{!sla.Name}" assignTo="{!csRecordToBeDeleted}" />
+                                        </apex:commandLink>-->
+                                    </apex:column>
+                                    <apex:column value="{!sla.Name}"/>
+                                    <apex:column value="{!sla.Business_Hour_Id__c}"/>
+                                    <apex:column value="{!sla.Queue_Name__c}"/>
+                                    <apex:column value="{!sla.SLA_Hours__c}"/>
+                                    <apex:column value="{!sla.SLA_Minutes__c}"/>
+                                </apex:pageBlockTable>
+                                <apex:commandButton value="Add New" reRender="mainPanel" action="{!newCSRecord}" rendered="{!NOT(isNewRecord)}" status="Processing"/>
+                            </apex:outputPanel>
+                            <br/>
+                            <apex:outputpanel id="slaNew" rendered="{!isNewRecord}">
+                                <br/>
+                                <apex:pageBlockSection title="New Custom Setting Record" collapsible="false">
+                                
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Name" />
+                                    <apex:inputText value="{!SlaNewWrap.appname}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Business Hour Id" />
+                                    <apex:inputText value="{!SlaNewWrap.appbussiness}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Queue Name" />
+                                    <apex:inputText value="{!SlaNewWrap.appqueue}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="SLA (Hours)" />
+                                    <apex:inputText value="{!SlaNewWrap.appslahr}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="SLA (Minutes)" />
+                                    <apex:inputText value="{!SlaNewWrap.appslamin}"/>
+                                    </apex:pageblockSectionitem>
+                                </apex:pageBlockSection>
+                                <apex:outputPanel layout="block" style="text-align:center;">
+                                    <apex:commandButton value="Save" action="{!saveRecord}" reRender="mainPanel" status="Processing"/>
+                                    <apex:commandButton value="Cancel" action="{!cancelEdit}" reRender="mainPanel" immediate="true" status="Processing"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="visaCheckPanel" rendered="{!isShowVisaCheck}">
+                            <apex:outputpanel id="visaCheckTable">
+                                <apex:pageBlockTable value="{!visaCheckList}" var="visa">
+                                    <apex:column headervalue="Action" width="7%">
+                                        <apex:commandLink value="Edit" reRender="mainPanel" action="{!editCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecordEdit" value="{!visa.Name}" assignTo="{!csRecordToBeEdited}" />
+                                        </apex:commandLink>
+                                        <!--&nbsp;|&nbsp;
+                                        <apex:commandLink value="Delete" reRender="mainPanel" action="{!deleteCSRecord}" status="Processing">
+                                            <apex:param name="selectedCSRecord" value="{!visa.Name}" assignTo="{!csRecordToBeDeleted}" />
+                                        </apex:commandLink>-->
+                                    </apex:column>
+                                    <apex:column value="{!visa.Name}"/>
+                                    <apex:column value="{!visa.API_Name__c}"/>
+                                </apex:pageBlockTable>
+                                <apex:commandButton value="Add New" reRender="mainPanel" action="{!newCSRecord}" rendered="{!NOT(isNewRecord)}" status="Processing"/>
+                            </apex:outputPanel>
+                            <br/>
+                            <apex:outputpanel id="visaCheckNew" rendered="{!isNewRecord}">
+                                <br/>
+                                <apex:pageBlockSection title="New Custom Setting Record" collapsible="false">
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="Name" />
+                                    <apex:inputText value="{!visaNewWrap.appname}"/>
+                                    </apex:pageblockSectionitem>
+                                    
+                                    <apex:pageblockSectionitem >
+                                    <apex:outputLabel value="API Name" />
+                                    <apex:inputText value="{!visaNewWrap.appapi}"/>
+                                    </apex:pageblockSectionitem>
+                                </apex:pageBlockSection>
+                                <apex:outputPanel layout="block" style="text-align:center;">
+                                    <apex:commandButton value="Save" action="{!saveRecord}" reRender="mainPanel" status="Processing"/>
+                                    <apex:commandButton value="Cancel" action="{!cancelEdit}" reRender="mainPanel" immediate="true" status="Processing"/>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,218 @@
+<aura:component implements="force:appHostable" controller="CSPApplicationCmpController">
+     
+    <aura:attribute name="selectedReceipt" type="sObject" default="{}"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedInvoiceEntityRecord" type="sObject" default="{}"/>
+    
+    <aura:attribute name="receiptLst" type="List" default="[]"/>
+    <aura:attribute name="applicationLst" type="List" default="[]"/>
+    <aura:attribute name="newApplicationLst" type="List" default="[]"/>
+    
+    <aura:attribute name="selectedReceiptId" type="string" default=""/>
+    <aura:attribute name="selectedEntityId" type="string" default=""/>
+    <aura:attribute name="invoiceCustomerFilter" type="string" default="" />
+    <aura:attribute name="selectedInvoiceEntityId" type="string" default=""/>
+    
+    <aura:attribute name="remaningAmnt" type="Decimal" default="0"/>
+    
+    <aura:attribute name="showInvoiceEntitySelection" type="Boolean" default="false"/>
+    
+    <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.onEntityChange}"/>
+    <aura:handler name="change" value="{!v.selectedInvoiceEntityRecord}" action="{!c.invoiceEntityChange}"/>
+    
+    <lightning:card>
+        <!-- Receipt entity selection -->
+        <lightning:layout class="slds-m-top_large">
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6">
+                <c:customLookupPublic SearchField="Lookup_Search_Field__c" aura:id="customer" label = "* Select Entity" objectAPIName="account" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecord}" isClear="{!v.isReload}" />
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+            </lightning:layoutItem>
+            
+        </lightning:layout>
+        
+        <!-- Receipt block -->
+        <aura:if isTrue="{!v.receiptLst.length > 0}">
+            <lightning:layout class="slds-m-top_large">
+                <lightning:layoutItem size="2">
+                </lightning:layoutItem>
+                <lightning:layoutItem size="8">
+                    <div class="">
+                        <h1 class="slds-text-heading–medium">Open Receipts</h1>
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-p-horizontal_small" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th class="slds-cell-shrink" scope="col">  
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Operating Unit">OU</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Receipt Number">Receipt Number</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="GL Date">GL Date</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Payment Currency">Payment Currency</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Amount">Amount</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Remaning Amount">Remaining Amount</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.receiptLst}" var="row">
+                                    <tr class="slds-hint-parent">
+                                        <td class="slds-text-align_right" role="gridcell">
+                                            <ui:inputRadio aura:id="{!row.Id}" text="{!row.Id}" name="rowSelectionCheckboxId" change="{!c.receiptSelection}"/>
+                                        </td>
+                                        <td data-label="Name">  
+                                            <div class="slds-truncate" title="{!row.Entity__r.Operating_Unit_Name__c}">{!row.Entity__r.Operating_Unit_Name__c}</div>
+                                        </td>
+                                        <td data-label="Name">  
+                                            <div class="slds-truncate" title="{!row.Name}">{!row.Name}</div>
+                                        </td>
+                                        <td data-label="City">  
+                                            <div class="slds-truncate" title="{!row.GL_Date__c}">{!row.GL_Date__c}</div>
+                                        </td>
+                                        <td data-label="Payment Currency">  
+                                            <div class="slds-truncate" title="{!row.Payment_Currency__c}">{!row.Payment_Currency__c}</div>
+                                        </td>
+                                        <td data-label="Country">  
+                                            <div class="slds-truncate" title="{!row.Amount}">{!row.Amount__c}</div>
+                                        </td>
+                                        <td data-label="Country">  
+                                            <div class="slds-truncate" title="{!row.Remaning_Amount__c}">{!row.Remaning_Amount__c}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="2">
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+        
+        <!-- Invoice entity selection -->
+        <aura:if isTrue="{!v.showInvoiceEntitySelection}">
+            
+            <lightning:layout class="slds-m-top_large">
+                <lightning:layoutItem size="3">
+                    
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6">
+                    <c:customLookupPublic SearchField="Lookup_Search_Field__c" aura:id="customerInvEntity" label = "* Select Invoice Entity" objectAPIName="account" filter="{!v.invoiceCustomerFilter}" IconName="standard:account" selectedRecord="{!v.selectedInvoiceEntityRecord}" isClear="{!v.isReload}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="3">
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+        
+        <!-- Application block -->
+        <aura:if isTrue="{!v.applicationLst.length > 0}">
+            
+            <lightning:layout class="slds-m-top_medium">
+                <lightning:layoutItem size="2">
+                    
+                </lightning:layoutItem>
+                <lightning:layoutItem size="8">
+                    Remaining Amount : {!v.remaningAmnt}
+                </lightning:layoutItem>
+                <lightning:layoutItem size="2">
+                </lightning:layoutItem>
+            </lightning:layout>
+            
+            <lightning:layout class="slds-m-top_medium">
+                <lightning:layoutItem size="2">
+                </lightning:layoutItem>
+                <lightning:layoutItem size="8">
+                    <div class="">
+                        <h1 class="slds-text-heading–medium">Open Invoices</h1>
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-p-horizontal_small" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th class="slds-cell-shrink" scope="col">  
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Invoice Number">Invoice Number</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Invoice Amount">Invoice Amount</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Invoice Balance">Invoice Balance</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Applied Date">Applied Date</div>
+                                    </th>
+                                    <th class="slds-cell-shrink" scope="col">
+                                        <div class="slds-truncate" title="Applied Amount">Applied Amount</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.applicationLst}" var="row">
+                                    <tr class="slds-hint-parent">
+                                        <td class="slds-text-align_right" role="gridcell">
+                                            <!--<ui:inputRadio aura:id="{!row.Id}" text="{!row.Id}" name="rowSelectionCheckboxId" change="{!c.receiptSelection}"/>-->
+                                            <ui:inputCheckbox aura:id="selectedInvoices" value="{!row.isSelected}" text="{!row.invoiceId}" name="applicationSelection" change="{!c.invoiceSelection}"/>
+                                        </td>
+                                        <td data-label="Name">  
+                                            <div class="slds-truncate" title="{!row.invoiceName}">{!row.invoiceName}</div>
+                                        </td>
+                                        <td data-label="invAmnt">  
+                                            <div class="slds-truncate" title="{!row.invAmnt}">{!row.invAmnt}</div>
+                                        </td>
+                                        <td data-label="invBalance">  
+                                            <div class="slds-truncate" title="{!row.invBalance}">{!row.invBalance}</div>
+                                        </td>
+                                        <td data-label="applicationDate">  
+                                            
+                                            <div class="slds-truncate" title="{!row.appliedDate}">
+                                            	<ui:inputDate aura:id="expdate" label="" class="field" value="{!row.appliedDate}" displayDatePicker="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="Amount Applied">  
+                                            <aura:if isTrue="{!row.isSelected}">
+                                                <ui:inputNumber disabled="{!!row.isSelected}"  value="{!row.appliedAmnt}" />
+                                                <aura:set attribute="else">
+                                                    0
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="2">
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+        <aura:if isTrue="{!v.newApplicationLst.length > 0}">
+            <lightning:layout class="slds-m-top_medium">
+                <lightning:layoutItem size="4">
+                    
+                </lightning:layoutItem>
+                <lightning:layoutItem size="4">
+                    <lightning:button disabled="" class="slds-m-top_large" variant="brand" label="Create Applications" title="Brand action" 
+                              onclick="{!c.saveApplications}" />
+                </lightning:layoutItem>
+                <lightning:layoutItem size="4">
+                </lightning:layoutItem>
+            </lightning:layout>
+            
+        </aura:if>
+
+    </lightning:card>
+</aura:component>

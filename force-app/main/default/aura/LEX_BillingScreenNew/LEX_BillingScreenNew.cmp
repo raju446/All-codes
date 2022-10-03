@@ -1,0 +1,9 @@
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,lightning:isUrlAddressable" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChanged}" />
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <c:LEX_Billing_Management_Component  aura:id="BillingSearchComp"  /> 
+    <!--<c:LEX_ReceiptCreation  aura:id="ReceiptComp"/> -->
+    <c:LEX_CreateEntity aura:id="EntityComp"/>
+</aura:component>

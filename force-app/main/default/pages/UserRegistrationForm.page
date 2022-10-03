@@ -1,0 +1,466 @@
+<apex:page id="UserRegPg" sidebar="false" language="en_GB" standardstylesheets="true" showheader="false" controller="UserRegistrationController" cache="false">
+    <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+    <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <apex:composition template="UserRegistrationHeader"/>
+    <style>
+        .page-title.row h4, .page-title.row h5, h3{
+            color: #fff !important;
+        }
+        .pbSubheader{
+            background-color : #44939C !important;
+        }
+        .bPageBlock{
+            border-top :  #ac975e !important;
+            width: 80%;
+            background-color : #fff !important;
+            text-align: left !important;
+            background-color: #fff !important;
+        }
+        .pageSpanContainer{
+            background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+            background-repeat: no-repeat;
+            width: 100%;
+            padding-bottom: 17%;
+            background-size: cover;
+            position: relative;
+        }
+        .pBlockTable{
+            margin-left: 8px;
+        }
+        .pageSpanContainer h1{
+            font-size: 24px;
+            line-height: 36px;
+            color: #fff;
+            margin-bottom: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+        }
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+            color: #fff !important;
+        }
+        .pBockSection .data2Col{
+            padding-left:15px !important;
+            padding-right:15px !important;
+        }
+        .btnCheckAvail{
+            color:  #AD9961 !important;
+            font-size: 13px !important;
+            font-weight:bold !important;
+            text-decoration:underline;
+        }
+        .pageDesc {
+            font-size: 12px;
+            margin-bottom: 0px;
+            color: #505050;
+            margin-left: 13px;
+        }
+        .pBockSection td.data2Col {
+            padding-left: 18px !important;
+        }
+        .p-notes{
+            padding-left: 16px;
+            padding-right: 16px;
+            font-size: 12px;
+        }
+        body{
+            background-color: #F5F5F5 !important;
+            position: relative;
+            
+        }
+        .left-spacer{
+            margin-left:20px;
+        }
+        .pBold{
+            font-weight:bold;
+        }
+        .t-spacer{
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .pBockSection td.data2Col{
+            font-size:1.1em;
+        }
+        body .pbBody table.list tr.headerRow td, body .pbBody table.list tr.headerRow th, body .pbBody table.list tr td, .bPageTitle .ptBody .links, .listHoverLinks, .modal-body, .bPageBlock .pbHeader select, .bPageBlock .pbBottomButtons select, body .pbBody table.list tr th {
+            font-size: 1em;
+        }
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+    </style>
+    <script>
+      (function() {
+        var windowOnload = window.onload;
+        window.onload = function() {
+          if (windowOnload) windowOnload();
+          var select = document.getElementById('calYearPicker');
+          if (!select) return;
+    
+          select.innerHTML = '';
+          var startYear = new Date().getFullYear() - 80;
+          for (var year = startYear; year < startYear + 80; year++) {
+            select.options[select.options.length] = new Option(year, year);
+          }
+        }
+      }());
+    </script>
+    <script type="text/javascript">
+        function validateFileType(elemid,fileName) {
+            var fileTypes = ['.bmp', '.jpg', '.png', '.jpeg', '.pdf'];
+            if (!fileName) return;
+            var dots = fileName.split(".")
+            //alert(dots);
+            var fpath = fileName.replace(/\\/g, '/');
+            var fname = fpath.substring(fpath.lastIndexOf('/')+1, fpath.lastIndexOf('.'));
+            if(fname.length > 80){
+                alert("File Name cannot exceed 80 characters");
+                document.getElementById(elemid).value = "";
+                return;
+            }
+            var fileType = "." + dots[dots.length - 1];
+            fileType = fileType.toLowerCase();
+            //alert(fileType);
+            //alert(fileTypes);
+            if(fileTypes.indexOf(fileType) != -1){   //We don't need to add .
+                //alert('That file is OK!');
+            }else{
+                //alert("Please only upload files that end in types: \n\n" + (fileTypes.join(" ")) + "\n\nPlease select a new file and try again.");
+                alert('Please Note: The Document File Format is required to be either PDF, JPEG, JPG, BMP or PNG.');
+                document.getElementById(elemid).value = "";
+            }
+            //Validating File size
+            var iFileSize = document.getElementById(elemid).files[0].size;
+            console.log(iFileSize);
+            if(iFileSize!=null && iFileSize>5242880 ){//1048576 ==1MB ; 2097152 == 2MB ; 5242880 = 5MB
+                alert('Document Size should be less than 5 MB.');
+                document.getElementById(elemid).value = "";
+            }
+        }
+    </script>
+    <apex:form id="UserRegFrm">
+        <div class="pageSpanContainer">
+            <div id="header-content"><h1>COMPANY USER REGISTRATION</h1></div>
+        </div>
+        <br/>
+        <center>
+        <!--<apex:messages/>-->
+        <apex:pageblock id="InfoPB" mode="maindetail">
+            <div id="MessageDiv" style="width:30%; margin-left:35%;">
+                <!--<apex:pagemessages id="msg"/>-->
+            </div>
+            <!--<apex:actionstatus id="loadingStatus">
+                <apex:facet name="start">
+                    <c:ADGM_Loading_Component />
+                </apex:facet>
+            </apex:actionstatus>-->
+            <apex:pageMessage summary="{!invalidFileMsg}" severity="error" strength="3" rendered="{!invalidFileMsg != ''}"/>
+            <apex:pageMessage summary="There is already a Lead Admin assigned to this company. Please contact the admin if portal access is needed." severity="error" strength="3" rendered="{!hasExistingUserSR}"/>
+            <!--<apex:pageMessage summary="CID Approval has not been initiated." severity="error" strength="3" rendered="{!hasInvalidCIDApprovalDate}"/>-->
+            <apex:pageblocksection title="Information" columns="2" collapsible="false">
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Title"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Title__c}"/>
+                    </apex:outputpanel> 
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="First Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.First_Name__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Middle Name"/>
+                    <apex:inputfield value="{!objSR.Middle_Name__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Last Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Last_Name__c}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Date of Birth"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.Date_of_Birth__c.inlineHelpText}</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Date_of_Birth__c}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Work Email"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.HexaBPM__Email__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Contact Number"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.HexaBPM__Send_SMS_to_Mobile__c.inlineHelpText}</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.HexaBPM__Send_SMS_to_Mobile__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <!--<apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Company Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Company_Name__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>-->
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="ADGM License Number"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.License_Number__c.inlineHelpText}</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.License_Number__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Registered for Tax"/>
+                    <apex:inputfield value="{!objSR.Registered_for_Tax__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel id="taxRegPanel1">
+                        <apex:outputlabel value="Tax Registration Number"/>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" id="taxRegPanel2">
+                        <apex:inputfield value="{!objSR.Tax_Registration_Number__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Are you an employee of the company"/>
+                    <apex:inputfield value="{!objSR.Sponsored_Employee__c}"/>
+                </apex:pageblocksectionitem>
+                <!--<apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Company Name (Arabic)"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Company_Name_Arabic__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>-->
+            </apex:pageblocksection>
+            <apex:pageblocksection id="ServicesSection" title="Requested Services" columns="1" collapsible="false">
+                <div class="pageDesc">
+                    Select from the list below the required services for this user profile. In order to permit access to these selected services, the relevant authorization letter needs to identify the exact same set of services.
+                </div>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Types of Services"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Types_of_Services_Accessible__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>
+            <apex:pageblocksection id="usernameDetails" title="Username Details" columns="1" collapsible="false">
+                <!--<apex:pageblocksectionitem >
+                    <div style="text-align:center;">Username must contain only alphanumeric characters. Please do not include special characters such as comma (,), quotes('"), slash(/), semi-colon(;), colon(:) and blank spaces.</div>
+                </apex:pageblocksectionitem>-->
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Username"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <!--<apex:outputpanel layout="block" styleclass="requiredInput" style="margin-top:1%">-->
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <!--<apex:inputField value="{!objSR.Guest_Username__c}"/>&nbsp;@adgm.portal-->
+                        <apex:inputText value="{!guestUsername}"/>&nbsp;@adgm.portal
+                        <span class="left-spacer" >
+                            <apex:commandLink value="Check Availability" action="{!checkUName}" styleClass="btnCheckAvail" status="loadingStatus"/>
+                            <apex:outputPanel rendered="{!IF((infomessage!=''),true,false)}" style="margin-left:15px;">
+                                <apex:image id="theImage" value="{!iconURL}" width="15" height="15"/>&nbsp;
+                                <apex:outputText value="{!infomessage}" style="{!IF((isUserNameAvailable=true),'color:green;font-weight:bold;','color:red;font-weight:bold;')}"/>
+                            </apex:outputPanel>
+                        </span>
+                        <div class="errorMsg" style="{!If((hasErrorUsername==false),'display:none;','')}"><strong>Error</strong>: Username is required.</div>
+                        <div class="errorMsg" style="{!If((hasErrorformatUsername==false),'display:none;','')}"><strong>Error</strong>: Username must contain only alphanumeric characters. Please do not include special characters such as comma (,), quotes('"), slash(/), semi-colon(;), colon(:) and blank spaces.</div>
+                    </apex:outputpanel>
+                     
+                </apex:pageblocksectionitem>
+                <!-- <apex:pageblocksectionitem > -->
+                <!-- </apex:pageblocksectionitem> -->
+                <!-- <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Disclaimer"/>
+                    <apex:outputText value="{!disclaimerText}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="I Agree"/>
+                    <apex:inputField value="{!objSR.I_Agree__c}"/>
+                </apex:pageblocksectionitem> -->
+            </apex:pageblocksection>
+            <apex:outputPanel styleClass="pBockSection" layout="block">
+                <apex:pageblocksection id="Documents" title="Documents" collapsible="false" columns="1" >
+                    <!--<apex:pageMessage summary="Please upload {!missedDocuments} document(s)." severity="error" strength="3" rendered="{!NOT(allDocsUploaded)}"/>-->
+                    <apex:pageMessage summary="Please upload the required documents." severity="error" strength="3" rendered="{!NOT(allDocsUploaded)}"/>
+                    <div class="pageDesc">
+                        Please note that the upload document file format should be either PDF, JPEG, JPG, BMP or PNG with a maximum file size of 5MB and the file name should not exceed 80 characters.
+                    </div>
+                    <div class="tableDiv">
+                        <apex:pageblocktable value="{!lstDocuments}" var="doc" width="100%" styleClass="pBlockTable">
+                            <apex:column width="35%" headervalue="Name">
+                                <apex:outputText value="{!doc.DocumentName}" escape="false"/>
+                            </apex:column>
+                            <apex:column width="45%" headervalue="Description">
+                                <apex:outputText value="{!doc.DocumentDescription}" />
+                            </apex:column>
+                            <apex:column >
+                                <apex:outputpanel layout="block" styleclass="requiredInput" rendered="{!NOT(doc.isOptional)}">
+                                    <div class="requiredBlock"></div>
+                                    <apex:inputfile styleClass="FileRequired" id="File_Required" value="{!doc.objAttachment.Body}" FileName="{!doc.objAttachment.Name}" contentType="{!doc.objAttachment.ContentType}" fileSize="{!doc.objAttachment.BodyLength}" style="width:200px !important;" onchange="validateFileType(this.id,this.value);"/>
+                                </apex:outputpanel>
+                                <apex:outputPanel rendered="{!doc.isOptional}">
+                                    <apex:inputfile id="File_Optional" value="{!doc.objAttachment.Body}" FileName="{!doc.objAttachment.Name}" contentType="{!doc.objAttachment.ContentType}" fileSize="{!doc.objAttachment.BodyLength}" style="width:200px !important;" onchange="validateFileType(this.id,this.value);"/>
+                                </apex:outputPanel>
+                            </apex:column>
+                            <!--<apex:column styleclass="fileStatus">
+                                <apex:outputtext value="" />
+                            </apex:column>-->
+                        </apex:pageblocktable>
+                    </div>
+                </apex:pageblocksection>
+                <div class="p-notes">
+                    <span class="pBold">Privacy Notice:</span> ADGM Registration Authority will not disclose your personal data, including name, date of birth, e-mail address or the personal information contained in your identity document to any third parties, and we will only use your personal details for the purpose of registration for the ACCESSADGM online solution. You have a right of access to and rectification of your personal data.
+                </div>
+                <div class="p-notes t-spacer">
+                    For more information on how we handle your personal data, please refer to ADGM’s <a href="https://www.adgm.com/privacypolicy/" target="_blank">Privacy Policy</a>.
+                </div>
+            </apex:outputPanel>
+            
+            <apex:pageBlockButtons id="pBButtons" html-align="right" location="bottom">
+                <apex:commandbutton id="btnSubmit" value="Submit" styleclass="btnSubmit" status="loadingStatus" immediate="false" onclick="submitUserRequest();return false;"/>
+                <apex:commandbutton id="btnCancel" value="Cancel" action="{!cancelReg}" styleclass="btnCancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:actionfunction name="submitRequest" action="{!SubmitSR}" />
+            <script>
+                function submitUserRequest(){
+                    disableButtons();
+                    submitRequest();
+                }
+                function disableButtons(){
+                    if(document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnSubmit')!=null){
+                        document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnSubmit').className = 'btnDisabled';
+                        document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnSubmit').value = 'Processing..';
+                        document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnSubmit').disabled = true;
+                    }
+                    if(document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnCancel')!=null){
+                        document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnCancel').className = 'btnDisabled';
+                        document.getElementById('UserRegPg:UserRegFrm:InfoPB:pBButtons:btnCancel').value = 'Processing..';
+                    }
+                }
+            </script>
+        </apex:pageblock>
+        </center>
+    </apex:form>
+</apex:page>

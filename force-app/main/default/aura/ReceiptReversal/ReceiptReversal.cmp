@@ -1,0 +1,59 @@
+<!--
+  @File Name          : ReceiptReversal.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 5/6/2020, 12:25:45 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    4/30/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" controller="ReceiptReversalController" >
+	<aura:handler name="init" value="{! this }" action="{! c.init }"/> 
+    <aura:attribute name="hasError" type="Boolean" default="false" />
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+            </div>
+        </aura:if>
+    <!-- Loading spinner end--> 
+    
+    <aura:if isTrue="{! !v.hasError}">
+        <lightning:recordEditForm aura:id="receiptReversalForm" recordId="{!v.recordId}" 
+                                onsuccess="{!c.updateReceipt}" objectApiName="Receipt__c">
+            <lightning:messages aura:id="OppMessage" />
+            <div class="slds-p-around_medium" >
+                <p>
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField required="true" variant="label-stacked" fieldName="Category__c" />
+                            
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField required="true" variant="label-stacked" fieldName="Reason__c" />  
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField required="true" variant="label-stacked" fieldName="Reversal_Date__c" />  
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </p>
+            
+            <footer >
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                    </lightning:layoutItem>    
+                </lightning:layout>
+            </footer>
+            </div>
+        </lightning:recordEditForm>
+    </aura:if>       
+</aura:component>

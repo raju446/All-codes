@@ -1,0 +1,4 @@
+<apex:component controller="WelcomeTextHelper" access="global">
+<apex:attribute name="UserId" type="String" description="the Digital Asset ID" assignTo="{!UId}"  />
+{!welcomeText}
+</apex:component>

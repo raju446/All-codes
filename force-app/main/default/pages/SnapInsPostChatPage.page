@@ -1,0 +1,145 @@
+<apex:page SHOwHeader="false" controller="FeedbackController" >
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8"></meta>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <title>Feedback Form Using HTML, CSS And PHP - reusable form</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" ></link>
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" ></link>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"></link>
+        <link rel="stylesheet" href="form.css" ></link>
+        <style type='text/css'>
+            container{
+                font-family: "Raleway_Regular", sans-serif;
+            }
+            .col-md-6 col-md-offset-3 form-container{
+                margin-top: 20px;
+            }
+            button{
+                color: #FFFFFF !important;
+                background-color: #002A3A !important;
+                background: #002A3A !important; 
+            }
+        </style>
+    </head>
+    <body onload="executeThisOnLoad()" >
+        <div class="container">
+            <div class="imagebg"></div>
+            <div class="row " style="margin-top: 50px">
+                <div class="col-md-6 col-md-offset-3 form-container">
+                    <h4>Feedback</h4> 
+                    <p> Please provide your feedback below: </p>
+                    <form role="form" method="post" id="reused_form">
+                        <div class="row">
+                            <div class="col-sm-12 form-group">
+                                <label>How do you rate your overall experience?</label><br></br>
+                                  <input type="radio" name="rating" value="1"> 1</input><br></br>
+                                  <input type="radio" name="rating" value="2"> 2</input><br></br>
+                                  <input type="radio" name="rating" value="3"> 3</input><br></br>
+                                  <input type="radio" name="rating" value="4"> 4</input><br></br>
+                                  <input type="radio" name="rating" value="5"> 5</input><br></br> 
+                            </div>
+                        </div>
+                        <!--
+                        <div class="row">
+                            <div class="col-sm-12 form-group">
+                                <label for="comments"> Comments:</label>
+                                <textarea class="form-control" type="textarea" name="comments" id="Comments" placeholder="Your Comments" maxlength="6000" rows="7"></textarea>
+                            </div>
+                        </div>
+                        -->
+                        <div class="row">
+                            <div class="col-sm-12 form-group">
+                                <label>Was ADGM Support team able to help you?</label><br></br>
+                                <input type="radio" name="clientSatisfaction" value="Checked"> I received the support that I needed. </input><br></br>
+                                <input type="radio" name="clientSatisfaction" value="Unchecked"> I need further assistance. </input><br></br>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12 form-group">
+                                <button type="submit" class="btn btn-lg btn-warning btn-block" onclick="doSave();return false;" >Post </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+<script>
+        
+        function executeThisOnLoad() {
+            //var comments = document.getElementById("comment").value;
+            //console.log('comment is ' + comments);
+            var chatKey = '{!$CurrentPage.parameters.ChatKey}';            
+            
+
+            FeedbackController.MarkCheckBox(chatKey, function(result, event) {
+                if (event.type === 'exception') {
+                    console.log("Exception");
+    
+                } else if (event.status) {
+                    console.log(result);
+                    if (result = 'Success') {
+                       
+                    }
+                } else {
+                    console.log(event.message);
+                }
+            });
+            
+        }
+        
+        
+        
+        
+        
+        function doSave() {
+            //var comments = document.getElementById("comment").value;
+            //console.log('comment is ' + comments);
+            var chatKey = '{!$CurrentPage.parameters.ChatKey}';            
+            
+            var ratings = document.getElementsByName('rating');
+            var rating = "0";
+            for(var i = 0; i < ratings.length; i++){
+                
+                if(ratings[i].checked){
+                    rating = ratings[i].value;
+                    continue;
+                }
+                
+            }
+            var clientSatisfactionOptions = document.getElementsByName('clientSatisfaction');
+            var clientSatisfaction = "Unchecked";
+            for(var i = 0; i < clientSatisfactionOptions.length; i++){               
+                if(clientSatisfactionOptions[i].checked){
+                    clientSatisfaction = clientSatisfactionOptions[i].value;
+                    continue;
+                }                
+            }
+
+
+            FeedbackController.submit(chatKey, rating, clientSatisfaction, function(result, event) {
+                if (event.type === 'exception') {
+                    console.log("Exception");
+    
+                } else if (event.status) {
+                    console.log(result);
+                    if (result = 'Success') {
+                        alert("Successfully save! Thank you")
+                    }
+                } else {
+                    console.log(event.message);
+                }
+            });
+            // Simulate an HTTP redirect:
+            window.location.replace("https://uat-adgm.cs80.force.com/apex/SnapIns_Feedback_Submission");
+        }
+ </script>
+</html>
+</apex:page>

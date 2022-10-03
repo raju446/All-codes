@@ -1,0 +1,266 @@
+@font-face {
+  font-family: 'Raleway_Regular';
+  src: url('../fonts/Raleway/Raleway-Regular.eot?orgId=00D0Y000002IemY');
+  src: url('../fonts/Raleway/Raleway-Regular.eot?orgId=00D0Y000002IemY#iefix') format('embedded-opentype'), url('../fonts/Raleway/Raleway-Regular.woff?orgId=00D0Y000002IemY') format('woff'), url('../fonts/Raleway/Raleway-Regular.ttf?orgId=00D0Y000002IemY') format('truetype'), url('../fonts/Raleway/Raleway-Regular.svg?orgId=00D0Y000002IemY#svgFontName') format('svg');
+}
+
+@font-face {
+  font-family: 'Raleway_Bold';
+  src: url('../fonts/Raleway/Raleway-Bold.eot?orgId=00D0Y000002IemY');
+  src: url('../fonts/Raleway/Raleway-Bold.eot?orgId=00D0Y000002IemY#iefix') format('embedded-opentype'), url('../fonts/Raleway/Raleway-Bold.woff?orgId=00D0Y000002IemY') format('woff'), url('../fonts/Raleway/Raleway-Bold.ttf?orgId=00D0Y000002IemY') format('truetype'), url('../fonts/Raleway/Raleway-Bold.svg?orgId=00D0Y000002IemY#svgFontName') format('svg');
+}
+
+@font-face {
+  font-family: 'Raleway_Medium';
+  src: url('../fonts/Raleway/Raleway-Medium.eot?orgId=00D0Y000002IemY');
+  src: url('../fonts/Raleway/Raleway-Medium.eot?orgId=00D0Y000002IemY#iefix') format('embedded-opentype'), url('../fonts/Raleway/Raleway-Medium.woff?orgId=00D0Y000002IemY') format('woff'), url('../fonts/Raleway/Raleway-Medium.ttf?orgId=00D0Y000002IemY') format('truetype'), url('../fonts/Raleway/Raleway-Medium.svg?orgId=00D0Y000002IemY#svgFontName') format('svg');
+}
+
+@font-face {
+  font-family: 'Raleway_SemiBold';
+  src: url('../fonts/Raleway/Raleway-SemiBold.eot?orgId=00D0Y000002IemY');
+  src: url('../fonts/Raleway/Raleway-SemiBold.eot?orgId=00D0Y000002IemY#iefix') format('embedded-opentype'), url('../fonts/Raleway/Raleway-SemiBold.woff?orgId=00D0Y000002IemY') format('woff'), url('../fonts/Raleway/Raleway-SemiBold.ttf?orgId=00D0Y000002IemY') format('truetype'), url('../fonts/Raleway/Raleway-SemiBold.svg?orgId=00D0Y000002IemY#svgFontName') format('svg');
+}
+
+@charset "UTF-8";
+
+@font-face {
+  font-family: "adgm-portal";
+  src: url("../fonts/IconFonts/adgm-portal.eot?orgId=00D0Y000002IemY");
+  src: url("../fonts/IconFonts/adgm-portal.eot?orgId=00D0Y000002IemY#iefix") format("embedded-opentype"), url("../fonts/IconFonts/adgm-portal.woff?orgId=00D0Y000002IemY") format("woff"), url("../fonts/IconFonts/adgm-portal.ttf?orgId=00D0Y000002IemY") format("truetype"), url("../fonts/IconFonts/adgm-portal.svg?orgId=00D0Y000002IemY#adgm-portal") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+[data-icon]:before {
+  font-family: "adgm-portal" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^=icon-adgm]:before, [class*=icon-adgm]:before {
+  font-family: "adgm-portal" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-adgm-appointment:before {
+  content: "\63";
+}
+
+.icon-adgm-arrow-down:before {
+  content: "\64";
+}
+
+.icon-adgm-arrow-left:before {
+  content: "\65";
+}
+
+.icon-adgm-arrow-right:before {
+  content: "\66";
+}
+
+.icon-adgm-arrow-up:before {
+  content: "\67";
+}
+
+.icon-adgm-checkbox:before {
+  content: "\68";
+}
+
+.icon-adgm-company:before {
+  content: "\69";
+}
+
+.icon-adgm-company-1:before {
+  content: "\6a";
+}
+
+.icon-adgm-company-profile:before {
+  content: "\6b";
+}
+
+.icon-adgm-company-profile-sidebar:before {
+  content: "\6c";
+}
+
+.icon-adgm-company-services:before {
+  content: "\6d";
+}
+
+.icon-adgm-contact:before {
+  content: "\6e";
+}
+
+.icon-adgm-contact-2:before {
+  content: "\6f";
+}
+
+.icon-adgm-contact-small:before {
+  content: "\70";
+}
+
+.icon-adgm-create-ticket:before {
+  content: "\71";
+}
+
+.icon-adgm-current-requests-sidebar:before {
+  content: "\72";
+}
+
+.icon-adgm-email:before {
+  content: "\73";
+}
+
+.icon-adgm-employee-visa:before {
+  content: "\74";
+}
+
+.icon-adgm-enquiry:before {
+  content: "\75";
+}
+
+.icon-adgm-facebook:before {
+  content: "\76";
+}
+
+.icon-adgm-fawri:before {
+  content: "\77";
+}
+
+.icon-adgm-feedback:before {
+  content: "\78";
+}
+
+.icon-adgm-group-820:before {
+  content: "\79";
+}
+
+.icon-adgm-house-black-building-shape:before {
+  content: "\7a";
+}
+
+.icon-adgm-it:before {
+  content: "\41";
+}
+
+.icon-adgm-letters-permits:before {
+  content: "\42";
+}
+
+.icon-adgm-letters-permits-white:before {
+  content: "\43";
+}
+
+.icon-adgm-login:before {
+  content: "\44";
+}
+
+.icon-adgm-logoicon-login:before {
+  content: "\45";
+}
+
+.icon-adgm-logoicon-small:before {
+  content: "\46";
+}
+
+.icon-adgm-logotext-login:before {
+  content: "\47";
+}
+
+.icon-adgm-logotext-small:before {
+  content: "\48";
+}
+
+.icon-adgm-nav-left:before {
+  content: "\49";
+}
+
+.icon-adgm-nav-right:before {
+  content: "\4a";
+}
+
+.icon-adgm-noc-letter:before {
+  content: "\4b";
+}
+
+.icon-adgm-payment:before {
+  content: "\4c";
+}
+
+.icon-adgm-pending-actions-sidebar:before {
+  content: "\4d";
+}
+
+.icon-adgm-profile:before {
+  content: "\4e";
+}
+
+.icon-adgm-radio:before {
+  content: "\4f";
+}
+
+.icon-adgm-radio-selected:before {
+  content: "\50";
+}
+
+.icon-adgm-register:before {
+  content: "\51";
+}
+
+.icon-adgm-saved-requests-sidebar:before {
+  content: "\52";
+}
+
+.icon-adgm-search:before {
+  content: "\53";
+}
+
+.icon-adgm-settings:before {
+  content: "\54";
+}
+
+.icon-adgm-twitter-circular-button:before {
+  content: "\55";
+}
+
+.icon-adgm-visa-service-white:before {
+  content: "\56";
+}
+
+.icon-adgm-visa-services:before {
+  content: "\57";
+}
+
+.icon-adgm-web:before {
+  content: "\58";
+}
+
+.icon-adgm-work-permit:before {
+  content: "\59";
+}
+
+.icon-adgm-youtube:before {
+  content: "\5a";
+}
+
+.icon-adgm-adgm-building:before {
+  content: "\61";
+}
+
+.icon-adgm-alerts:before {
+  content: "\62";
+}

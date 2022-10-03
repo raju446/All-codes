@@ -1,0 +1,36 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" standardController="Case" extensions="CaseSelectionController">
+<head>
+</head>
+<body>
+     <div class="main-block">
+        <div class="pageTopic">RAISE A NEW CASE</div>
+        <div class="pageDesc">
+			Before raising a new case, please ensure that you have visited the Knowledge Centre tab on your top menu bar. The Knowledge Centre contains many knowledge articles and tutorial videos that will provide you with the necessary guidance and assistance on how to access and complete all services on the One Stop Shop portal.
+        </div>
+        <div class="detail">
+            <div class="case-type-title">Select a Case Type</div>
+            <div class="case-block">
+                <div class="container-fluid">
+                    <div class="row">
+                        <apex:repeat value="{!lstCaseRecordTypes}" var="caseType">
+                            <div class="col-sm-3 col-box">
+                                <a href="{!$Site.Prefix}{!caseType.CaseUrl}">
+                                    <div class="case-box">
+                                        <div class="type-block tabular">
+                                            <span class="type-logo {!caseType.IconName} tabular-cell"></span>
+                                            <span class="type-title tabular-cell">{!caseType.Title}</span>
+                                        </div>
+                                        <div class="title-detail">
+                                            {!caseType.Description}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

@@ -1,0 +1,51 @@
+.custom-box{
+  background-color: #ffeadc;
+  margin-left: 4px;
+  border: 10px;
+}
+.pageborder{
+    background-color: #A9904D;
+    color: white;
+    font-size: 14px;
+    font-weight: 900;
+    font-family: 'Test Financier Display';
+}
+.agree{
+    height: 1px;
+    font-family: 'Poppins';
+    font-weight: 500;
+    margin-left: 10px;
+}
+.text{
+    padding: 10px;
+    font-family: 'Georgia, serif';
+    font-weight: 500;
+    font-style: italic;
+}
+.bg{
+    background-color: #fde9dc;
+}
+.button{
+    font-family: serif;
+    color:white;
+    width: 100px;
+    margin-left: 75px;
+    background: linear-gradient(324.88deg, #B89553 10.65%, #D3AB5E 104.25%);
+    border-radius: 50px;
+    height: 38px;
+    font-style: italic;
+    }
+    .button2{
+        font-family: serif;
+    color:white;
+    width: 100px;
+    margin-left: 20px;
+    background: linear-gradient(324.88deg, #B89553 10.65%, #D3AB5E 104.25%);
+    border-radius: 50px;
+    height: 38px;
+    font-style: italic;
+
+    }
+    .font{
+        font-family: 'Test Financier Display';
+    }

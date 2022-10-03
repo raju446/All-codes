@@ -1,0 +1,136 @@
+<apex:page id="page_acct_statement" docType="html-5.0" title="Statement Of Account"  controller="StatementAccountController">
+<head>
+    <style>
+        .form-area-control{
+            margin-bottom: 8px;
+        }
+         .form-area-label{
+            width: 100%;
+        }
+        .form-area-label label{
+            width: 7%;
+            display: inline-block;
+        }
+        .pageTopic {
+            text-transform: uppercase;
+            margin-bottom: 13px;
+        }
+        .pageDesc {
+            margin-bottom: 30px;
+        }
+        .backend_lbl{
+            font-weight: bold;
+            color: #4a4a56;
+            width: 8% !important;
+        }
+        .backend_lbl_pad{
+            padding-left: 8% !important;
+        }
+        .portal_lbl_pad{
+             padding-left: 7% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-block" style="{!IF(ISNULL($User.ContactId),'margin-top:10px;','')}"> <!-- ISNULL($User.ContactId) means BackendUser -->
+        <div class="pageTopic">Generate Statement of Account</div>
+        <div class="pageDesc">
+            Please select the from and to date.
+        </div>
+
+        <div>
+            <apex:form id="frm_statement"  style="{!IF(!ISNULL($User.ContactId),'font-size:1.2em;','')}" >
+                <apex:outputPanel rendered="{!ISNULL($User.ContactId)}" layout="none"> <!-- Add this Account lookup field only for backend users. -->
+                    <div class="form-area-control">
+                        <div class="form-area-label">
+                            <label class="{!IF(ISNULL($User.ContactId),'backend_lbl','')}">Account</label>
+                            <apex:outputPanel rendered="{!isPortalUser}">
+                                <apex:inputField id="lkPortalAccount" value="{!sObj['HexaBPM__Customer__c']}"/> 
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!!isPortalUser}">
+                                <apex:inputField id="lkBackendAccount" value="{!sObj['Entity__c']}"/> 
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <div class="form-area-control">
+                    <div class="form-area-label">
+                        <label class="{!IF(ISNULL($User.ContactId),'backend_lbl','')}">From Date</label>
+                        <apex:outputPanel rendered="{!isPortalUser}">
+                            <apex:inputField id="portalFromDate" value="{!sObj['Date_of_Birth__c']}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!!isPortalUser}">
+                                <apex:inputField id="backendFromDate" value="{!sObj['Sys_Date__c']}"/> 
+                        </apex:outputPanel>
+                    </div>
+                </div>
+                <div class="form-area-control">
+                    <div class="form-area-label">
+                        <label class="{!IF(ISNULL($User.ContactId),'backend_lbl','')}">To Date</label>
+                        <apex:outputPanel rendered="{!isPortalUser}">
+                            <apex:inputField id="portalToDate" value="{!sObj['Date_of_Birth__c']}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!!isPortalUser}">
+                                <apex:inputField id="backendToDate" value="{!sObj['Sys_Date__c']}"/> 
+                        </apex:outputPanel>
+                    </div>
+                </div>
+                
+                <div class="form-area-control {!IF(ISNULL($User.ContactId),'backend_lbl_pad','portal_lbl_pad')}">
+                    <input  type="submit" onclick="generatePDF();return false;" style="font-size: 1.2em !important" value="Submit" />
+                </div>
+            </apex:form>
+        </div>
+    </div>
+    <script>
+        var isPortalUser = "{!isPortalUser}";
+        var domFromDate,domToDate;
+        if(isPortalUser == "true"){
+            domFromDate = document.getElementById('{!$Component.frm_statement.portalFromDate}');
+            domToDate = document.getElementById('{!$Component.frm_statement.portalToDate}')
+        }
+        else{
+            domFromDate = document.getElementById('{!$Component.frm_statement.backendFromDate}');
+            domToDate = document.getElementById('{!$Component.frm_statement.backendToDate}')
+        }
+        domFromDate.readOnly = true;
+        domToDate.readOnly = true;
+
+        function formatDate(date) {
+           var splitInputDate = date.split("/");
+           var outputDate = splitInputDate[2] + '-' + splitInputDate[1] + '-' + splitInputDate[0];
+           return outputDate;
+        }
+        function generatePDF(){
+            var fromDateVal = domFromDate.value;
+            var toDateVal = domToDate.value;
+            var formattedFromDate = formatDate(fromDateVal);
+            var formattedToDate = formatDate(toDateVal);
+            if(!fromDateVal || !toDateVal){
+                alert("Please enter the date range to generate the Statement Of Accounts.");
+            }
+            else{
+                var dtFromDate = new Date(formattedFromDate);
+                var dtToDate = new Date(formattedToDate);
+                
+                if(dtFromDate > dtToDate){
+                    alert("Fromdate is greather than Todate"); 
+                }
+                else{
+                    var navURL = "StatementAccount_PDF?fromDate="+formattedFromDate +"&toDate="+formattedToDate;
+                    
+                    var lookUpStrFieldId;
+                    if(isPortalUser == "true")
+                        lookUpStrFieldId = "page_acct_statement:frm_statement:lkPortalAccount_lkid";
+                    else{
+                        lookUpStrFieldId = "page_acct_statement:frm_statement:lkBackendAccount_lkid";
+                        navURL += "&accId="+document.getElementById(lookUpStrFieldId).value;
+                    }
+                    window.open(navURL,"_blank");
+                }
+                
+            }
+        }
+    </script>
+</body>
+</apex:page>

@@ -1,0 +1,224 @@
+<template>
+  <div class="bg">
+      <lightning-record-edit-form 
+      object-api-name="HexaBPM__Service_Request__c" 
+      onsuccess={handleSuccess}
+      onerror={handleError}
+      onsubmit={handleSubmit} >
+          <lightning-messages></lightning-messages>
+          <lightning-layout>
+              <lightning-layout-item>
+                  <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                      <a
+                          href="/ADGMMOBILE/s/services-help"><span style="color: #000; font-size:27px; padding: 1px;">&#8592;</span></a>
+                  </div>
+              </lightning-layout-item>
+          </lightning-layout>
+          <h2 style="margin-left: 10px;font-family: 'Test Financier Display';font-size: 18px;">Service Request</h2>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Information" style="padding: 11px;font: size 14px;">Information<span style="color: red; font-size:11px;float:right;">||<span style="color:#ffff; font: size 10px;">'-Required Information</span></span></a></span>
+              </h1>
+          </div>
+          <br>
+          <div class="slds-p-horizontal_small">
+              <span style="font-weight: 800;font-size: 20px;font-size: 92%;text-align: center;font-family: 'Test Financier Display';">ADP Record Type</span><span style="font-weight: 700;font-size: 80%;text-align: center;font-family: 'Test Financier Display';"> EmploymentVisa - New</span>
+          </div>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Entity Details" style="padding: 11px;font: size 14px;">Entity Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Transferring_To_Entity_Name__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="License_Number__c" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Visa Validity Details" style="padding: 11px;font: size 14px;">Visa Validity Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Visa_Period__c" required="true" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Application Existing Visa Details" style="padding: 11px;font: size 14px;">Application Existing Visa Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Person_In_UAE__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Previous_Visa_Type__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Previous_Visa_Number__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Residence_Visa_Cancellation_Date__c"
+              class="font"></lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Date_of_Arrival__c" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant Personal Details" style="padding: 11px;font: size 14px;">Applicant Personal Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Title__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="First_Name__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Middle_Name__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Last_Name__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Gender__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Marital_Status__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Religion__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Faith__c" class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Date_of_Birth__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Nationality__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Birth_Place__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Country_of_Birth__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Mother_s_Name__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Father_s_Name__c" required="true" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant Arabic Personal Details" style="padding: 11px;font: size 14px;">Applicant Arabic Personal Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="First_Name_Arabic__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Middle_Name_Arabic__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Last_Name_Arabic__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Mother_Name_Arabic__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Place_of_Birth_Arabic__c" required="true"
+              class="font"> </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant Passport Details" style="padding: 11px;font: size 14px;">Applicant Passport Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Passport_Number__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Passport_Type__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Passport_Issue_Date__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Country_of_Issue__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Passport_Expiry_Date__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Place_of_Issue__c" required="true" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant job Details" style="padding: 11px;font: size 14px;">Applicant job Details</span>
+              </h1>
+          </div>
+         <lightning-input-field variant="label-stacked" field-name="Job_Title__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Highest_Qualification__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Languages_Spoken__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Gross_Monthly_Salary__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Employee_Email_ID__c" required="true"
+              class="font"> </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant's offical documens will be couriered to:" style="padding: 11px;font: size 14px;">Applicant's offical documens will be couriered to:</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Address__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="City__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Employee_Mobile_Number__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Alternate_Mobile_Number__c" class="font">
+          </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Applicant Native Address Details" style="padding: 11px;font: size 14px;">Applicant Native Address Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Permanent_Native_Address_1__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Permanent_Native_City__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Permanent_Native_Country__c" required="true"
+              class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Contact_Native_Country_Phone_Number__c	"
+              required="true" class="font"> </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Permanent_Native_POBox_Postal_Zip_Code__c"
+              class="font"> </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Portal Correspondence Details" style="padding: 11px;font: size 14px;">Portal Correspondence Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="HexaBPM__Email__c" required="true" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Contact_Number_Second_Correspondence__c"
+              required="true" class="font"> </lightning-input-field>
+          <br>
+          <div class="slds-page-header__name-title">
+              <h1>
+                  <span class="pageborder slds-page-header__title slds-truncate" title="Portal Correspondence Details" style="padding: 11px;font: size 14px;">Portal Correspondence Details</span>
+              </h1>
+          </div>
+          <lightning-input-field variant="label-stacked" field-name="Email_Second_Correspondence__c" class="font">
+          </lightning-input-field>
+          <lightning-input-field variant="label-stacked" field-name="Contact_Number_Second_Correspondence__c"
+              class="font"> </lightning-input-field>
+          <p class="text">Delaration,Authorization and<br>
+            privacy Statement<br>
+            A. I hereby declare that the above information is true to the best of our knowlwdge and I bear full responsibility for it.<br>
+            B. I have read and understand the Authorization included in this application form and I hereby agree to its terms and conditions.<br>
+            C. The information being submitted in this form is personal in nature and will be shered with third parties for the purpose of arranging government services, Please<br>
+            confirm that you have the subjects consent to submit their personal information to the Registration Authority.<br>
+            D. Any fees, levies, charges, fines or other financil penalties that are due to third parties including, but not limited,government authorities in connection with the<br>
+            application must be settled by the applicant.</p>
+          <br>
+          <lightning-input-field variant="label-stacked" field-name="I_Agree__c" onchange={handleChange} class="font">
+          </lightning-input-field>
+          <template if:true={buttonVisible}>
+          <br><br>
+          <button
+        class="button"
+        type="submit"
+        name="saved"
+        label="Save">
+        Save
+     </button>
+          <button
+      class="button2"
+      name="Cancelld"
+      label="Cancel">
+      Cancel
+      </button>
+    </template>
+      </lightning-record-edit-form>
+  </div>
+  <br><br><br>
+</template>
