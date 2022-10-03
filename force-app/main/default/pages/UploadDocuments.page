@@ -1,0 +1,43 @@
+<apex:page id="DocumentUploadPage" controller="UploadDocumentsController" sidebar="true" tabstyle="HexaBPM__Service_Request__c" action="{!CheckAccess}">
+    <style>
+        #MainCompDiv{
+            margin-left:10px;
+        }
+    </style>
+    <table class="row" style="width: 100%;">
+        <tbody>
+            <tr>
+                <td>
+                    <div id="MainCompDiv">
+                        <!-- <div class="bPageTitle" style="padding: 5px 10px 0 !important;">
+                            <div class="ptBody">
+                                <div >
+                                    <h2 class="pageDescription">Upload Required Documents</h2>
+                                    <div class="blank">&nbsp;</div>
+                                </div>
+                                <div>
+                                    <strong>Please Note: The SR Document File Format is required to be either PDF, JPEG, JPG, BMP or PNG.</strong>
+                                </div>  
+                            </div>
+                        </div>             -->
+                        <div class="pageTopic">Upload Required Documents</div>
+                        <div class="pageDesc">
+                            Please note that the upload document file format should be either PDF, DOC, DOCX, JPEG, JPG, BMP, TIFF or PNG with a maximum file size of 5MB.
+                            Recommended file types for Passport: .jpeg, jpg
+                        </div>
+                        <c:UploadDocumentVC id="DocUploadComp"/>
+                    </div>
+                 </td>
+             </tr>
+         </tbody>
+     </table>
+     <script>
+        Sfdc.onReady(function() {
+            $("table.list, table.newgrid").each(function () {
+                $(this).find("tr.headerRow").children(":nth-child(n+4)").attr("data-hide", "phone");
+                $(this).find("tr.headerRow").children(":nth-child(n+5)").attr("data-hide", "phone,tablet");
+                $(this).footable();
+            })
+        });
+    </script>
+</apex:page>

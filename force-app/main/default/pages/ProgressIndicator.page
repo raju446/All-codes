@@ -1,0 +1,270 @@
+<apex:page standardController="HexaBPM__Service_Request__c" extensions="ProgressIndicatorController" id="IPage">
+        <apex:stylesheet value="{!URLFOR($Resource.HexaBPM__SLDS_BPM_Resource, 'SLDS_BPM_Resource/SLDS_BPM_Res/css/font-awesome.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.HexaBPM__SLDS_BPM_Resource, 'SLDS_BPM_Resource/SLDS_BPM_Res/js/jquery.min.js')}"/>
+        <style>
+            .htimeline {
+                display: table;
+                min-height: 140px;
+                list-style: none;
+                padding: 0 0 0 0;
+                /* Padding left  right */
+                position: relative;
+                width: 100%;
+                margin-bottom: 0;
+            }
+            .htimeline>li {
+                display: table-cell;
+                margin-left: 0px !important;
+                position: relative;
+                //float: left;
+                top: 0px;
+                background-color: #f3f5f6;
+                /*padding-bottom: 5px;*/
+                //min-height: 140px;
+                -moz-transition: all 0.5s ease-in;
+                -webkit-transition: all 0.5s ease-in;
+                -ms-transition: all 0.5s ease-in;
+                transition: all 0.5s ease-in;
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                /* Firefox */
+                border-bottom: 1px solid #efefef;
+                box-shadow: 0 0 0 1px #efefef inset;
+            }
+            
+            .htimeline>li:before {
+                content: "  ";
+                display: block;
+                width: 100%;
+                height: 3px;
+                background-color: #cccccc;
+            }
+            
+            .htimeline>li>.timeline-badge {
+                color: #fff;
+                width: 26px;
+                height: 26px;
+                line-height: 26px;
+                font-size: 1.2em;
+                text-align: center;
+                position: absolute;
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+                background-color: #999999;
+                z-index: 100;
+                /*
+                border-top-right-radius: 50%;
+                border-top-left-radius: 50%;
+                border-bottom-right-radius: 50%;
+                border-bottom-left-radius: 50%;
+                */
+                border: 3px solid #cccccc;
+                font-family: HelveticaNeue, Arial, sans-serif;
+            }
+            
+            .htimeline>li>.timeline-badge {
+                top: -12px;
+                -moz-transition: all 1s ease-in;
+                -webkit-transition: all 1s ease-in;
+                -ms-transition: all 1s ease-in;
+                transition: all 1s ease-in;
+            }
+            
+            ul.htimeline>li>.timeline-descr {
+                //margin-left: 25%;
+                text-align:center;
+                margin-top: 20px;
+                font-size: 1.0em;
+                width: 100%;
+                <!--text-align: center;-->
+                font-family: HelveticaNeue, Arial, sans-serif;
+                font-weight: bold;
+                /* font-weight added for all the groups apart from selected */
+            }
+            
+            .timeline-badge.selected {
+                background-color: #2e6da4 !important;
+            }
+            
+            .timeline-badge.before {
+                background-color: #5bc0de !important;
+            }
+            
+            .timeline-descr.selected {
+                font-weight: bold;
+            }
+            
+            iframe[Attributes Style] {
+                border-top-width: 0px;
+                border-right-width: 0px;
+                border-bottom-width: 0px;
+                border-left-width: 0px;
+                height: auto !important;
+                width: 100%;
+            }
+            
+            .stepsList {
+                list-style: none;
+                margin-top: 10px;
+                position: relative;
+                padding-left: 0px;
+            }
+            
+            .stepsList li {
+                line-height: 1.5em;
+            }
+            
+            .stepsList li i.fa {
+                postion: absolute;
+                top: 0;
+                left: 0;
+                margin-right: 5px;
+            }
+            
+            .childli {
+                margin-left: 0 !important;
+            }
+            .childli tr {
+                text-align: center;
+            }
+            
+            .actionLink {
+                color: #015ba7;
+                text-decoration: none;
+                font-weight: normal;
+            }
+            
+            .stepsList li i,
+            .stepsList .timeline-descr {
+                display: inline;
+            }
+            
+            .stepsList li,
+            .stepsList li:hover,
+            .stepsList li a:hover {
+                background: none !important;
+            }
+            
+            div.timeline-icon {
+                display: inline !important;
+             }
+            
+            td.td-timeline-descr {
+                width: 30%;
+            }
+            .timeline-help
+            {
+                margin-left: 5px;
+            }
+            
+            .sla-section {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                background-color: rgb(243, 245, 246);
+                display: flex;
+                width: 100%;
+                font-weight: bold;
+            }
+            
+            .sla-section .totalTime {
+                padding-left: 10px;
+            }
+            
+            .seperator {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .clear-dec {
+                text-decoration: none !important;
+            }
+            
+            .stepHelp {
+                background-position: top left;
+                position: absolute;
+                right: -20px;
+                top: 0px;
+                background-position: 0 0;
+                width: 20px;
+                height: 15px;
+            }
+            
+            .stepHelp:hover {
+                background-position: top right;
+            }
+            td.data2col{
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .customer-indicator{
+                color: #5bc0de;
+            }
+        </style>
+        <apex:form id="IFrm" style="margin-left:-10px;">
+            <ul class="htimeline">
+                <apex:repeat value="{!lstGroupWrap}" var="grp">
+                    <li style="width: {!GroupWidth}; background-color: rgb(243, 245, 246);">
+                        <div class="{!IF(grp.CurrentGroup,'timeline-badge selected',IF(grp.Passed_Group,'timeline-badge before','timeline-badge'))}">{!grp.GroupShortLabel}</div>
+                        <div class="{!IF(grp.CurrentGroup,'timeline-descr selected',IF(grp.Passed_Group,'timeline-descr before','timeline-descr'))}">{!grp.GroupLabel}</div>
+                        <!-- class="timeline-descr before" -->
+                        <ul class="stepsList" type="square">
+                            <apex:repeat value="{!grp.lstChilds}" var="chld">
+                                <li class="childli">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td class="td-timeline-descr">
+                                                <div class="timeline-icon"><i class="fa {!IF(chld.IsOpen=true && chld.IsClosed=false, 'fa-hourglass-half', IF(chld.IsOpen=false && chld.IsClosed=true, 'fa-check-square-o', 'fa-angle-double-right'))}"></i></div>
+                                                <div class="timeline-descr ">
+                                                    <apex:outputlabel value="{!chld.StepSummary}" styleClass="{!IF((chld.owner='Client'),'customer-indicator','')}"   rendered="{!!chld.hasStep}" />
+                                                    <apex:outputlink title="click to change status" styleClass="{!IF((chld.owner='Client'),'customer-indicator','')}" value="/{!chld.StepId}" target="_blank" rendered="{!IF(chld.hasStep && (chld.ActionType==null || chld.ActionType==''),true,false)}">{!chld.StepSummary}</apex:outputlink>
+                                                    <apex:outputlink title="click to change status" styleClass="{!IF((chld.owner='Client'),'customer-indicator','')}" value="/apex/{!chld.PageName}?Id={!chld.SRID}&StepId={!chld.StepId}"
+                                                        target="_top" rendered="{!IF(chld.hasStep && chld.IsOpen && chld.ActionType!=null && chld.ActionType!='',true,false)}">{!chld.StepSummary}</apex:outputlink>
+                                                    <apex:outputlabel styleClass="{!IF((chld.owner='Client'),'customer-indicator','')}" value="{!chld.StepSummary}" rendered="{!IF(chld.hasStep && chld.IsClosed && chld.ActionType!=null && chld.ActionType!='',true,false)}"/>
+                                                    <apex:outputlabel rendered="{!IF(chld.SLA!=null && chld.SLA!='',true,false)}" value=" ({!chld.SLA})" />
+                                                </div>
+                                                <span class="timeline-help">
+                                                        <a title="{!chld.helpText}" class="clear-dec">
+                                                            <i class="fa fa-info-circle" />
+                                                        </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </li>
+                            </apex:repeat>
+                        </ul>
+
+                    </li>
+                </apex:repeat>
+            </ul>
+            <div class="sla-section">
+                <span class="totalTime">Time Taken: {!totalTime}</span>
+                <span class="seperator"> | </span>
+                <span class="slaTime"> SLA: {!totalSLA}</span>
+                <span class="seperator"> | </span>
+                <span class="srStatus"> Status: {!srStatus}</span>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    // Rotate effect for Current Step
+                    $("li")
+                        .mouseover(function () {
+                            $(this).css("background-color", "#d2e4e5");
+                        })
+                        .mouseout(function () {
+                            $(this).css("background-color", "#f3f5f6");
+                        })
+
+                    setTimeout(function () {
+                        $(".timeline-badge.selected").css({
+                            transform: 'rotateY(360deg)'
+                        });
+                    }, 0);
+
+                });
+            </script>
+        </apex:form>
+
+</apex:page>

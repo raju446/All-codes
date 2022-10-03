@@ -1,0 +1,13 @@
+<aura:component >
+    <aura:attribute name="currentPageNumber" type="Integer" required="true" />
+    <aura:attribute name="maxPageNumber" type="Integer" required="true" />
+    <br/>
+    <div style="width: 287px;margin: 0 auto;">
+    <lightning:button variant="base"  iconName="utility:jump_to_bottom" onclick="{!c.firstPage}"  class="noborder lastPageBut slds-button slds-button--neutral" disabled="{!v.maxPageNumber == 0 || v.currentPageNumber == 1}"/>
+   <lightning:button variant="base" iconName="utility:chevronleft" onclick="{!c.prevPage}"  class="noborder slds-button slds-button--neutral" disabled="{!v.maxPageNumber == 0 || v.currentPageNumber == 1}"/>
+    Page: {!v.currentPageNumber} of {!v.maxPageNumber} 
+    <lightning:button variant="base" iconName="utility:chevronright" onclick="{!c.nextPage}"  class="noborder slds-button slds-button--neutral" disabled="{!v.maxPageNumber == 0 || v.currentPageNumber == v.maxPageNumber}"/>
+    <lightning:button variant="base" iconName="utility:jump_to_top" onclick="{!c.lastPage}"  class="noborder lastPageBut slds-button slds-button--neutral" disabled="{!v.maxPageNumber == 0 || v.currentPageNumber == v.maxPageNumber}"/>
+    </div>
+    
+</aura:component>

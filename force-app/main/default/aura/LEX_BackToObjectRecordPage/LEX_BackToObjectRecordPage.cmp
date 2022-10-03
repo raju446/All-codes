@@ -1,0 +1,15 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="LEX_BackToObjectRecordPageController" >
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" /> 
+    <aura:attribute name="currentTask" type="Task" />
+    <force:recordData recordId="{!v.recordId}" fields="WhatId"
+        targetFields="{!v.currentTask}" />
+    
+    <aura:html tag="style">
+    .slds-backdrop {
+    background: rgba(43, 40, 38, 0) !important;  
+    }
+    .slds-fade-in-open {
+    display:none !important;
+   }
+</aura:html>
+</aura:component>

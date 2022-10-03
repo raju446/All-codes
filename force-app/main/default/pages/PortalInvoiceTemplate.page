@@ -1,0 +1,3 @@
+<apex:page id="InvoiceTemplate">
+<c:PortalInvoiceTemplateVC ServiceRequestId="a1B25000000iVyy"/>
+</apex:page>

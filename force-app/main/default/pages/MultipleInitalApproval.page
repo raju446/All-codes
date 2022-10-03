@@ -1,0 +1,35 @@
+<apex:page standardController="Account" extensions="MultipleInitialApprovalSRController" sidebar="false" showHeader="false">
+    <apex:form >
+        <br/>
+        <!--<apex:outputLabel style="font-weight:bold;color:#e0301e;" value="There are multiple Initial Approval Service requests raised. The latest service request raised is {!latestOpenCIDSR}." rendered="{!hasMultiple}"/>-->
+        <apex:outputPanel rendered="{!hasMultiple}">
+            <apex:pageBlock >
+                <apex:pageBlockTable value="{!objSRList}" var="objSR">
+                    <apex:column >
+                        <apex:facet name="header">Action</apex:facet>
+                        <apex:outputLink value="/{!objSR.Id}" target="_parent">View</apex:outputLink>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">SR Number</apex:facet>
+                        <apex:outputText value="{!objSR.Name}" style="{!IF(objSRList[0].Id!=objSR.Id,'color:#e0301e','')}"/>
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Status</apex:facet>
+                        <apex:outputText value="{!objSR.HexaBPM__External_Status_Name__c}" />
+                    </apex:column>
+                    <apex:column >
+                        <apex:facet name="header">Created By</apex:facet>
+                        <apex:outputField value="{!objSR.CreatedById}" />&nbsp;
+                        <apex:outputField value="{!objSR.CreatedDate}"/>
+                    </apex:column>                   
+                    <apex:column >
+                        <apex:facet name="header">Last Modified by</apex:facet>
+                        <apex:outputField value="{!objSR.LastModifiedById}" />&nbsp;
+                        <apex:outputField value="{!objSR.LastModifiedDate}"/>
+                    </apex:column> 
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputLabel value="There are no multiple Initial Approval Service Request." rendered="{!NOT(hasMultiple)}"/>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,6 @@
+<aura:component implements="lightning:actionOverride" access="global">
+	<div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+		<h2>You are not allowed to create Contact.
+        </h2>
+    </div>
+</aura:component>

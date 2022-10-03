@@ -1,0 +1,256 @@
+<aura:component implements="force:appHostable,force:hasRecordId,lightning:actionOverride,lightning:isUrlAddressable" access="global" controller = "RefundRequestController">
+	
+    <aura:attribute name="sourceSystemNames" type="List" default="['RA', 'FSRA', 'Courts', 'Academy','Catalyst','Access','ADGM Arbitration Center','Bridge Property']"/>
+    <aura:attribute name="currencyScenarios" type="List" default="['Funds Transfer in same currency','Funds Transfer in different currency']"/>
+    <aura:attribute name="operatingUnitScenarios" type="List" default="['Same Operating Unit','Different Operating Unit']"/>
+    <aura:attribute name="ouList" type="List" default="" />
+    <aura:attribute name="sourceSystems" type="List" default="" />
+    
+    <aura:attribute name="fundTransferObj" type="Fund_Transfer__c" default="{ 'sobjectType': 'Fund_Transfer__c', 'Amount__c':0.0, 'Status__c':'Draft', 'Scenario__c':'None'}" />
+    <aura:attribute name="uploadedFiles" type="Object[]" default="[{'fileName':'No File Selected...','isUploaded':false}]"/>
+    <aura:attribute name="selectedLookUpRecordFrom" type="sObject" default="{}"/>
+    <aura:attribute name="selectedReferenceReceipt" type="sObject" default="{}"/>
+    <aura:attribute name="selectedLookUpRecordTo" type="sObject" default="{}"/>
+    
+    
+    <aura:attribute name="receiptBalance" type="Decimal" default="0.0" />
+    
+    <aura:attribute name="unCustomerFilterTo" type="string" default="{!' AND Oracle_Site_Id__c =\'' + v.selectedToOU+ '\''}" />
+    <aura:attribute name="unCustomerFilterFrom" type="string" default="{!' AND Oracle_Site_Id__c =\'' + v.selectedFromOU+ '\''}" />
+    <aura:attribute name="selectedCurrency" type="String" default="Funds Transfer in same currency"/>
+    <aura:attribute name="selectedOU" type="String" default="Same Operating Unit"/>
+    <aura:attribute name="receiptFilterCriteria" type="String" default=""/>
+    <aura:attribute name="fromEntityParentId" type="String" default="" />
+    <aura:attribute name="selectedFromOU" type="String" default="" />
+    <aura:attribute name="selectedToOU" type="String" default="" />
+    
+	<aura:attribute name="canFetchReceiptDetails" type="Boolean" default="true"/>
+    <aura:attribute name="disableReceiptSelection" type="Boolean" default="true"/>
+    <aura:attribute name="isFromEntityReadonly" type="Boolean" default="true" />
+    <aura:attribute name="isNotReceiptSelected" type="Boolean" default="true"/>
+    <aura:attribute name="isGLDateNotSelected" type="Boolean" default="true"/>
+    <aura:attribute name="isToEntityReadonly" type="Boolean" default="true" />
+    <aura:attribute name="isGLDateReadOnly" type="Boolean" default="true" />
+    <aura:attribute name="isReview" type="Boolean" default="false" />    
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler name="change" value="{!v.selectedLookUpRecordFrom}" action="{!c.handleFromEntityValueChange}"/>
+    <aura:handler name="change" value="{!v.selectedLookUpRecordTo}" action="{!c.handleToEntityValueChange}"/>
+    <aura:handler name="change" value="{!v.selectedReferenceReceipt}" action="{!c.handleReceiptValueChange}"/>
+    
+    <lightning:spinner aura:id="mySpinner" alternativeText="Processing.." title="Processing.." variant="brand" size="large" class="slds-hide"/>
+    <lightning:card>
+        <aura:set attribute="title">
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                  <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                      <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                            <lightning:icon iconName="standard:partner_fund_request" size="large"/>
+                          <span class="slds-assistive-text">Fund Transfer</span>
+                        </span>
+                      </div>
+                      <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                          <div class="slds-page-header__name-title">
+                            <h1>
+                              <span class="slds-page-header__title slds-truncate" title="Fund Transfer">Fund Transfer</span>
+                            </h1>
+                          </div>
+                        </div>
+                        <p class="slds-page-header__name-meta">Transfer funds between Entities</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </aura:set>
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:select aura:id="curVal" disabled="{!v.isReview}" name="curVal" label="Currency Scenario" required="true" onchange="{!c.handleCurrencyChange}" value="{!v.selectedCurrency}"  messageWhenValueMissing="Complete this field">  
+                        <aura:iteration items="{!v.currencyScenarios}" var="sce">
+                            <option value="{!sce}" text="{!sce}" selected="{!sce == v.selectedCurrency}"/> 
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                &nbsp;
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:select aura:id="curVal" disabled="{!v.isReview}" name="curVal" label="Operating Unit Scenario" required="true" onchange="{!c.handleOUChange}" value="{!v.selectedOU}"  messageWhenValueMissing="Complete this field">  
+                        <aura:iteration items="{!v.operatingUnitScenarios}" var="sce">
+                            <option value="{!sce}" text="{!sce}" selected="{!sce == v.selectedOU}"/> 
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="6">
+                &nbsp;
+            </lightning:layoutItem>
+            <!--From and To OU Selection-->   
+            <lightning:layoutItem padding="around-small" size="3">
+                <div class="custom-box">
+                    <lightning:select onchange="{!c.onFromOUChange}" aura:id="curVal" name="curVal" disabled="{!v.isReview}" label="From Operating Unit" required="true" value="{!v.selectedFromOU}"  messageWhenValueMissing="Complete this field">
+                        <option text="--None--" value=""></option>    
+                        <aura:iteration var="sysName" items="{!v.ouList}" >
+                            <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.selectedFromOU}"></option>
+                        </aura:iteration>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="3">
+                <div class="custom-box">
+                    <lightning:select aura:id="curVal" name="curVal" disabled="{!or(v.isReview, if(or(v.selectedFromOU == '104',v.selectedFromOU == '101'),false,true))}" label="From Source System" onchange="{!c.onFromSourceSystemChange}" required="true" value="{!v.fundTransferObj.From_Source_System__c}"  messageWhenValueMissing="Complete this field">
+                        <option text="--None--" value=""></option>  
+                        
+                        <aura:if isTrue="{! if(v.selectedFromOU == '102',true,false)}">
+                            <option text="ECourts" value="ECourts" selected="{! v.fundTransferObj.From_Source_System__c == 'ECourts'}"></option>
+                            <option text="BM" value="BM" selected="{! v.fundTransferObj.From_Source_System__c == 'BM'}"></option>
+                        </aura:if>
+                        <aura:if isTrue="{! if(v.selectedFromOU == '103',true,false)}">
+                            <option text="FSRA Connect" value="FSRA Connect" selected="{! v.fundTransferObj.From_Source_System__c == 'FSRA Connect'}"></option>
+                            <option text="BM" value="BM" selected="{! v.fundTransferObj.From_Source_System__c == 'BM'}"></option>
+                        </aura:if>
+                        <aura:if isTrue="{! if(v.selectedFromOU == '104',true,false)}">
+                            <option text="Access" value="Access" selected="{! v.fundTransferObj.From_Source_System__c == 'Access'}"></option>
+                            <option text="Catalyst" value="Catalyst" selected="{! v.fundTransferObj.From_Source_System__c == 'Catalyst'}"></option>
+                        </aura:if>
+                        <aura:if isTrue="{! if(v.selectedFromOU == '101',true,false)}">
+                            <option text="BM - Arbitration" value="BM - Arbitration" selected="{! v.fundTransferObj.From_Source_System__c == 'BM - Arbitration'}"></option>
+                            <option text="BM - ADGM" value="BM - ADGM" selected="{! v.fundTransferObj.From_Source_System__c == 'BM - ADGM'}"></option>
+                        </aura:if> 
+                        
+                        <aura:if isTrue="{! if(and(v.selectedFromOU != '101', v.selectedFromOU != '104'),true,false)}">
+                            <aura:iteration var="sysName" items="{!v.sourceSystems}" >
+                                <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.fundTransferObj.From_Source_System__c}"></option>
+                            </aura:iteration>
+                        </aura:if>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="3">
+                <div class="custom-box">
+                    <lightning:select onchange="{!c.onToOUChange}" aura:id="curVal" name="curVal" disabled="{!or(v.isReview,if(v.selectedOU == 'Same Operating Unit',true,false))}" label="To Operating Unit" required="true" value="{!v.selectedToOU}"  messageWhenValueMissing="Complete this field">
+                        <option text="--None--" value=""></option>    
+                        <aura:iteration var="sysName" items="{!v.ouList}" >
+                            <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.selectedToOU}"></option>
+                        </aura:iteration>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="around-small" size="3">
+                <div class="custom-box">
+                    <lightning:select aura:id="curVal" name="curVal" disabled="{!or(or(v.isReview, or(v.selectedOU == 'Same Operating Unit', v.selectedOU == 'Different Operating Unit')), if(or(v.selectedToOU == '104', v.selectedToOU == '101'),false,true))}" label="To Source System" required="true" value="{!v.fundTransferObj.To_Source_System__c}" onchange="{!c.onToSourceSystemChange}"  messageWhenValueMissing="Complete this field">
+                        <option text="--None--" value=""></option> 
+                        <aura:if isTrue="{! if(v.selectedToOU == '104',true,false)}">
+                            <option text="Access" value="Access" selected="{! v.fundTransferObj.To_Source_System__c == 'Access'}"></option>
+                            <option text="Catalyst" value="Catalyst" selected="{! v.fundTransferObj.To_Source_System__c == 'Catalyst'}"></option>
+                        </aura:if>
+                        <aura:if isTrue="{! if(v.selectedToOU == '101',true,false)}">
+                            <option text="BM - Arbitration" value="BM - Arbitration" selected="{! v.fundTransferObj.To_Source_System__c == 'BM - Arbitration'}"></option> 
+                            <option text="BM - ADGM" value="BM - ADGM" selected="{! v.fundTransferObj.To_Source_System__c == 'BM - ADGM'}"></option>
+                        </aura:if> 
+                        
+                        <aura:if isTrue="{! if(and(v.selectedToOU != '101', v.selectedToOU != '104'),true,false)}">
+                            <aura:iteration var="sysName" items="{!v.sourceSystems}" >
+                                <option text="{!sysName.picklistLabel}" value="{!sysName.picklistVal}" selected="{!sysName.picklistVal == v.fundTransferObj.To_Source_System__c}"></option>
+                            </aura:iteration>
+                        </aura:if>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            <!--End of From and To OU Selection--> 
+            
+            
+            <!--Other Scenarios than Unidentified From and To Entity Selection-->
+            <aura:if isTrue="{! if(v.fundTransferObj.Scenario__c != 'Unidentified customer balance transfer',true,false)}">
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <c:customLookupPublic aura:id="fromCustomer" SearchField="Lookup_Search_Field__c" label = "* From Customer" isDisabled="{!or(v.isReview,v.isFromEntityReadonly)}" filter="{!v.unCustomerFilterFrom}" objectAPIName="account" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecordFrom}" />
+                    </div>
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <c:customLookupPublic aura:id="toCustomer" SearchField="Lookup_Search_Field__c"  label = "* To Customer" isDisabled="{!or(v.isReview,v.isToEntityReadonly)}" objectAPIName="account" filter="{!v.unCustomerFilterTo}" IconName="standard:account" selectedRecord="{!v.selectedLookUpRecordTo}" />
+                    </div>
+                </lightning:layoutItem>
+            </aura:if>
+            <!--End of Other Scenarios than Unidentified From and To Entity Selection-->
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <c:customLookupPublic aura:id="fromReceipt" showError="true" SearchField="Lookup_Search_Field__c" isDisabled="{!or(v.isReview,if(and(!v.disableReceiptSelection),false,true))}" filter="{! 'AND Journal_Created__c = true AND Remaning_Amount__c > 0 AND Entity__c =\''+ v.fundTransferObj.From_Entity__c+'\''+v.receiptFilterCriteria}" label = "Receipt" objectAPIName="Receipt__c" IconName="standard:partner_fund_claim" selectedRecord="{!v.selectedReferenceReceipt}" />
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:input type="date" name="glDate" label="GL Date" disabled="{!v.isGLDateReadOnly}" value="{!v.fundTransferObj.GL_Date__c}" required="true" onchange="{!c.glDateSelected}"/>
+                </div>
+            </lightning:layoutItem>
+            
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:select aura:id="frmcurrency" disabled="true" name="curVal" label="From Currency" required="true" value="{!v.fundTransferObj.From_Currency__c}"  messageWhenValueMissing="Complete this field">
+                        <option text="-None-" value=""></option>    
+                        <option text="AED" value="AED"></option>
+                        <option text="USD" value="USD"></option>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:select aura:id="tocurrency" disabled="true" name="curVal" label="To Currency" required="true" value="{!v.fundTransferObj.To_Currency__c}"  messageWhenValueMissing="Complete this field">  
+                        <option text="-None-" value=""></option>    
+                        <option text="AED" value="AED"></option>
+                        <option text="USD" value="USD"></option>
+                    </lightning:select> 
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:input type="number" disabled="{! or(v.isReview, v.isNotReceiptSelected)}" min="0.0" max="{!v.receiptBalance}" messageWhenRangeOverflow="{! 'Amount can not be more than '+ v.receiptBalance}" label="Amount" name="recAmount" value="{!v.fundTransferObj.Amount__c}" step=".01" aura:id="amnt" required="true" /> 
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="6">
+                <div class="custom-box">
+                    <lightning:textarea disabled="{!or(v.isReview, v.isNotReceiptSelected)}" label="Description" name="recAmount" value="{!v.fundTransferObj.Description__c}" aura:id="RecAmount"/> 
+                </div>
+            </lightning:layoutItem>
+            
+            <lightning:layoutItem padding="around-small" size="3">
+                <div class ="custom-box" >
+                    <lightning:input disabled="{!v.isReview}" name="otherFiles" type="file" label="Other Document" required="false" onchange="{!c.onFileChange}"/>
+                    <div class="slds-text-body_small slds-text-color_error">{!v.uploadedFiles[0].fileName}</div>
+                </div>
+            </lightning:layoutItem>
+            
+        </lightning:layout>
+        
+        <aura:set attribute="footer">
+            <aura:if isTrue="{! or(v.fundTransferObj.Pushed_To_Oracle__c, v.isEdit)}">
+                <lightning:button iconName="utility:back" variant="brand" label="Back" title="Back" onclick="{!c.goBack}"/>
+            </aura:if>
+            <aura:if isTrue="{! !v.fundTransferObj.Pushed_To_Oracle__c}">
+                <aura:if isTrue="{! !v.isReview}">
+                    <!-- <lightning:button iconName="utility:clear" variant="neutral" label="Clear" title="Clear"/>    -->   
+                    <lightning:button disabled="{! or(v.isNotReceiptSelected , v.isGLDateNotSelected) }" iconName="utility:save" variant="brand" label="Confirm and Save" title="Confirm and Save" onclick="{!c.doConfirm}"/>
+                    <aura:set attribute="else">
+                        <lightning:button iconName="utility:clear" variant="neutral" label="Edit" title="Edit" onclick="{!c.doEdit}"/>       
+                        <lightning:button iconName="utility:save" variant="brand" label="Confirm" title="Confirm" onclick="{!c.doSave}"/>
+                    </aura:set>
+                </aura:if>
+            </aura:if>
+        </aura:set>
+        
+    </lightning:card>
+</aura:component>

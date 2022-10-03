@@ -1,0 +1,44 @@
+<apex:page id="PaymentReceipt" controller="PaymentReceiptController" action="{!checkParameters}" tabStyle="ADGM_Portal_Home__tab">
+    <style>
+        body .bPageTitle .pageTitleIcon, body .bPageTitle .ptBody .pageType{
+            display:block !important;
+        }
+        
+        .bPageBlock .detailList th, .bPageBlock .detailList td {
+            vertical-align: middle !important;
+        }
+    </style>
+    <script type="text/javascript">
+        function printReceipt(recieptId){
+            //alert(recieptId);
+            var strURL = '/'+'{!$Label.Receipt_Object_Prefix}'+'/o';
+            window.open(strURL, "_parent");
+        }
+    </script>
+    <apex:sectionheader title="Transaction Details"/>
+    <apex:form id="ReceiptForm">
+        <apex:pageblock >
+            <apex:pageBlockButtons location="bottom">
+                <!--<apex:commandButton value="Print Receipt" onclick="printReceipt('{!receipt.Id}');" reRender="null" />-->
+                <apex:commandButton value="Go to Receipts" onclick="printReceipt('{!receipt.Id}');" reRender="null" />
+            </apex:pageBlockButtons>
+            <!--<apex:pageMessage summary="Receipts can be downloaded from the Receipts tab." severity="confirm" strength="3"/>-->
+            <apex:pageblocksection title="Receipt Information" columns="1" collapsible="false">
+                <apex:outputfield value="{!receipt.Message__c}"/>
+                <apex:outputfield value="{!receipt.Amount__c}"/>
+                <apex:outputfield value="{!receipt.Payment_Currency__c}"/>
+                <apex:outputfield value="{!receipt.Status__c}"/>
+                <apex:outputfield value="{!receipt.Payment_Purpose__c}"/>
+                <apex:outputfield value="{!receipt.Transaction_Reference__c}"/>
+                <apex:outputfield value="{!receipt.Invalid_Fields__c}" rendered="{!IF(receipt.Status__c!='Success',true,false)}"/>
+                <apex:outputfield value="{!receipt.Decision__c}" rendered="{!IF(receipt.Status__c!='Success',true,false)}"/>
+            </apex:pageblocksection>
+        </apex:pageblock>
+        <!-- 
+            <apex:repeat value="{!keyMap}" var="key">
+                {!key} >>>  {!formDataMap[key]}
+                <br/>
+            </apex:repeat>
+        -->
+    </apex:form>
+</apex:page>

@@ -1,0 +1,13 @@
+<apex:page standardController="Account"  readOnly="true" extensions="PortalUserController"> 
+  <apex:pageBlock >
+      <apex:pageBlockTable value="{!lstPortalContacts}" var="user" >
+         <apex:column headerValue="Name"><a href="/{!user.Id}" target="_blank">{!user.name}</a></apex:column>
+         <apex:column value="{!user.Email}"/>
+         <apex:column value="{!user.Types_of_Services_Accessible__c}"/>
+      </apex:pageBlockTable>
+      
+      
+     
+      
+   </apex:pageBlock>
+</apex:page>

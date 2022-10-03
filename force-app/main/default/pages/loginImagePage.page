@@ -1,0 +1,23 @@
+<apex:page showHeader="false" applyBodyTag="false" cache="false" standardStylesheets="false">
+<head>
+    <style>
+        html{
+            height: 100%;
+        }
+        body{
+            height: 100%;
+            margin: 0px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            background-image: url("{!URLFOR($Resource.IFrame_BG_Login)}");
+        }
+        img{
+            height:auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+</body>
+</apex:page>

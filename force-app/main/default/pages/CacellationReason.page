@@ -1,0 +1,129 @@
+<apex:page Id="CourierPage" StandardController="HexaBPM__Service_Request__c" Extensions="CancelReasonController" >
+    <style>
+        /* This is for the full screen DIV */
+        .overlay {
+           background-color: black;
+           /*cursor: wait;*/
+           opacity: 0.6;
+           /* Generic for Major browsers */ 
+           -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; 
+           /* IE 5-7 */
+           filter: alpha(opacity = 60);
+           /* Netscape */
+           -moz-opacity: 0.6;
+           /* Safari 1.x */
+           -khtml-opacity: 0.6;
+           position: fixed;
+           width: 100%; 
+           height: 100%;
+           top: 0;
+           left: 0;
+           z-index: 101;
+           zIndex: 101;
+        }
+        /* This is for the message DIV */
+        .contentDiv{
+            position: absolute; 
+            z-index: 102; 
+            top: 0px;
+            left: 50%;
+            margin-left: -300px;
+            <!--margin-left: 8%;-->
+            <!--margin-top:5%;-->
+            <!--//width:500px;-->
+            <!--//min-height:300px;-->
+            <!--//margin-right: 10%;-->
+        }
+        #pbdiv {
+            width: 750px;
+        }
+        .pageTitleIcon {
+            background-image: url(/img/sprites/master.png);
+            background-position: 0 -1202px;
+            width: 32px;
+            height: 32px;
+        }
+        #pbdiv .bPageBlock {
+           min-height:250px !important;
+           margin-bottom:0 !important;
+           max-width:750px;
+           /*
+           border:none !important;
+           background-color: transparent !important;
+           */
+        }
+        .Step_pageTitleIcon {
+            background-image: url(/img/icon/custom51_100/presenter32.png);
+            background-position: 0 0;
+            width: 32px;
+            height: 32px;
+        }
+        .ActnHeaderCol{
+            text-align:center;
+        }
+        .bEditBlock .pbHeader > table > tbody > tr > td, .bPageBlock .pbHeader > table > tbody > tr > td, .bLayoutBlock .pbHeader > table > tbody > tr > td, .bEditBlock .pbBottomButtons > table > tbody > tr > td, .bPageBlock .pbBottomButtons > table > tbody > tr > td, .bLayoutBlock .pbBottomButtons > table > tbody > tr > td{
+            padding: 15px 12px;
+        }
+        .spacer-qs{
+            margin-top:10px;
+        }
+    </style>
+    <style type="text/css">
+        
+        a:hover {background:#ffffff; text-decoration:none;opacity: 1;} /*BG color is a must for IE6*/
+        a.tooltip span {display:none; padding:2px 3px; margin-left:8px; width:130px;opacity: 1;}
+        a.tooltip:hover span{display:inline; position:absolute; border:1px solid #cccccc; background:#ffffff; color:#6c6c6c;opacity: 1;}
+    </style>
+    
+    <apex:form id="frm">
+        <div class="overlay"></div>
+        <apex:outputPanel styleClass="contentDiv courrierDiv">
+            <div id="pbdiv">
+                <apex:pageblock Id="pb">
+                    <apex:actionStatus id="pleasewait" stopText="">
+                      <apex:facet name="start">
+                          <div>
+                              <div class="popupBackground"></div>
+                              <div class="PopupPanel">
+                                  <img src="{!$Resource.Hexabpm__LoadingImage}"/>
+                              </div>
+                          </div>
+                      </apex:facet>
+                    </apex:actionStatus>
+                    <div class="content">
+                        <table>
+                            <tr>
+                                <td>
+                                    <img src="/s.gif" alt="Step" class="Step_pageTitleIcon" title="Step"/>
+                                </td>
+                                <td>
+                                    <h1 class="pageType" style="margin-top:5px;">{!sr.Name}<span class="titleSeparatingColon">:</span></h1>
+                                    <br/>
+                                    <h2 style="font-size:15px;">Provide Reason To Cancel</h2>
+                                    <div class="blank">&nbsp;</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <apex:pageBlockButtons location="bottom" id="pbtns">
+                        <apex:commandButton id="CancelLink"  action="{!cancel}" styleClass="btn" style="padding: 4px;text-decoration: none;" value="Cancel"/>
+                        <apex:commandButton id="ProceedLink" action="{!confirmCancel}" styleClass="btn" style="padding: 4px;text-decoration: none;" value="Confirm"/>
+                    </apex:pageBlockButtons>
+                    <div class="spacer-qs">
+                        <apex:pageMessages id="msg"/>
+                    </div>
+                    <apex:outputpanel layout="block">
+                        <apex:pageblocksection title="Cancellation Information" columns="2" collapsible="false">
+                            <apex:pageblocksectionitem >
+                                <apex:outputlabel value="Cancellation Reason"/>
+                                <apex:inputfield value="{!sr.Reason_of_Cancellation__c}" style="width: 360px;"/>
+                            </apex:pageblocksectionitem>
+                        </apex:pageblocksection>
+                    </apex:outputpanel>
+                    <div class="spacer-qs">
+                    </div>
+                </apex:pageblock>
+            </div>
+        </apex:outputpanel>
+    </apex:form>
+</apex:page>

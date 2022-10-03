@@ -1,0 +1,465 @@
+<apex:page id="UserRegPg" sidebar="false" language="en_GB" standardstylesheets="true" showheader="false" controller="GuestUserRegistrationController">
+    <link rel="stylesheet" type="text/css" href="{!$Site.Prefix}/apex/FZPortalCSSMain" />
+    <apex:includeScript value="{!URLFOR($Resource.ADGMStaticResources, 'ADGMStaticResources/js/jquery.min.js')}"/>
+    <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+    </apex:actionstatus>
+    <apex:composition template="UserRegistrationHeader"/>
+    <style>
+        .page-title.row h4, .page-title.row h5, h3{
+            color: #fff !important;
+        }
+        .pbSubheader{
+            background-color : #44939C !important;
+        }
+        /*body button, body .x-btn, body .btn, body .btnDisabled, body .menuButton .menuButtonButton{
+            background :  #AD9961 !important;
+        }*/
+        .bPageBlock{
+            border-top :  #ac975e !important;
+            width: 80%;
+            background-color : #fff !important;
+            text-align: left !important;
+            background-color: #fff !important;
+        }
+        .pageSpanContainer{
+             background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+            background-repeat: no-repeat;
+            width: 100%;
+            padding-bottom: 17%;
+            /*height: 240px;*/
+            background-size: cover;
+            position: relative;
+        }
+        .pageSpanContainer h1{
+            font-size: 24px;
+            line-height: 36px;
+            //text-align: left;
+            color: #fff;
+            margin-bottom: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+        }
+        body button, body .x-btn, body .btn, body .btnDisabled, body .btnCancel, body .menuButton .menuButtonButton{
+            color: #fff !important;
+        }
+        /*
+        .btnSubmit{
+            height : 25px !important;
+            width : 70px !important;
+            background :  #AD9961 !important;
+        }
+        .btnCancel{
+            height : 25px !important;
+            width : 70px !important;
+            background :  #8C9CA0 !important;
+        }
+        */
+        .btnCheckAvail{
+            //height : 25px !important;
+            //width : 100px !important;
+            //background :  #AD9961 !important;
+            color:  #AD9961 !important;
+            font-size: 13px !important;
+            //margin-left: 8px !important; 
+            font-weight:bold !important; 
+            //text-transform: uppercase;
+            text-decoration:underline;
+        }
+        body{
+            background-color: #F5F5F5 !important;
+            position: relative;
+            
+        }
+        .pad-left{
+            padding-left: 16px;
+            font-family: Raleway_Regular;
+        }
+        .left-spacer{
+            margin-left:20px;
+        }
+        .t-spacer{
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .pBold{
+            font-weight:bold;
+        }
+        .vfHelpText a            {position:relative;}
+        .vfHelpText a span       {display: none;}
+        .vfHelpText a:hover span {display: block;
+                                  position:absolute;
+                                  top:1.25em;
+                                  padding:5px 5px;
+                                  /*left:-15em; width:16em;*/
+                                  left:-10em; width:10%;
+                                  z-index:100; min-width:11em;
+                                  border:1px solid orange;
+                                  background-color:#FEFDB9;
+                                  color:black;
+                                 }
+        
+    </style>
+    <script>
+      (function() {
+        var windowOnload = window.onload;
+        window.onload = function() {
+          if (windowOnload) windowOnload();
+          var select = document.getElementById('calYearPicker');
+          if (!select) return;
+    
+          select.innerHTML = '';
+          var startYear = new Date().getFullYear() - 80;
+          for (var year = startYear; year < startYear + 80; year++) {
+            select.options[select.options.length] = new Option(year, year);
+          }
+        }
+        //translate_field();
+      }());
+      
+        
+    </script>
+    <apex:form id="UserRegFrm">
+        <div class="pageSpanContainer">
+            <div id="header-content"><h1>REGISTER AS A GUEST USER</h1></div>
+        </div>
+        <br/>
+        <center>
+        <!--<apex:messages />-->
+        <apex:pageblock id="InfoPB" mode="maindetail">
+            <div id="MessageDiv" style="width:30%; margin-left:35%;">
+                <!--<apex:pagemessages id="msg"/>-->
+            </div>
+            <!--<apex:actionstatus id="loadingStatus">
+                <apex:facet name="start">
+                    <c:ADGM_Loading_Component />
+                </apex:facet>
+            </apex:actionstatus>-->
+            <apex:pageblocksection title="Information" columns="2" collapsible="false">
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Title"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Title__c}"/>
+                    </apex:outputpanel> 
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="First Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.First_Name__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Middle Name"/>
+                    <apex:inputfield value="{!objSR.Middle_Name__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Last Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Last_Name__c}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Date of Birth"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.Date_of_Birth__c.inlineHelpText}</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Date_of_Birth__c}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Work Email"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.HexaBPM__Email__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Contact Number"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>{!$ObjectType.HexaBPM__Service_Request__c.fields.HexaBPM__Send_SMS_to_Mobile__c.inlineHelpText}</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.HexaBPM__Send_SMS_to_Mobile__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Company Name"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield id="company_name_en" value="{!objSR.Company_Name__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <!--<apex:pageblocksectionitem >
+                    <apex:outputlabel value="Reason for Access"/>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Reason_for_Access__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>-->
+                <!--
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="License Number"/>
+                    <apex:inputfield value="{!objSR.License_Number__c}"/>
+                </apex:pageblocksectionitem>  -->
+                
+                
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="License Number"/>
+                        <span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.License_Number__c}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                
+                
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Company Name (Arabic)"/>
+                    <apex:inputfield id="company_name_ar" value="{!objSR.Company_Name_Arabic__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Registered for Tax"/>
+                    <apex:inputfield value="{!objSR.Registered_for_Tax__c}"/>
+                </apex:pageblocksectionitem>
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel id="taxRegPanel1">
+                        <apex:outputlabel value="Tax Registration Number"/>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" id="taxRegPanel2">
+                        <apex:inputfield value="{!objSR.Tax_Registration_Number__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Is ADGM Company"/>
+                    </apex:outputPanel>
+                    <apex:outputpanel layout="block" >
+                        <input id="isADGMCompany" type="checkbox" name="isADGMCompany" value="isADGMCompany"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <!--<apex:pageblocksectionitem >
+                    <apex:outputlabel value="Other Reasons"/>
+                    <apex:inputfield value="{!objSR.Other_Reasons__c}"/>
+                </apex:pageblocksectionitem>-->
+            </apex:pageblocksection>
+            <!--<apex:pageblocksection id="passportDetails" title="Passport Details" columns="2" collapsible="false">
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Nationality"/>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Nationality__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Passport Number"/>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Passport_Number__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Passport Issue Date"/>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Passport_Issue_Date__c}"/> 
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Passport Expiry Date"/>
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <apex:inputfield value="{!objSR.Passport_Expiry_Date__c}"/>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+            </apex:pageblocksection>-->
+            <apex:pageblocksection id="usernameDetails" title="Username Details" columns="1" collapsible="false">
+                <!--<apex:pageblocksectionitem >
+                    <div style="text-align:center;">Username must contain only alphanumeric characters. Please do not include special characters such as comma (,), quotes('"), slash(/), semi-colon(;), colon(:) and blank spaces.</div>
+                </apex:pageblocksectionitem>-->
+                <apex:pageblocksectionitem >
+                    <apex:outputPanel >
+                        <apex:outputlabel value="Username"/>
+                        <!--<span class="vfHelpText">
+                            <apex:outputLink value="javascript:return false;">
+                                <img src="/s.gif" alt="" class="helpOrb" />
+                                <span>This field is required. Username must be in the form of an email address. Do not include these characters: ' " : ; , blank space</span>
+                            </apex:outputLink>
+                            &nbsp;&nbsp;
+                        </span>-->
+                    </apex:outputPanel>
+                    <!--<apex:outputpanel layout="block" styleclass="requiredInput" style="margin-top:1%">-->
+                    <apex:outputpanel layout="block" styleclass="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <!--<apex:inputField value="{!objSR.Guest_Username__c}"/>&nbsp;@adgm.portal-->
+                        <apex:inputText value="{!guestUsername}"/>&nbsp;@adgm.portal
+                        <span class="left-spacer" >
+                            <apex:commandLink value="Check Availability" action="{!checkUName}" styleClass="btnCheckAvail" status="loadingStatus" reRender="UserRegFrm"/>
+                            <apex:outputPanel rendered="{!IF((infomessage!=''),true,false)}" style="margin-left:15px;">
+                            <apex:image id="theImage" value="{!iconURL}" width="15" height="15"/>&nbsp;
+                            <apex:outputText value="{!infomessage}" style="{!IF((isUserNameAvailable=true),'color:green;font-weight:bold;','color:red;font-weight:bold;')}"/>
+                            </apex:outputPanel>
+                        </span>
+                        <div class="errorMsg" style="{!If((hasErrorUsername==false),'display:none;','')}"><strong>Error</strong>: Username is required.</div>
+                        <div class="errorMsg" style="{!If((hasErrorformatUsername==false),'display:none;','')}"><strong>Error</strong>: Username must contain only alphanumeric characters. Please do not include special characters such as comma (,), quotes('"), slash(/), semi-colon(;), colon(:) and blank spaces.</div>
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <div class="pad-left">
+                    <span class="pBold">Privacy notice:</span> ADGM Registration Authority will not disclose your personal data, including name, date of birth or e-mail address to any third parties, and we will only use your personal details for the purpose of registration for the ACCESSADGM online solution. You have a right of access to and rectification of your personal data.
+                </div>
+                <div class="pad-left t-spacer">
+                    For more information on how we handle your personal data, please refer to ADGM’s <a href="https://www.adgm.com/privacypolicy/" target="_blank">Privacy Policy</a>.
+                </div>
+                <!-- <apex:pageblocksectionitem >
+                    <apex:outputlabel value="Disclaimer"/>
+                    <apex:outputText value="{!disclaimerText}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                    <apex:outputlabel value="I Agree"/>
+                    <apex:inputField value="{!objSR.I_Agree__c}"/>
+                </apex:pageblocksectionitem> -->
+            </apex:pageblocksection>
+              
+            <apex:pageBlockButtons html-align="right" location="bottom">
+                <apex:commandbutton value="Submit" onclick="submitSR();return false;" action="{!SubmitSR}" styleclass="btnSubmit" status="loadingStatus" reRender="UserRegFrm" immediate="false"/>
+                <apex:commandbutton value="Cancel" action="{!cancelReg}" styleclass="btnCancel"/>
+            </apex:pageBlockButtons>
+            
+        </apex:pageblock>
+        <apex:actionfunction name="submitSRAction" action="{!SubmitSR}" />
+        <apex:actionfunction name="toggleTaxReg" action="{!toggletaxregNum}" reRender="null" />
+        </center>
+    </apex:form>
+    <script>
+        function submitSR(){
+            console.log(document.getElementById("isADGMCompany").checked);
+            if(document.getElementById("isADGMCompany").checked == false)
+                submitSRAction();
+            else{
+                alert("Please select the Company Registration Link from the login page to register as a Company.");
+                return false;
+            }
+        }
+        function checkHastaxRegNum(){
+            toggleTaxReg();
+            /*if(hasTaxReg == Yes){
+                document.getelementById('UserRegPg:UserRegFrm:InfoPB:j_id11:j_id92:taxRegPanel1').style.display = '';
+                document.getelementById('UserRegPg:UserRegFrm:InfoPB:j_id11:j_id92:taxRegPanel2').style.display = '';
+            } else if(hasTaxReg == No){
+                document.getelementById('UserRegPg:UserRegFrm:InfoPB:j_id11:j_id92:taxRegPanel1').style.display = 'none';
+                document.getelementById('UserRegPg:UserRegFrm:InfoPB:j_id11:j_id92:taxRegPanel2').style.display = 'none';
+            }*/
+        }
+        translate_field();
+        /*Gets the source field values(from custom settings) and performs the Arabic translation.*/
+        function translate_field(){
+            var dict = {};
+            var JSONTranslateFields = JSON.parse('{!jsonTranslateFields}');
+            for(var i = 0; i < JSONTranslateFields.length; i++){
+                dict[JSONTranslateFields[i].Source__c] = JSONTranslateFields[i].Destination__c;
+            }
+            //console.log(dict);
+            var sourceIdEndWith;
+            var destIdEndWith;
+            for (var key in dict) {
+                var sourceIdEndWith= '[id$="'+key+'"]';
+                //console.log($(sourceIdEndWith));
+                if($(sourceIdEndWith)){
+                    $(sourceIdEndWith).bind('keyup', function(event){
+                        var keyName = $(this).attr('id');
+                        //console.log(keyName );
+                        $.getJSON('https://www.googleapis.com/language/translate/v2/',{key:'{!$Label.Google_API}',source:'en', target:'ar', q: $(this).val()})
+                            .done(function(response){
+                                var translated_val = response["data"].translations[0].translatedText;
+                                destIdEndWith = '[id$="'+dict[key]+'"]';
+                                //console.log(destIdEndWith);
+                                $(destIdEndWith ).val(translated_val);
+            
+                            })
+                            .fail(function(error){
+                                console.log('Google Translation error: '+error);
+                            });                   
+                    });
+                }
+            }
+    
+        }
+    </script>
+</apex:page>

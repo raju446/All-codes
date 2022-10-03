@@ -1,0 +1,392 @@
+<apex:page >
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Page
+
+<!-- Start of Chat Style Sheet -->
+
+
+
+<style type='text/css'>
+    .embeddedServiceHelpButton .helpButton .uiButton {
+        background-color: #002A3A;
+        font-family: "Georgia", sans-serif;
+        font-size: inherit;
+        font-size: 1.3em !important; 
+        padding: 0 10px !important; 
+        max-width: none !important;
+        min-width: inherit !important;
+    }
+    .embeddedServiceHelpButton .helpButton .uiButton:focus {
+        outline: 1px solid #002A3A;
+    }
+
+        .embeddedServiceSidebarHeader{
+        overflow: visible !important;
+    }
+
+
+
+    .embeddedServiceSidebarHeader .h1, .embeddedServiceSidebarHeader .h2, .embeddedServiceSidebarHeader .h3, .embeddedServiceSidebarHeader h1, .embeddedServiceSidebarHeader h2, .embeddedServiceSidebarHeader h3{
+        margin-bottom: inherit !important;
+        margin-top: inherit !important;
+
+    } 
+    .embeddedServiceHelpButton .message, .embeddedServiceSidebarHeader .message, .embeddedServiceSidebar .message {
+        background-color: inherit !important;
+        color: inherit !important;
+        border-style: none !important;
+        padding: initial;
+        margin: inherit !important;
+    }
+
+    .embeddedServiceSidebarHeader body button, .embeddedServiceSidebarHeader body,.embeddedServiceSidebarHeader .x-btn,.embeddedServiceSidebarHeader body .btn,.embeddedServiceSidebarHeader body .btnDisabled,.embeddedServiceSidebarHeader body .btnCancel,.embeddedServiceSidebarHeader body .menuButton .menuButtonButton {
+
+        color: inherit !important;
+        margin: inherit !important;
+        padding: inherit !important; 
+        border: inherit !important;
+        border-bottom-color: inherit !important;
+        background: #002A3A !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font: inherit !important;   
+    }
+
+    .embeddedServiceSidebar button, .embeddedServiceSidebar button .label {
+        background:  #002A3A !important;
+/*      font-weight: normal !important; */
+        color: #FFFFFF !important;
+    }
+
+    .embeddedServiceSidebarMinimizedDefaultUI{
+        min-width: inherit !important;
+        width: inherit !important; 
+    }
+
+</style>
+
+<!-- Start of Invitations -->
+<div class="embeddedServiceInvitation" id="snapins_invite" inert="" aria-live="assertive" role="dialog" aria-atomic="true">
+    <div class="embeddedServiceInvitationHeader" aria-labelledby="snapins_titletext" aria-describedby="snapins_bodytext">
+        <img id="embeddedServiceAvatar"></img>
+        <span class="embeddedServiceTitleText" id="snapins_titletext">Need help?</span>
+        <button type="button" id="closeInvite" class="embeddedServiceCloseIcon" aria-label="Exit invitation">&times;</button>
+    </div>
+    <div class="embeddedServiceInvitationBody">
+        <p id="snapins_bodytext">How can we help you?</p>
+    </div>
+    <div class="embeddedServiceInvitationFooter" aria-describedby="snapins_bodytext">
+        <button type="button" class="embeddedServiceActionButton" id="rejectInvite">Close</button>
+        <button type="button" class="embeddedServiceActionButton" id="acceptInvite">Start Chat</button>
+    </div>
+</div>
+
+<style type='text/css'>
+    #snapins_invite { 
+        background-color: #FFFFFF; font-family: 
+        "Georgia", sans-serif; 
+        overflow: visible; 
+        border-radius: 8px; visibility: hidden; }
+    
+    .embeddedServiceInvitation { 
+        background-color: transparent; 
+        max-width: 290px; 
+        max-height: 210px; 
+        -webkit-box-shadow: 0 7px 12px rgba(0,0,0,0.28); 
+        -moz-box-shadow: 0 7px 12px rgba(0,0,0,0.28); 
+        box-shadow: 0 7px 12px rgba(0,0,0,0.28); }
+        @media only screen and (min-width: 48em) { /*mobile*/ .embeddedServiceInvitation { max-width: 332px; max-height: 210px; } }
+    
+    .embeddedServiceInvitation  button{
+        background: #002A3A !important; 
+    }
+
+    .embeddedServiceInvitation > .embeddedServiceInvitationHeader { 
+        width: inherit; 
+        /* height: 32px; */
+        height: inherit !important; 
+        line-height: 32px; 
+        padding: 10px; 
+        color: #FFFFFF; 
+        background-color: #002A3A !important; 
+        overflow: initial; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: stretch; 
+        border-top-left-radius: 8px; 
+        border-top-right-radius: 8px; }
+    
+    .embeddedServiceInvitationHeader #embeddedServiceAvatar { 
+        width: 32px; 
+        height: 32px; 
+        border-radius: 50%; }
+
+    .embeddedServiceInvitation body button, .embeddedServiceInvitation body .x-btn, .embeddedServiceInvitation body .btn, .embeddedServiceInvitation body .btnDisabled, .embeddedServiceInvitation body .btnCancel, .embeddedServiceInvitation body .menuButton .menuButtonButton{
+        background-color: #002A3A !important;
+        background: #002A3A !important;
+        color: inherit;
+        background: inherit!;
+    }
+    
+    .embeddedServiceInvitationHeader .embeddedServiceTitleText { 
+        font-size: 18px; 
+        color: #FFFFFF; 
+        overflow: hidden; 
+        word-wrap: normal; 
+        white-space: nowrap; 
+        text-overflow: ellipsis; 
+        align-self: stretch; 
+        flex-grow: 1; 
+        max-width: 100%; 
+        margin: 0 12px; }
+    
+    .embeddedServiceInvitationHeader .embeddedServiceCloseIcon { 
+        border: none; 
+        border-radius: 3px; 
+        cursor: pointer; 
+        position: relative; 
+        bottom: 3%; 
+        background-color: inherit !important;
+        width: 32px; 
+        height: 32px; 
+        font-size: 23px !important; 
+        color: #FFFFFF; 
+        padding: 0 !important 
+/*      font-weight: normal !important; */ }
+    
+    .embeddedServiceInvitationHeader .embeddedServiceCloseIcon:focus { 
+        outline: none; }
+
+    .embeddedServiceInvitationHeader .embeddedServiceCloseIcon:focus::before { 
+        content: " "; 
+        position: absolute; 
+        top: 11%; 
+        left: 7%;
+        width: 85%; 
+        height: 85%; 
+        background-color: inherit !important; ; 
+        border-radius: 4px; pointer-events: none; }
+    
+    .embeddedServiceInvitationHeader .embeddedServiceCloseIcon:active, .embeddedServiceCloseIcon:hover { 
+        background-color: #FFFFFF; 
+        color: rgba(0,0,0,0.7); 
+        opacity: 0.7; }
+    
+    .embeddedServiceInvitation > .embeddedServiceInvitationBody { 
+        background-color: #FFFFFF; 
+        max-height: 110px; 
+        min-width: 260px; 
+        margin: 0 8px; 
+        font-size: 14px; 
+        line-height: 20px; 
+        overflow: auto; }
+    
+    .embeddedServiceInvitationBody p { 
+        color: #333333; 
+        padding: 8px; 
+        margin: 12px 0; }
+    
+    .embeddedServiceInvitation > .embeddedServiceInvitationFooter { 
+        width: inherit; 
+        color: #FFFFFF; 
+        text-align: right; 
+        background-color: #FFFFFF; 
+        padding: 10px; 
+        max-height: 50px; 
+        border-bottom-left-radius: 8px; 
+        border-bottom-right-radius: 8px; }
+
+
+    
+    .embeddedServiceInvitationFooter > .embeddedServiceActionButton { 
+        font-size: 13px !important; 
+/*      font-weight: normal !important; */
+        max-height: 40px; 
+        border: none; 
+        border-radius: 4px; 
+        /* padding: 10px; */
+        padding: 5px !important; 
+        margin: 4px; 
+        text-align: center; 
+        text-decoration: none; 
+        display: inline-block; 
+        cursor: pointer; 
+        background: #002A3A!important; 
+        color: inherit !important;
+        }
+    
+    .embeddedServiceInvitationFooter > #acceptInvite { 
+        background-color: #002A3A !important;
+        background: #002A3A !important;
+        color: #FFFFFF !important; }
+    
+    .embeddedServiceInvitationFooter > #rejectInvite { 
+        background-color: #002A3A !important;
+        background: #002A3A !important;      
+        color: #FFFFFF !important; }
+
+/*
+    .embeddedServiceIcon.x-small svg{
+        display: none !important;
+    }
+
+    .embeddedServiceHelpButton .embeddedServiceIcon::before, .embeddedServiceSidebarMinimizedDefaultUI .embeddedServiceIcon::before {
+        
+        content: url(https://adgm--ecm--c.cs101.visual.force.com/resource/1549872050000/SnapInsGoldLogo?) !important;
+    }
+
+*/
+</style>
+
+<script type='text/javascript'>
+    (function() {
+        document.getElementById('closeInvite').onclick = function() { embedded_svc.inviteAPI.inviteButton.rejectInvite(); };
+        document.getElementById('rejectInvite').onclick = function() { embedded_svc.inviteAPI.inviteButton.rejectInvite(); }; // use this API call to reject invitations
+        document.getElementById('acceptInvite').onclick = function() { embedded_svc.inviteAPI.inviteButton.acceptInvite(); }; // use this API call to start chat from invitations
+        document.addEventListener('keyup', function(event) { if (event.keyCode == 27) { embedded_svc.inviteAPI.inviteButton.rejectInvite(); }})
+    })();
+</script>
+<!-- End of Invitations -->
+
+<script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
+<script type='text/javascript'>
+    var initESW = function(gslbBaseURL) {
+        embedded_svc.settings.displayHelpButton = true; //Or false
+        embedded_svc.settings.language = ''; //For example, enter 'en' or 'en-US'
+        embedded_svc.settings.avatarImgURL = "https://adgm--ecm--c.cs101.visual.force.com/resource/1549872760000/SnapInsAvatarHuman?"
+        //embedded_svc.settings.smallCompanyLogoImgURL = "https://adgm--ecm--c.cs101.visual.force.com/resource/1549872050000/SnapInsGoldLogo?"
+        embedded_svc.settings.defaultMinimizedText = 'Need Help?'; //(Defaults to Chat with an Expert)
+        //embedded_svc.settings.disabledMinimizedText = '...'; //(Defaults to Agent Offline)
+
+        //embedded_svc.settings.loadingText = ''; //(Defaults to Loading)
+        //embedded_svc.settings.storageDomain = 'yourdomain.com'; //(Sets the domain for your deployment so that visitors can navigate subdomains during a chat session)
+
+        // Settings for Live Agent
+        //embedded_svc.settings.directToButtonRouting = function(prechatFormData) {
+            // Dynamically changes the button ID based on what the visitor enters in the pre-chat form.
+            // Returns a valid button ID.
+        //};
+        //embedded_svc.settings.prepopulatedPrechatFields = {}; //Sets the auto-population of pre-chat form fields
+        //embedded_svc.settings.fallbackRouting = []; //An array of button IDs, user IDs, or userId_buttonId
+        //embedded_svc.settings.offlineSupportMinimizedText = '...'; //(Defaults to Contact Us)
+
+        embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+        embedded_svc.settings.entryFeature = 'LiveAgent';
+
+
+        /* Added this to change the standard behavior.*/
+/*
+        embedded_svc.settings.extraPrechatFormDetails = [{
+            "label": "Case Origin",
+            "fieldName": "Origin",
+            "value": "Phone",
+            "displayToAgent": true
+        }];
+
+*/      
+            
+
+
+
+        embedded_svc.settings.extraPrechatInfo = [{
+            "entityName": "Contact",
+            "linkToEntityName": "Case",
+            "linkToEntityField": "ContactId",
+            "entityFieldMaps": [{
+                "isExactMatch": true,
+                "fieldName": "FirstName",
+                "doCreate": false,
+                "doFind": false,
+                "label": "First Name"
+            },
+            {
+                "isExactMatch": true,
+                "fieldName": "LastName",
+                "doCreate": false,
+                "doFind": false,
+                "label": "Last Name"
+            },
+            {
+                "isExactMatch": true,
+                "fieldName": "Email",
+                "doCreate": false,
+                "doFind": true,
+                "label": "Email"
+            }]
+        },
+        {   
+            "entityName": "Case",
+            "showOnCreate": true,
+            "entityFieldMaps": [
+            {
+                "isExactMatch": false,
+                "fieldName": "CRM_First_Name__c",
+                "doCreate": true,
+                "doFind": false,
+                "label": "First Name"
+            },
+            {
+                "isExactMatch": false,
+                "fieldName": "CRM_Last_Name__c",
+                "doCreate": true,
+                "doFind": false,
+                "label": "Last Name"
+            },
+            {
+                "isExactMatch": true,
+                "fieldName": "Email_Address__c",
+                "doCreate": true,
+                "doFind": false,
+                "label": "Email"
+            },
+            {
+                "isExactMatch": false,
+                "fieldName": "CRM_Company__c",
+                "doCreate": true,
+                "doFind": false,
+                "label": "Company Name"
+            }
+
+            /*
+            ,
+            {
+                "fieldName": "Origin",
+                "value": "ACCESSADGM Portal – Live Chat"
+            }
+            */
+            ]
+                    
+        }];
+
+
+        embedded_svc.init(
+            'https://adgm--ECM.cs101.my.salesforce.com',
+            'https://ecm-adgm.cs101.force.com/snapins2',
+            gslbBaseURL,
+            '00D1X0000008aIC',
+            'Website_Deployment',
+            {
+                baseLiveAgentContentURL: 'https://c.la1-c1cs-fra.salesforceliveagent.com/content',
+                deploymentId: '5721X0000004CBD',
+                buttonId: '5731X0000004CBN',
+                baseLiveAgentURL: 'https://d.la1-c1cs-fra.salesforceliveagent.com/chat',
+                eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04I1X0000008OKpUAM_1694d1bebb6',
+                isOfflineSupportEnabled: true
+            }
+        );
+    };
+
+    if (!window.embedded_svc) {
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://adgm--ECM.cs101.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+        s.onload = function() {
+            initESW(null);
+        };
+        document.body.appendChild(s);
+    } else {
+        initESW('https://service.force.com');
+    }
+</script>
+ 
+</apex:page>

@@ -1,0 +1,9 @@
+<apex:page tabstyle="All_Leads__tab">
+<script>
+    window.onload = function redirect() { 
+        //window.location.href='https://adgm--uat.cs80.my.salesforce.com/00Q?fcf=00B25000001A9pQ';
+        //window.parent.location.href='/00Q?fcf=00B25000001A9pQ';
+        window.parent.location.href='/lightning/o/Lead/list?filterName=00B25000001A9pQ';
+    }
+</script>
+</apex:page>

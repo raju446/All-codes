@@ -1,0 +1,284 @@
+<!--
+  @description       : 
+  @author            : Jayanta Karmakar
+  @group             : 
+  @last modified on  : 30-05-2021
+  @last modified by  : Jayanta Karmakar
+  Modifications Log 
+  Ver   Date         Author             Modification
+  1.0   02-02-2021   Jayanta Karmakar   Initial Version
+-->
+<aura:component implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:hasPageReference,force:appHostable" controller="MergeAccountsController" access="global" >
+    
+    
+    <!-- data table attributes -->
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="linkeddata" type="Object"/>
+    <aura:attribute name="selecteddata" type="Object"/>
+    <aura:attribute name="linkedcolumns" type="List"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedRowsCount" type="Integer" default="0"/>
+
+    <aura:attribute name="SelectedOU" type="String" default="104"/>
+    <aura:attribute name="ouPicklist" type="object[]" />
+    <aura:attribute name="isOUDisabled" type="Boolean" default="false"/>
+    <!-- search attributes -->
+    <aura:attribute name="selectedRowsList" type="List" />
+    <aura:attribute name="entityEmail" type="String" />
+    <aura:attribute name="entityPhone" type="String" />
+    <aura:attribute name="entityWebsite" type="String" />
+    <aura:attribute name="entityname" type="String" />
+    <aura:attribute name="selectedValue" type="String"/>
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />    
+    
+    <aura:attribute name="maxRowSelection" type="Integer" default="10"/>
+    <!--Basic Attributes-->
+    <aura:attribute name="pageReference" type="Object" />
+    
+    <aura:attribute name="selectAll" type="Boolean" default="false"/>
+    <aura:attribute name="selectedCount" type="Integer" default="0"/>
+    <aura:attribute name="selectedIndex" type="Integer" default="-1" />
+    <!-- Search attributes -->
+    <aura:attribute name="hasNoId" type="Boolean" default="false"/>
+    <aura:attribute name="issearching" type="Boolean" default="false"/>
+    <!-- handlers-->
+    <aura:handler event="force:refreshView" action="{!c.init}"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChanged}" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Page body Start -->
+    <lightning:card variant="Narrow" title="Merge Duplicates" iconName="standard:account" >
+        <aura:set attribute="actions">
+            <aura:if isTrue="{! !v.hasNoId}">  <lightning:button variant="brand" label="Back" iconName="utility:back" onclick="{!c.navigateBack}" iconPosition="right" /> </aura:if>
+        </aura:set>
+        <!--<hr/>-->
+        <div class="slds-border_top"></div>
+        <!-- Current Entity Detail start -->
+        <p class="slds-p-horizontal_small">
+            <!-- <aura:if isTrue="{! !v.hasNoId}">
+                the container element determine the height of the datatable -->
+            <!-- <div class="singleRecordClass">
+                <h1><b>Entity Detail</b></h1>
+                <lightning:datatable
+                                     columns="{! v.linkedcolumns }"
+                                     data="{! v.linkeddata }"
+                                     keyField="id"
+                                     resizeColumnDisabled = "true"
+                                     hideCheckboxColumn="true"/> 
+            </div>
+            
+            
+           
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem padding="around-small" size="6">
+                    
+                    <div class="custom-box">
+                        <lightning:input name="entityname" value="{!v.linkeddata[0].Name}" label="Name" disabled="{! !v.hasNoId}"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:input type="email" name="entityEmail" value="{!v.linkeddata[0].Email__c}" label="Email" disabled="true"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:input type="tel" name="entityPhone" value="{!v.linkeddata[0].Phone}" label="Phone" disabled="true"/>
+                    </div>
+                </lightning:layoutItem>  
+                 <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:input type="url" name="entityWebsite" value="{!v.linkeddata[0].Website}" label="Website" disabled="true"/>
+                    </div>
+                </lightning:layoutItem>
+               
+                          
+            </lightning:layout>
+        
+            <br/>
+        </aura:if>-->
+            <br/>
+            
+            <h1><b>Search Entities</b></h1>
+            <!-- Search Section Start-->
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem padding="around-small" size="6">
+                    
+                    <div class="custom-box">
+                        <lightning:input name="entityname" required="true" aura:id="entitynameinput" value="{!v.entityname}" label="Name" disabled="{! !v.hasNoId}" minlength="2" />
+                    </div>
+                </lightning:layoutItem>
+               <!-- <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:input type="email" name="entityEmail" value="{!v.entityEmail}" label="Email" disabled="{! !v.hasNoId}"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <lightning:input type="tel" name="entityPhone" value="{!v.entityPhone}" label="Phone" disabled="{! !v.hasNoId}"/>
+                    </div>
+                </lightning:layoutItem>   -->
+                <lightning:layoutItem padding="around-small" size="6">
+                    <div class="custom-box">
+                        <!--<lightning:input type="url" name="entityWebsite" aura:id="entitywebsiteinput" value="{!v.entityWebsite}"  label="Website" disabled="{! !v.hasNoId}" minlength="3"/> -->
+                        <lightning:select required="true" name="OU" label="Operating Unit" value="{!v.SelectedOU}" aura:id="OUinput" disabled="{! v.isOUDisabled}">
+                            <aura:iteration items="{!v.ouPicklist}" var="ouval">
+                                <option value="{!ouval.picklistVal}" text="{!ouval.picklistLabel}" selected="{!ouval.picklistVal == v.SelectedOU}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </lightning:layoutItem>
+                
+                
+            </lightning:layout>
+            
+            <aura:if isTrue="{!v.hasNoId}">
+                <lightning:button variant="brand" label="Search" iconName="utility:search" iconPosition="right" onclick="{!c.searchButtonClick}" class="searchbutton" />
+                <lightning:button variant="brand" label="Clear" iconName="utility:clear" iconPosition="right" onclick="{!c.clear}" class="clearbutton" />
+                
+                
+            </aura:if>
+            <br/><br/>
+            <h1 class="customNoteCss"><b>Note:</b> <br/>
+                1. Using the merge operation, field values on the master record always supersede the corresponding field values on the records to be merged. <br/>
+                2. After merging, the merge record is deleted and only master record remains in the database and all related records are moved to master related records. <br/>
+                3. Maximum 10 records can be merge at a time.
+                </h1>
+            <br/>
+            <!-- Current Entity Detail start -->
+            <!--<p class="slds-p-horizontal_small"> -->
+            <!-- Possible Match Details start -->
+            <div >
+                <h1><b>Potential Duplicate Entities</b></h1>
+                <!-- <lightning:datatable aura:id="pTable"
+                                     columns="{! v.columns }"
+                                     data="{! v.data }"
+                                     keyField="id"
+                                     maxRowSelection="{! v.maxRowSelection }"
+                                     onrowaction="{! c.handleRowAction }"
+                                     onrowselection="{! c.updateSelectedText }"/>
+                <br/> -->
+                <lightning:button variant="brand" label="Merge" iconName="utility:merge" onclick="{!c.mergeAccount}" iconPosition="right" class="mergeButton" />
+                <br/>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title--caps">
+                            <th scope="col"><div class="slds-truncate" title="Select All"><aura:if isTrue="{!!empty(v.data)}" ><ui:inputCheckbox aura:id="checkbox" value="{! v.selectAll }" change="{!c.onSelectAll}"/></aura:if></div></th>
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Master Record</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Name" >Name</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Oracle_Party_Id">AUTHORITY</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Oracle_Site_Id">PARTY ID</div></th>
+                            <!--<th scope="col"><div class="slds-truncate" title="Oracle_Party_Id">EMAIL</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Oracle_Site_Id">PHONE</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">WEBSITE</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Source System Id</div></th>-->
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Entity Id</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Created Date</div></th>
+                            <!-- <aura:if isTrue="{!v.hasNoId}"><th scope="col"><div class="slds-truncate" title="Goldan_Entity">Record Type Name</div></th></aura:if> -->
+                            <th scope="col"><div class="slds-truncate" title="Goldan_Entity">Entity Status</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.data}" var="objEntityWrapper" indexVar="tableIndex">
+                            <!-- Child Lightning Component --> 
+                            <tr>
+                                <td scope="col" width="5%">
+                                    <div class="slds-truncate" title="Action">
+                                        <ui:inputCheckbox aura:id="checkboxCampaign" value="{! objEntityWrapper.isSelected }" name="{!tableIndex}" disabled="{! tableIndex == v.selectedIndex }" change="{!c.onSelect}"/>
+                                    </div>
+                                </td>
+                                <td scope="col" width="5%">
+                                    <div class="slds-truncate" title="Action">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<ui:inputRadio aura:id="checkbox" change="{!c.onRadionButtonSelection}" name="{!tableIndex}" value="{! tableIndex == v.selectedIndex}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="30%">
+                                    <div class="slds-truncate" title="Name">
+                                        <a href="{! objEntityWrapper.accLink}" target="_blank"><ui:outputText value="{!objEntityWrapper.accountRec.Name}"/> </a>
+                                    </div>
+                                </td>
+                                <!--<td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Party_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Email__c}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Phone}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Website}"/> 
+                                    </div>
+                                </td> -->
+                                <td scope="col" width="15%">
+                                    <div class="slds-truncate" title="Oracle_Party_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Source_System_Name__c}"/> 
+                                    </div>
+                                </td>
+                                
+                                <td scope="col" width="15%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Oracle_Party_Id__c}"/> 
+                                    </div>
+                                </td>
+                                <!-- <td scope="col" width="25%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                       <ui:outputText value="{!objEntityWrapper.accountRec.Source_System_Id__c}"/>
+                                    </div>
+                                </td> -->
+                                <td scope="col" width="10%">
+                                    <div class="slds-truncate" title="Oracle_Party_Id">
+                                        <ui:outputText value="{!objEntityWrapper.accountRec.Entity_Id__c}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="10%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                        <ui:outputDateTime value="{!objEntityWrapper.accountRec.CreatedDate}"/> 
+                                    </div>
+                                </td>
+                                <td scope="col" width="10%">
+                                    <div class="slds-truncate" title="Oracle_Site_Id">
+                                       <ui:outputText value="{!objEntityWrapper.accountRec.Entity_Status__c}"/>
+                                    </div>
+                                </td>
+
+                                
+                                <!-- <aura:if isTrue="{!v.hasNoId}">
+                                    <td scope="col" width="25%">
+                                        <div class="slds-truncate" title="Oracle_Site_Id">
+                                            <ui:outputText value="{!objEntityWrapper.accountRec.RecordType.Name}"/> 
+                                        </div>
+                                    </td> 
+                                </aura:if> -->
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                <aura:if isTrue="{!v.data == null || v.data.length == 0}">
+                    <h1><b class="noDataFoundCss">No Records Found </b></h1>
+                </aura:if> 
+                <br/>
+                <br/>
+                <lightning:button variant="brand" label="Merge" iconName="utility:merge" onclick="{!c.mergeAccount}" iconPosition="right" class="mergeButton" />
+                <aura:if isTrue="{! !v.hasNoId}">	<lightning:button variant="brand" label="Cancel" iconName="utility:back" onclick="{!c.navigateBack}" iconPosition="right" class="clearbutton" /> </aura:if>
+                <br/><br/>
+            </div>
+            
+        </p>
+        
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,28 @@
+<apex:page standardcontroller="PO_Box__c" extensions="CreatePOBoxController" tabStyle="PO_Box__c">
+  <style>
+      body{
+            position: relative;
+        }
+  </style>
+  <apex:form id="mainForm">
+      <apex:actionstatus id="loadingStatus">
+        <apex:facet name="start">
+            <c:ADGM_Loading_Component />
+        </apex:facet>
+      </apex:actionstatus>
+      <apex:sectionHeader title="PO Box Edit" subtitle="New PO Box"/>
+      <apex:pageBlock title="New PO Box" id="MainPB">
+          <apex:pagemessages id="msg"/>
+          <apex:pageBlockSection title="Information" collapsible="false">
+            <apex:inputText label="Start Number" value="{!startPOBoxNum}" required="true"/>
+            <apex:inputText label="End Number" value="{!endPOBoxNum}" required="true"/>
+            <!--<apex:inputField value="{!newObjPOBox.Size__c}" required="true"/>-->
+            <apex:inputField value="{!newObjPOBox.Type__c}" required="true"/>
+          </apex:pageBlockSection>
+          <apex:pageBlockButtons >
+              <apex:commandButton value="Save" action="{!savePOBoxes}" reRender="MainPB" status="loadingStatus"/>
+              <apex:commandButton value="Cancel" action="{!cancelPOBox}" immediate="true"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock>
+  </apex:form>
+</apex:page>

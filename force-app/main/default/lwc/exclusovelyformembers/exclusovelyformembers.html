@@ -1,0 +1,32 @@
+<template>
+    <div class="container slds-box slds-p-around_small">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" padding="around-small">
+                <p class="greet">{greetingMessage}</P>
+            </lightning-layout-item>
+            
+        </lightning-layout>
+        <img src="https://www.lightningdesignsystem.com/assets/images/carousel/carousel-03.jpg" alt="User Image"/>
+        <br/>
+        <br/>
+        <h2 class="slds-text-heading_small slds-m-bottom_small" style="color: white;">
+            Exclusively for members
+        </h2>
+        <div class="image slds-size_6-of-6">
+            <lightning-carousel>
+                <lightning-carousel-image
+                    src="https://assets.wam.ae/uploads/2019/03/8621240677416.jpg"
+                    header="Free gym"
+                    description=""
+                    alternative-text="Second card accessible description.">>
+                </lightning-carousel-image>
+                <lightning-carousel-image
+                    src="https://www.lightningdesignsystem.com/assets/images/carousel/carousel-03.jpg"
+                    header="ADGM Academy"
+                    description="Our academy is a centre ofexcellence for training and Industry expertise"
+                    alternative-text="Third card accessible description.">
+                </lightning-carousel-image>
+            </lightning-carousel>
+        </div>
+    </div>
+</template>

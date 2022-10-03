@@ -1,0 +1,16 @@
+<apex:component >
+    <!--<div class="waitingSearchDiv" id="el_loading" style="background: rgba(0,0,0,0.5);height:100%;width:100%;overflow-y:hidden;">
+        <div class="waitingHolder" style="background-color: #002A3A;width:250px;height:150px;border-radius:25px;opacity:1">
+              <img src="{!URLFOR($Resource.adgm_spinner)}" style="margin-top:40px;position:relative;width:50px;height:50px;"/>
+              <br/><br/>
+              <center>
+                  <span style="color:#fff;font-family:Raleway_Bold">LOADING...</span>
+              </center>
+        </div>
+    </div>-->
+    <div id="adgmload" style="height:100%;width:100%;overflow-y:hidden;">
+            <span class="sp_loader">
+                <div class="adgm_spinner"></div> <!--ADGM Loader Image -->
+            </span>
+    </div>
+</apex:component>

@@ -1,0 +1,35 @@
+<aura:component controller="BalanceHistoryController" implements="force:appHostable">
+    <aura:attribute name="options" type="List" default="[]"/>
+    <aura:attribute name="selectedOperatingUnit" type="String" default=""/>
+    <aura:attribute name="selectedAccountRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedGLDate" type="Date" />
+    <aura:attribute name="disableSubmit" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card >
+        <lightning:layout class="slds-m-top_large">
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6">
+                <!--<lightning:combobox name="progress" label="Operating Unit" value="inProgress" 
+                                    placeholder="Select Progress" options="{! v.options }" 
+                                    onchange="{! c.handleChange }" required="true"/>-->
+                <lightning:input type="date" name="input1" label="GL Date" value="{!v.selectedGLDate}"/>
+                <!--<div class="custom-box">
+                    <c:customLookupPublic aura:id="From" filter="" label = "Entity" objectAPIName="account" IconName="standard:account" selectedRecord="{!v.selectedAccountRecord}" />
+                </div>-->
+                <center>
+                    <lightning:button disabled="{!v.disableSubmit}" class="slds-m-top_large" variant="brand" label="Submit" title="Brand action" 
+                                      onclick="{! c.handleSubmit }" />
+                </center>
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+        </lightning:layout>
+        
+    </lightning:card>
+    
+</aura:component>

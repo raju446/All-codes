@@ -1,0 +1,340 @@
+<apex:page controller="EventFeedbackController" docType="html-5.0" standardstylesheets="true" showheader="false"
+    cache="false">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="{!$Site.Prefix}/apex/FZPortalCSSMain" />
+        
+        <style>
+            .page-title.row h4,
+            .page-title.row h5,
+            h3 {
+                color: #44939C !important;
+            }
+
+            .pbSubheader {
+                background-color: #44939C !important;
+            }
+
+            .bPageBlock {
+                border-top: #ac975e !important;
+                width: 80%;
+                background-color: #fff !important;
+                text-align: left !important;
+                background-color: #fff !important;
+            }
+
+            .pageSpanContainer {
+                background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+                background-repeat: no-repeat;
+                width: 100%;
+                padding-bottom: 17%;
+                background-size: cover;
+                position: relative;
+            }
+
+            .pBlockTable {
+                margin-left: 8px;
+            }
+
+            .pageSpanContainer h1 {
+                font-size: 24px;
+                line-height: 36px;
+                color: #fff;
+                margin-bottom: 10px;
+                position: absolute;
+                bottom: 0;
+                left: 10%;
+            }
+
+            body button,
+            body .x-btn,
+            body .btn,
+            body .btnDisabled,
+            body .btnCancel,
+            body .menuButton .menuButtonButton {
+                color: #fff !important;
+            }
+
+            .pBockSection .data2Col {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .btnCheckAvail {
+                color: #AD9961 !important;
+                font-size: 13px !important;
+                font-weight: bold !important;
+                text-decoration: underline;
+            }
+
+            .pageDesc {
+                font-size: 12px;
+                margin-bottom: 0px;
+                color: #505050;
+                margin-left: 13px;
+            }
+
+            .pBockSection td.data2Col {
+                padding-left: 18px !important;
+            }
+
+            .p-notes {
+                padding-left: 16px;
+                padding-right: 16px;
+                font-size: 12px;
+            }
+
+            body {
+                background-color: #F5F5F5 !important;
+                position: relative;
+
+            }
+            #page-container {
+                position: relative;
+                min-height: 100vh;
+            }
+
+            #content-wrap {
+                 padding-bottom: 6.5rem;/* Footer height */
+            }
+
+            #footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 6.5rem;/* Footer height */
+            }
+            .left-spacer {
+                margin-left: 20px;
+            }
+
+            .pBold {
+                font-weight: bold;
+            }
+
+            .t-spacer {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .pBockSection td.data2Col {
+                font-size: 1.1em;
+            }
+
+            body .pbBody table.list tr.headerRow td,
+            body .pbBody table.list tr.headerRow th,
+            body .pbBody table.list tr td,
+            .bPageTitle .ptBody .links,
+            .listHoverLinks,
+            .modal-body,
+            .bPageBlock .pbHeader select,
+            .bPageBlock .pbBottomButtons select,
+            body .pbBody table.list tr th {
+                font-size: 1em;
+            }
+
+            .vfHelpText a {
+                position: relative;
+            }
+
+            .vfHelpText a span {
+                display: none;
+            }
+
+            .vfHelpText a:hover span {
+                display: block;
+                position: absolute;
+                top: 1.25em;
+                padding: 5px 5px;
+                /*left:-15em; width:16em;*/
+                left: -10em;
+                width: 10%;
+                z-index: 100;
+                min-width: 11em;
+                border: 1px solid orange;
+                background-color: #FEFDB9;
+                color: black;
+            }
+
+            table {
+                width: 100%;
+            }
+
+            /*Changes */
+            input[type="text"],
+            select,
+            textarea {
+                width: 100%;
+                font-size: 12px;
+            }
+
+            .top-sp {
+                margin-top: 10px;
+            }
+
+            .txt-left {
+                text-align: left;
+            }
+
+            .txt-right {
+                text-align: right;
+            }
+
+            .btn-bl {
+                padding-top: 40px;
+                padding-bottom: 20px;
+                text-align: center;
+            }
+
+            .dBlock {
+                padding-bottom: 20px;
+            }
+
+            .lbl-msg-block {
+                min-height: 180px;
+            }
+
+            h4 {
+                color: #44939C;
+            }
+
+            input[type="submit"],
+            input[type=button]:not(.refreshListButton) {
+                background-color: #44939C;
+                padding: 4px 10px !important;
+                padding: 0px;
+                border: 0px;
+                color: #fff;
+                background: #44939C;
+                border-radius: 4px;
+                border: 1px solid #44939C;
+                font-size: 1.3em !important;
+                font-family: Raleway_Bold !important;
+                min-width: 65px;
+                font-weight: bold;
+            }
+
+            .row {
+                padding-top: 15px !important;
+            }
+
+            .lbl-bl {
+                font-weight: bold;
+                font-size: 1.2em !important;
+                font-family: Raleway_Bold !important;
+            }
+
+            body .bPageBlock .pbBody .section-header h3 {
+                /*margin-left: 12px;*/
+                display: inline-block;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                font-family: Raleway_Bold;
+                font-size: 1.5em !important;
+            }
+
+            .section-header {
+                background-color: #44939C !important;
+            }
+
+            body .pbBody {
+                margin: 0px 0px 0px 0px !important;
+            }
+
+            input[type=radio] {
+                margin: 4px 5px 5px !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="page-container">
+            <div id="content-wrap">
+                <apex:composition template="UserRegistrationHeaderProtocol" />
+                <apex:form id="theform">
+                    <div class="pageSpanContainer">
+                        <div id="header-content">
+                            <h1>Please Rate Your Experience</h1>
+                        </div>
+                    </div>
+                    <br />
+                    <center>
+                        <apex:pageMessages />
+                        <apex:outputPanel rendered="{!isSubmitted}" styleClass="lbl-msg-block" layout="block">
+                            <h4>Survey is already submitted</h4>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!isThank}" styleClass="lbl-msg-block" layout="block">
+                            <h4>Thank you for your feedback</h4>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{! !isSubmitted && !isThank}">
+                            <div class="dBlock content">
+                                <apex:pageBlock >
+                                    <div class="section-header brandTertiaryBgr txt-left">
+                                        <h3>Survey</h3>
+                                    </div>
+
+                                    <div class="container top-sp">
+                                        <b>N/A-Void Response | 1-Very Dissatisfied | 2-Dissatisfied | 3-Neutral |
+                                            4-Satisfied | 5- Very Satisfied </b>
+                                        <apex:repeat value="{!surveyResponseWrapperLst}" var="v">
+                                            <div class="row">
+                                                <div class="col-sm-4 lbl-bl">{!v.question} <span
+                                                        style="color:red">*</span></div>
+                                                <div class="col-sm-4 val-col">
+                                                    <apex:selectList size="1" value="{!v.forDichotomous}"
+                                                        rendered="{!v.questionType == 'Dichotomous'}">
+                                                        <apex:selectOption itemValue="" itemLabel="-None-" />
+                                                        <apex:selectOption itemValue="Yes" itemLabel="Yes" />
+                                                        <apex:selectOption itemValue="No" itemLabel="No" />
+                                                    </apex:selectList>
+                                                    <apex:inputTextArea value="{!v.forText}" required="true"
+                                                        rendered="{!v.questionType == 'Text'}" />
+                                                    <apex:selectRadio value="{!v.rating}"
+                                                        rendered="{!v.questionType == 'Rating'}">
+                                                        <apex:selectOptions value="{!v.items}" />
+                                                    </apex:selectRadio>
+                                                </div>
+                                            </div>
+                                        </apex:repeat>
+                                    </div>
+                                    <div class="btn-bl">
+                                        <apex:commandbutton value="Submit" action="{!doSubmit}"
+                                            styleclass="btnSubmit" />
+                                    </div>
+                                </apex:pageBlock>
+                            </div>
+                        </apex:outputPanel>
+                    </center>
+                </apex:form>
+                <div class="footer-block" id="footer">
+                    <div class="left">
+                        <div class="footer-text">
+                            <span class="footer-line"><a href="https://www.adgm.com/privacypolicy/"
+                                    target="_blank">Privacy Policy</a></span>
+                            <span class="footer-gap">|</span>
+                            <span class="footer-line"><a href="https://www.adgm.com/terms-conditions/"
+                                    target="_blank">Terms and
+                                    Conditions</a></span>
+                            <span class="footer-gap">|</span>
+                            <span class="footer-line"><a href="https://www.adgm.com/disclaimer/"
+                                    target="_blank">Disclaimer</a></span>
+                        </div>
+                        <div class="footer-note">
+                            © 2021 Abu Dhabi Global Market. All rights Reserved.
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="footer-icons">
+                            <a href="https://www.linkedin.com/company/abu-dhabi-global-market-adgm-"
+                                target="_blank"><span class="linked-in-icon icon-adgm-group-820"></span></a>
+                            <!--<a href="https://m.facebook.com/abudhabiglobalmarket/" target="_blank"><span class="fb-icon icon-adgm-facebook"</span></a>-->
+                            <a href="https://twitter.com/adglobalmarket?lang=en" target="_blank"><span
+                                    class="twitter-icon icon-adgm-twitter-circular-button"></span></a>
+                            <!--<a href="https://www.youtube.com/watch?v=Lhx9lJVxVZw" target="_blank"><span class="youtube-icon icon-adgm-youtube"></span></a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</apex:page>

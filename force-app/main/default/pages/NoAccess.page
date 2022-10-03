@@ -1,0 +1,11 @@
+<apex:page >
+<table cellspacing="10">
+<tbody><tr><td><span style="font-weight: bold; font-size: 12pt;">Insufficient Privileges</span></td></tr>
+<tr><td>
+You do not have the level of access necessary to perform the operation you requested. Please contact the owner of the record or your administrator if access is necessary.
+ For more information, see <a href="javascript:openPopupFocusEscapePounds('https://help.salesforce.com/apex/htdoor?loc=help&amp;target=admin_insufficient_privileges_flowchart.htm&amp;language=en_US&amp;release=210.15.3&amp;instance=CS81&amp;showSplash=true', 'Help', 1024, 768, 'width=1024,height=768,resizable=yes,toolbar=yes,status=yes,scrollbars=yes,menubar=yes,directories=no,location=yes,dependant=no', false, false);">Insufficient Privileges Errors</a>.
+<br/><br/>
+
+</td></tr>
+</tbody></table>
+</apex:page>

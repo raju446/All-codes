@@ -1,0 +1,61 @@
+@font-face {
+  font-family: 'icon fonts';
+  src: url('../fonts/icon-fonts.eot?orgId=00D0Y000002IemY');
+  src: url('../fonts/icon-fonts.eot?orgId=00D0Y000002IemY#iefix') format('embedded-opentype'), url('../fonts/icon-fonts.woff?orgId=00D0Y000002IemY') format('woff'), url('../fonts/icon-fonts.ttf?orgId=00D0Y000002IemY') format('truetype'), url('../fonts/icon-fonts.svg?orgId=00D0Y000002IemY#icon-fonts') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class*=icon-]:before {
+  display: inline-block;
+  font-family: 'icon fonts';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-save:before {
+  content: '\0041';
+}
+
+.icon-edit:before {
+  content: '\0042';
+}
+
+.icon-new:before {
+  content: '\0043';
+}
+
+.icon-clear:before {
+  content: '\0044';
+}
+
+.icon-filter:before {
+  content: '\0045';
+}
+
+.icon-submit:before {
+  content: '\0046';
+}
+
+.icon-login:before {
+  content: '\0047';
+}
+
+.icon-updates:before {
+  content: '\0048';
+}
+
+.icon-user:before {
+  content: '\0049';
+}
+
+.icon-dropdown:before {
+  content: '\004a';
+}
+
+.icon-menu:before {
+  content: '\004b';
+}

@@ -1,0 +1,117 @@
+<apex:page cache="false" controller="RSVPController"  docType="html-5.0" showHeader="false" sidebar="false"
+    standardStylesheets="false">
+    <head>
+    <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+    <style>
+        .pageSpanContainer{
+            background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+            background-repeat: no-repeat;
+            width: 100%;
+            padding-bottom: 17%;
+            background-size: cover;
+            position: relative;
+        }
+        .pageSpanContainer h1{
+            font-size: 24px;
+            line-height: 36px;
+            color: #fff;
+            margin-bottom: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+        }
+        .lblMsg{
+            color: #44939C;
+            font-family: Raleway_Bold;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+        .content {
+            min-height: 210px;
+            position: relative;
+            margin-top:20px;
+        }
+        html .brandTertiaryBgr {
+            background-color: #44939C!important;
+        }
+        .dBlock{
+            width:80%;
+        }
+        body {
+            background-color: #F5F5F5 !important;
+            position: relative;
+        }
+        input[type="text"],select,textarea{
+            width:100%;
+            font-size: 12px;
+        }
+        .top-sp{
+            margin-top: 10px;
+        }
+        .lbl-bl{
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .txt-left{
+            text-align: left;
+        }
+        .txt-right{
+            text-align: right;
+        }
+        .btn-bl{
+            padding-top: 40px;
+            padding-bottom: 20px;
+        }
+        #body {
+            padding-bottom: 60px;
+            /* Height of the footer */
+        }
+
+        #footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            /* Height of the footer */
+        }
+    </style>
+    </head>
+    <apex:composition template="UserRegistrationHeaderProtocol" />
+        <div class="pageSpanContainer">
+            <div id="header-content">
+            </div>
+        </div>
+        <apex:pageMessages ></apex:pageMessages>
+        
+        <div class="content">
+            <h4 class="lblMsg">Thank you! Your request has been submitted.</h4>
+        </div>
+        
+        
+    <div class="footer-block" id="footer">
+        <div class="left">
+            <div class="footer-text">
+                <span class="footer-line"><a href="https://www.adgm.com/privacypolicy/" target="_blank">Privacy Policy</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/terms-conditions/" target="_blank">Terms and
+                        Conditions</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/disclaimer/" target="_blank">Disclaimer</a></span>
+            </div>
+            <div class="footer-note">
+                © 2021 Abu Dhabi Global Market. All rights Reserved.
+            </div>
+        </div>
+        <div class="right">
+            <div class="footer-icons">
+                <a href="https://www.linkedin.com/company/abu-dhabi-global-market-adgm-" target="_blank"><span class="linked-in-icon icon-adgm-group-820"></span></a>
+                <!--<a href="https://m.facebook.com/abudhabiglobalmarket/" target="_blank"><span class="fb-icon icon-adgm-facebook"</span></a>-->
+                <a href="https://twitter.com/adglobalmarket?lang=en" target="_blank"><span class="twitter-icon icon-adgm-twitter-circular-button"></span></a>
+                <!--<a href="https://www.youtube.com/watch?v=Lhx9lJVxVZw" target="_blank"><span class="youtube-icon icon-adgm-youtube"></span></a>-->
+            </div>
+        </div>
+    </div>
+</apex:page>

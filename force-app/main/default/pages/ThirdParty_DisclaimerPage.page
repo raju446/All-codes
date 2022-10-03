@@ -1,0 +1,123 @@
+<apex:page Id="CourierPage"   >
+    <style>
+        /* This is for the full screen DIV */
+        .overlay {
+           background-color: black;
+           /*cursor: wait;*/
+           opacity: 0.6;
+           /* Generic for Major browsers */ 
+           -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; 
+           /* IE 5-7 */
+           filter: alpha(opacity = 60);
+           /* Netscape */
+           -moz-opacity: 0.6;
+           /* Safari 1.x */
+           -khtml-opacity: 0.6;
+           position: fixed;
+           width: 100%; 
+           height: 100%;
+           top: 0;
+           left: 0;
+           z-index: 101;
+           zIndex: 101;
+        }
+        /* This is for the message DIV */
+        .contentDiv{
+            position: absolute; 
+            z-index: 102; 
+            top: 0px;
+            left: 50%;
+            margin-left: -300px;
+            <!--margin-left: 8%;-->
+            <!--margin-top:5%;-->
+            <!--//width:500px;-->
+            <!--//min-height:300px;-->
+            <!--//margin-right: 10%;-->
+        }
+        #pbdiv {
+            width: 750px;
+        }
+        .pageTitleIcon {
+            background-image: url(/img/sprites/master.png);
+            background-position: 0 -1202px;
+            width: 32px;
+            height: 32px;
+        }
+        #pbdiv .bPageBlock {
+            
+           min-height:300px !important;
+           margin-bottom:0 !important;
+           max-width:750px;
+           font-size: 15px;
+           /*
+           border:none !important;
+           background-color: transparent !important;
+           */
+        }
+        .Step_pageTitleIcon {
+            background-image: url(/img/icon/custom51_100/presenter32.png);
+            background-position: 0 0;
+            width: 32px;
+            height: 32px;
+        }
+        .ActnHeaderCol{
+            text-align:center;
+        }
+        .bEditBlock .pbHeader > table > tbody > tr > td, .bPageBlock .pbHeader > table > tbody > tr > td, .bLayoutBlock .pbHeader > table > tbody > tr > td, .bEditBlock .pbBottomButtons > table > tbody > tr > td, .bPageBlock .pbBottomButtons > table > tbody > tr > td, .bLayoutBlock .pbBottomButtons > table > tbody > tr > td{
+            padding: 15px 12px;
+        }
+        .spacer-qs{
+            margin-top:10px;
+        }
+    </style>
+    <style type="text/css">
+        
+        a:hover {background:#ffffff; text-decoration:none;opacity: 1;} /*BG color is a must for IE6*/
+        a.tooltip span {display:none; padding:2px 3px; margin-left:8px; width:130px;opacity: 1;}
+        a.tooltip:hover span{display:inline; position:absolute; border:1px solid #cccccc; background:#ffffff; color:#6c6c6c;opacity: 1;}
+    </style>
+    
+    <apex:form id="frm">
+        <div class="overlay"></div>
+        <apex:outputPanel styleClass="contentDiv courrierDiv">
+            <div id="pbdiv" >
+            <apex:pageblock >
+            <apex:pageblockbuttons location="bottom">
+                <apex:commandbutton value="I Understand" onclick="acceptbtn();" rerender="frm"/>
+
+               
+            </apex:pageblockbuttons>
+                <center><b>DISCLAIMER</b></center>
+                <br/><br/>
+                    <p>The <i>ACCESS</i><b>ADGM</b> portal contains information about products and/or services which may be provided by third party service providers. </p><br/>
+                    <p style="font-size:100%">ADGM makes no representations or warranties, either express or implied, regarding the information provided by any third party service provider, and does not endorse, recommend or accept responsibility for the accuracy of the information provided by any third party sites or any products and/or services displayed on the <i>ACCESS</i><b>ADGM</b> portal by third parties.</p><br/>
+                    <p>The ADGM is not liable for any losses or damages arising under or in connection with your use of the third party sites or reliance on any content displayed on the third party sites or any products and/or services displayed on the <i>ACCESS</i><b>ADGM</b> portal by third parties.</p><br/>
+                <p>You should not rely on the information provided in this portal as an alternative to obtaining your own independent legal advice or other relevant qualified professional advice.</p><br/>
+                <p>By entering the <i>ACCESS</i><b>ADGM</b> portal you agree that any information (including any data about you) which you authorise the ADGM to send to the third party service provider will be the responsibility of that third party service provider and not the ADGM.</p> <br/>
+                <p>By following links to third party sites or using any of the products and/or services displayed on the <i>ACCESS</i><b>ADGM</b> portal by third parties, you agree that may allow third parties to collect, process or share data about you. We do not control these third-party websites and are not responsible for their privacy policies, data collection practices or security measures.</p><br/>
+                	<p>You will be liable to the ADGM for any damage, loss, claim, demand, liability or expense (including reasonable legal fees) that we may suffer or incur arising out of or in connection with your conduct on the third party sites.</p>
+                
+                <!--<br/>
+                <div align="center">
+                    <a href="{!$Site.Prefix}/apex/ThirdPartyServices">
+                        <button type="button">I Understand</button>
+                    </a>
+                    
+                </div> -->
+            </apex:pageblock>
+            
+            </div>    
+        </apex:outputpanel>
+    </apex:form>
+    <script src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/js/jquery.min.js')}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{!URLFOR($Resource.FZbootstrap, 'bootstrap/js/bootstrap.min.js')}"></script>
+    <script type="text/javascript">
+        function acceptbtn()
+        {
+           window.location.href= "{!$Site.Prefix}/apex/ThirdPartyServices";
+        
+        }
+    
+    </script>
+</apex:page>

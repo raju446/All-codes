@@ -1,0 +1,118 @@
+<aura:component controller="UpdateInvoiceReceiptEntityController" implements="force:appHostable">
+    <aura:attribute name="objectLst" type="List" default="[
+                                                          {'label': 'Invoice', 'value': 'Invoice'},
+                                                          {'label': 'Receipt', 'value': 'Receipt'}
+                                                          ]"/>
+    <aura:attribute name="selectedObject" type="String" default="Invoice"/>
+    <aura:attribute name="invoiceReceiptId" type="String" default=""/>
+    <aura:attribute name="entityToUpdate" type="String" default=""/>
+    <aura:attribute name="invRctWrapper" type="List" default="[]"/>
+    <aura:attribute name="invoiceReceiptDetails" type="Object" default="{}"/>
+    <aura:attribute name="showInvoiceReceiptDetail" type="Boolean" default="false"/>
+    <aura:attribute name="updateEntityName" type="String" default=""/>
+    <aura:attribute name="reassignButtonEnabled" type="Boolean" default="false"/>
+    <lightning:card >
+        <lightning:layout class="slds-m-top_large">
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6">
+                <lightning:radioGroup name="radioGroup"
+                                      label="Select Transaction Type"
+                                      options="{! v.objectLst }"
+                                      value="{! v.selectedObject }"
+                                      type="radio"
+                                      onchange="{!c.refreshScreen}"/>
+                <lightning:input type="text" name="input1" label="{!v.selectedObject + ' Id'}" value="{!v.invoiceReceiptId}"/>
+                
+                <aura:if isTrue="{!v.showInvoiceReceiptDetail}">
+                    <div>&nbsp;</div>
+                    <div>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate">{!v.selectedObject + ' Number'}</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate">Old Entity</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td  scope="row">
+                                        <div class="slds-truncate">{!v.invoiceReceiptDetails.invoiceReceiptName}</div>
+                                    </td>
+                                    <td >
+                                        <div class="slds-truncate">{!v.invoiceReceiptDetails.oldEntityId}</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    
+                    <lightning:input type="text" name="input1" label="Entity Id to Update" value="{!v.entityToUpdate}"/>
+                    <aura:if isTrue="{!v.reassignButtonEnabled}">
+                        <div><b>Account Name : {!v.updateEntityName}</b></div>
+                    </aura:if>
+                    <lightning:button disabled="" class="slds-m-top_large" variant="brand" label="Fetch Entity" title="Brand action" 
+                                      onclick="{!c.fetchEntityDetails}" />
+                    <aura:if isTrue="{!v.reassignButtonEnabled}">
+                        <lightning:button disabled="" class="slds-m-top_large" variant="brand" label="Reassign Entity" title="Brand action" 
+                                          onclick="{!c.reassignEntity}" />
+                    </aura:if>
+                </aura:if>
+                <aura:if isTrue="{!!v.showInvoiceReceiptDetail}">
+                    <lightning:button disabled="" class="slds-m-top_large" variant="brand" label="{!'Fetch ' + v.selectedObject + ' Details'}" title="Brand action" 
+                                      onclick="{!c.fetchSelectedObjectDetails}" />
+                </aura:if>                
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                
+            </lightning:layoutItem>
+        </lightning:layout>
+        <aura:if isTrue="{!v.invRctWrapper.length > 0}">
+            <lightning:layout class="slds-m-top_large">
+                <lightning:layoutItem size="3">
+                    
+                </lightning:layoutItem>
+                <lightning:layoutItem size="6">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">Invoice/Receipt</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">Old Entity</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">New Entity</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.invRctWrapper}" var="wrap">
+                                <tr class="slds-hint-parent">
+                                    <td  scope="row">
+                                        <div class="slds-truncate">{!wrap.invoiceReceiptName}</div>
+                                    </td>
+                                    <td >
+                                        <div class="slds-truncate">{!wrap.oldEntityId}</div>
+                                    </td>
+                                    <td >
+                                        <div class="slds-truncate">{!wrap.newEntityId}</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table></lightning:layoutItem>
+                <lightning:layoutItem size="3">
+                    
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+    </lightning:card>
+</aura:component>

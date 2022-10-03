@@ -1,0 +1,3 @@
+<apex:page >
+<c:PriceItemRollupVC ServiceRequestId="a0s26000001OSi7"/>
+</apex:page>

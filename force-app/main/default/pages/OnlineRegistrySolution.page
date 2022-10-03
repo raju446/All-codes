@@ -1,0 +1,7 @@
+<apex:page >
+  <script>
+        window.onload = function() {
+            window.open('https://www.registration.adgm.com/adgm-master/viewInstance/view.html?id=966c908da1c0b6bd0f1e2ea084e0da51c396c8682f19fe99&_timestamp=1592412952092095');
+        }
+    </script>
+</apex:page>

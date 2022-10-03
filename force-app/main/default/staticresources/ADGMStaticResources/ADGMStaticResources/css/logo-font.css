@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "access-adgm-font";
+  src: url("../fonts/ADGMLogoFont/access-adgm-font.eot?orgId=00D0Y000002IemY");
+  src: url("../fonts/ADGMLogoFont/access-adgm-font.eot?orgId=00D0Y000002IemY#iefix") format("embedded-opentype"), url("../fonts/ADGMLogoFont/access-adgm-font.woff?orgId=00D0Y000002IemY") format("woff"), url("../fonts/ADGMLogoFont/access-adgm-font.ttf?orgId=00D0Y000002IemY") format("truetype"), url("../fonts/ADGMLogoFont/access-adgm-font.svg?orgId=00D0Y000002IemY#access-adgm-font") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+[data-icon]:before {
+  font-family: "access-adgm-font" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^=icon-]:before, [class*=icon-]:before {
+  font-family: "access-adgm-font" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-access:before {
+  content: "\61";
+}
+
+.icon-adgm:before {
+  content: "\62";
+}

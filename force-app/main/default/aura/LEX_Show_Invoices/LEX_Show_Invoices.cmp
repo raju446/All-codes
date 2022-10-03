@@ -1,0 +1,204 @@
+<!--
+  @File Name          : LEX_Show_Invoices.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 5/17/2020, 6:58:16 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/2/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component controller="BillingManagementController">
+    <!-- attributes Start  -->
+    <aura:attribute name="selectedEntityId" type="String" default="null"/>
+    <aura:attribute name="entitySiteId" type="String" default="null"/>
+    <aura:attribute name="dynamicName" type="String" default="null"/>
+    <aura:attribute name="currentProfileName" type="String" default=""/>
+    <aura:attribute name="dynamicBtnName" type="String" default="Submit To Finance"/>
+    <aura:attribute name="listInvoiceWrapper" type="object[]"/>
+    <aura:attribute name="selectedEntityName" type="String"/>
+    <aura:attribute name="selectedInvoice" type="integer" default="-1"/>
+    <aura:attribute name="isInvoiceSaved" type="Boolean" default="false"/>
+    <aura:attribute name="isRecPushed" type="Boolean" default="false"/>
+    <aura:handler name="change" value="{!v.isInvoiceSaved}" action="{!c.refetchRecord}"/>
+    <aura:method name="fetchInvoice" action="{!c.doAction}" description="Sample method with parameters" access="PUBLIC"> 
+        <aura:attribute name="param1" type="String" /> 
+        <aura:attribute name="param2" type="String" />
+        <aura:attribute name="param3" type="String" />
+        <aura:attribute name="siteId" type="String" />
+    </aura:method>	
+    
+    <c:LEX_CreateInvoice aura:id="invoiceCreateComp" isRecordSaved="{!v.isInvoiceSaved}"/> 
+    <c:LEX_View_InvoiceLineItem aura:id="invoiceLineComp"/> 
+    <h3 class="slds-section-title--divider headerCss">Create Invoices for - {!v.selectedEntityName}</h3>
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" id="backdrop"></div>
+    </aura:if>
+    
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr class="slds-text-title--caps">
+                <th scope="col"><div class="slds-truncate" title="Action">Action</div></th>
+                <th scope="col"><div class="slds-truncate" title="Transaction Reference">Document Reference</div></th>
+                <th scope="col"><div class="slds-truncate" title="Payment Term">Payment Term</div></th>
+                <th scope="col"><div class="slds-truncate" title="Payment Currency">Payment Currency</div></th>
+                <th scope="col"><div class="slds-truncate" title="Invoice Type">Invoice Type</div></th> 
+                <th scope="col"><div class="slds-truncate" title="Invoice Balance">Invoice Balance</div></th>
+                <th scope="col"><div class="slds-truncate" title="Pending Invoice Amount">Pending Invoice Amount</div></th>
+                <th scope="col"><div class="slds-truncate" title="Oracle Invoice Id">Oracle Invoice Id</div></th> 
+                <th scope="col"><div class="slds-truncate" title="Oracle Invoice Id">Invoice No</div></th> 
+            </tr>
+        </thead>
+        <tbody>
+            
+                
+                
+                <aura:iteration items="{!v.listInvoiceWrapper}" var="objInvoiceWrapper" indexVar="tableIndex">
+                        <tr class="slds-text-title--caps">
+                            <td scope="col" width="25%">
+                                <div class="slds-truncate" title="Action" >
+                                    <aura:if isTrue="{! and(or(objInvoiceWrapper.invoiceRec.Status__c == 'Draft', objInvoiceWrapper.invoiceRec.Status__c == 'Success'), !objInvoiceWrapper.invoiceRec.Is_Refundable__c)}">
+                                    	<lightning:button name="{!tableIndex}" variant="base" label="Edit " title="Edit" onclick="{!c.onEditInvoiceRec}" /> |
+                                    </aura:if>
+                                    
+                                    <aura:if isTrue="{!and(or(objInvoiceWrapper.invoiceRec.Status__c == 'Draft', objInvoiceWrapper.invoiceRec.Status__c == 'Success'),!objInvoiceWrapper.invoiceRec.Is_Refundable__c)}">
+                                    	<lightning:button name="{!tableIndex}" variant="base" label="{! v.dynamicName}" title="Edit" onclick="{!c.onSubmitClick}" /> |
+                                    </aura:if>
+                                    <lightning:button aura:id="shInl" name="{!tableIndex}" variant="base" iconName="utility:chevronright" iconPosition="right" label="Invoice Lines" title="Lines" onclick="{!c.onShowInvoiceLine}" />
+                                </div>
+                            </td>
+                            <td scope="col" width="10%">
+                                <div class="slds-truncate" title="Transaction Reference">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Transaction_Reference__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="10%">
+                                <div class="slds-truncate" title="Payment Term">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Payment_Term__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="10%">
+                                <div class="slds-truncate" title="Payment Currency">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Payment_Currency__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="10%">
+                                <div class="slds-truncate" title="Invoice Type">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Oracle_Invoice_Type__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="15%">
+                                <div class="slds-truncate" title="Invoice Balance">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Invoice_Balance__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="15%">
+                                <div class="slds-truncate" title="Pending Invoice Amount">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.In_Progress_Amount__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="15%">
+                                <div class="slds-truncate" title="Oracle Invoice">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Oracle_Invoice_Id__c}"/>
+                                </div>
+                            </td>
+                            <td scope="col" width="15%">
+                                <div class="slds-truncate" title="Oracle Invoice">
+                                    <a href="{!'/one/one.app?#/sObject/'+ objInvoiceWrapper.invoiceRec.Id + '/view'}" target="_blank">
+                                    <ui:outputText value="{!objInvoiceWrapper.invoiceRec.Name}"/>
+                                    </a>
+                                </div>
+                            </td>
+                            
+                        </tr> 
+                        
+                            <tr class="slds-text-title--caps">
+                                
+                                <aura:If isTrue="{!and(not(empty(objInvoiceWrapper.listInvoiceLineRec )), v.selectedInvoice == tableIndex)}"> 
+                                    <td colspan="10" style="border-top:none; background-color:rgb(243, 242, 242); padding-top:10px; padding-bottom:10px">
+                                        <!--<h3 class="slds-section-title-|-divider headerCss">Create Invoices Line Item</h3>-->
+                                        
+                                        
+                                        <table class="tbl-custom" style="width:90%; float:right">
+                                            <thead>
+                                                <tr class="slds-text-title--caps">       
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="View">Action</div></th>    
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Amount">Item Description</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Amount">Amount</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Tax Amount">Tax Amount</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Discount Amount">Discount Amount</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Discount Tax Amount">Discount Tax Amount</div></th>
+                                                    <th scope="col" style="box-shadow: none;"><div class="slds-truncate" title="Item Reference">Item Reference</div></th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!objInvoiceWrapper.listInvoiceLineRec}" var="objInvoiceLineItemWrapper" indexVar="tableIndexLine">
+                                                    <tr class="slds-text-title--caps">
+                                                        <td scope="col" style="box-shadow: none;">
+                                                           <!-- <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close" onclick="{!c.closeModal}">
+                                                              View  <lightning:icon class="xbtn" iconName="utility:description" size="x-small" alternativeText="Close"/>
+                                                            </button> -->
+                                                            <lightning:button iconName="utility:description" name="{!tableIndex+'-'+tableIndexLine}" variant="base" label="View" title="View" onclick="{!c.viewInvoiceLineDetail}" />
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            
+                                                            <div class="slds-truncate itemDesc" title="Item Description">
+                                                                <ui:outputText class="itemDesc" value="{!objInvoiceLineItemWrapper.Item_Description__c}"/>
+                                                            </div>
+                                                            <!-- <lightning:input name="itemDescription" value="{!objInvoiceLineItemWrapper.invoiceLineItemRec.Item_Description__c}"  disabled="{!objInvoiceLineItemWrapper.isEditable}" />   -->
+                                                            
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Description">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Description">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.Tax_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Discount_Amount">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.Discount_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Taxable_Discount_Amount">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.Taxable_Discount_Amount__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        <td scope="col" style="box-shadow: none;">
+                                                            <div class="slds-truncate" title="Item_Reference">
+                                                                <ui:outputText value="{!objInvoiceLineItemWrapper.Item_Reference__c}"/>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </td>    
+                                </aura:If>
+                                    
+                            </tr>
+                    
+                </aura:iteration>
+            
+        </tbody>
+    </table>
+</aura:component>

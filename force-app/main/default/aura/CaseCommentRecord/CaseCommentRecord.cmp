@@ -1,0 +1,181 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="CaseCommentsUnread">
+ <aura:handler name="init" action="{!c.doInit}" value="{!this}" /> 
+ <aura:attribute name="wrapperList" type="object"/>
+ <aura:attribute name="isOpen" type="boolean" default="false"/> <!-- Modal opener for new case comment-->
+ <aura:attribute name="NewRecForm" type="boolean" default="false"/>  <!-- Modal opener for creating new comment-->
+ <aura:attribute name="CaseCommentsSelected" type="String" />
+ <aura:attribute name="NewCommentBody" type="String" /> 
+ <aura:attribute name="checkbox" type="boolean" default ="False" />
+
+    
+  <div clss="slds">
+  	<div class="slds-card_boundary">
+  		<div class="slds-card__header slds-grid">
+    		<header class="slds-media slds-media_center slds-has-flexi-truncate">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container slds-icon-standard-contact" title="contact">
+          			<lightning:icon iconName="standard:case_comment" size="small" />
+          			<span class="slds-assistive-text">Case Comments</span>
+        			</span>
+      			</div>
+      			<div class="slds-media__body">
+        			<h2 class="slds-card__header-title">
+          			<a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+            		<span>Case Comments</span>
+         			 </a>
+        			</h2>
+      			</div>
+      			<div class="slds-no-flex">
+          			<button class="slds-button slds-button_neutral" onclick ="{!c.createRecord}" >New</button>
+      			</div>
+    		</header>
+  		</div>
+  		<div class="slds-card__body ">
+    		<table class="slds-table slds-table_fixed-layout slds-table_bordered " role="grid">
+      		<thead>
+        		<tr class="slds-line-height_reset">
+          			<th class="" scope="col">
+            			<div class="slds-truncate" >COMMENTS</div>
+      		   		</th>
+          			<th class="slds-size--2-of-8" scope="col">
+            			<div class="slds-truncate" >USER</div>
+          			</th>
+          			<th class="slds-size--2-of-8" scope="col">
+                		<div class="slds-truncate"  >CREATED DATE</div>
+          			</th>
+          			<th class="slds-size--1-of-8" scope="col">
+            			<div class="slds-truncate ">PUBLIC</div>
+          			</th>
+                </tr>
+      		</thead>
+      		<tbody>
+      		<aura:iteration items="{!v.wrapperList.newCaseComments}" var="cc">
+        	<tr class="slds-hint-parent">
+          		<th scope="row">
+            		<div class="slds-truncate" title="Click Here to read the new comment"  >
+              		<a style=" border-bottom: 1px dotted;" onclick="{!c.showComment}" id="{!cc.Id}"  
+                       tabindex="-1" > New Comment Added</a>
+            		</div>
+          		</th>
+          		<td role="gridcell">
+            		<div class="slds-truncate" title="{!cc.CreatedBy.Name}">{!cc.CreatedBy.Name}</div>
+          		</td>
+          		<td role="gridcell">
+            		<div class="slds-truncate" title="{!cc.CreatedDate}"><ui:outputDateTime aura:id="yDateTime" value="{!cc.CreatedDate}" format="dd/MM/yyyy hh:mm "/></div>
+          		</td>  
+          		<td role="gridcell">
+                    <div class="slds-truncate" title="{!cc.IsPublished}"><ui:outputCheckbox aura:id="output" value="{!cc.IsPublished}"/></div>
+          		</td>  
+          	</tr>
+       		</aura:iteration>
+                
+       		<aura:iteration items="{!v.wrapperList.readCaseComments}" var="cc">
+        	<tr class="slds-hint-parent">
+          		<th scope="row">
+            		<div class="slds-truncate"  title="{!cc.CommentBody}"  >
+              		<ui:outputTextArea aura:id="output" value="{!cc.CommentBody}"/>
+            		</div>
+          		</th>
+          		<td role="gridcell slds-size--2-of-8">
+            		<div class="slds-truncate" style="width: 200px;"  title="{!cc.CreatedBy.Name}">{!cc.CreatedBy.Name}</div>
+          		</td>
+          		<td role="gridcell slds-size--2-of-8 ">
+            		<div class="slds-truncate" title="{!cc.CreatedDate}"><ui:outputDateTime aura:id="oDateTime" value="{!cc.CreatedDate}"   format="dd/MM/yyyy hh:mm "/></div>
+          		</td>  
+          		<td role="gridcell slds-size--1-of-8">
+            		<div class="slds-truncate" title="{!cc.IsPublished}"><ui:outputCheckbox aura:id="output" value="{!cc.IsPublished}"/></div>
+          		</td>  
+          	</tr>
+       		</aura:iteration>
+      		</tbody>
+    	</table>
+            
+       <!-- Modal to show the new unread comment -->     
+       <aura:if isTrue="{!v.isOpen}"> 
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModelButton }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Case Comment</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                  
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                       
+                       <div class="slds-section-title slds-text-align_center">
+                           <ui:outputTextArea aura:id="output" value="{!v.CaseCommentsSelected}"/></div>
+                       
+                    </div>
+                    
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                     <lightning:button variant="neutral" 
+                                          label="Close"
+                                          title="Cancel"
+                                          onclick="{! c.closeModelButton }"/>    
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            </aura:if>
+      
+      <!-- New case Comment Modal Form -->
+      
+      <aura:if isTrue="{!v.NewRecForm}">
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModelButton }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Case Comment</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                  
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                       
+                           
+                 <label class="slds-form-element__label" for="text-input-id-1">
+                 <abbr class="slds-required" title="required">* </abbr>Body</label>
+                
+                 
+                 <lightning:input type="text"   name="NewCommentBody" value="{!v.NewCommentBody}" />
+                <lightning:input type="checkbox"  label="Public"   class="slds-p-vertical_small"  value="{!c.checkbox}" onchange="{!c.TurnTrue}"/>
+                       
+                       
+                    </div>
+                    
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                     <lightning:button variant="neutral" 
+                                          label="Close"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                       <lightning:button variant="brand" 
+                                          label="Save"
+                                          title="Save"
+                                          onclick="{! c.createCaseComment }"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        	</aura:if>
+  		</div>
+  	</div>
+ </div>   	
+</aura:component>

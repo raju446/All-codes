@@ -1,0 +1,119 @@
+<apex:page controller="EmployeeDetailController" showHeader="false" readOnly="true" sidebar="false" contentType="application/vnd.ms-excel#Employee-Details.xls" cache="true">
+    
+    <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        
+        <body style="font-family: Microsoft Sans Serif;" >
+            <br/>
+            <br/> 
+            <table >
+                <tr>
+                <td >
+                       
+                    </td>
+                    <td ></td><td ></td>
+                    <td ></td>
+                    <td ></td>
+                    
+                    <td ></td><td ></td>
+                    <td >
+                        <!-- <img src="https://adgm--uat.my.salesforce.com/servlet/servlet.ImageServer?id=01525000000Ysyg&oid=00D25000000DxwU" width="132" height="50"/> -->
+                        <img src="{!profile_photo_png}" width="200" height="100"/>
+                    </td>
+                </tr>            
+            </table>
+            <table width="200%">
+                
+                <tr>
+                    <td >
+                        <table style="font-size: 9;">
+                            <tr style="border : 1px solid #000000;" >
+                                <td style="background-color: #44939c;color: #fff;font-family: Microsoft Sans Serif; " >Entity Name: </td>
+                                <td style="font-family: Microsoft Sans Serif;" >{!entityName}</td>
+                            </tr>
+                            <tr style="border : 1px solid #000000;" >
+                                <td style="background-color: #44939c;color: #fff;font-family: Microsoft Sans Serif;"  >License Number: </td>
+                                <td style="font-family: Microsoft Sans Serif;" >{!licenseNumber}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td ></td><td ></td>
+                    <td style="text-align:center;vertical-align: middle;">
+                        <h2>Employee Details</h2>
+                    </td>
+                    <td ></td><td ></td>
+                    <td >
+                    </td>
+                    
+                </tr>
+            </table>
+            <table>
+                <tr><td height="50"></td></tr>
+            </table> <br></br>
+            <table cellpadding="1" cellspacing="0" border="1" style="border: 1px solid black;border-collapse: collapse;margin-top: 20px;width:100%; font-size: 9;">
+                <tr height="25">
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;" >First Name</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Last Name</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Email</th>
+                    <th  style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Job Title</th>
+                    <th  style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Sponsor</th>
+                    <th  style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Passport Number</th>
+                    <th  style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Employment Status</th>
+                    <th  style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Nationality</th>
+                    <!-- <th >Nationality (Arabic)</th> -->
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Work Permit Expiry Date</th>
+                </tr>
+                <apex:repeat value="{!EmployeeDetails}" var="objEmployeeDetail">
+                    <tr>
+                        <td>{!objEmployeeDetail.conFirstName}</td>
+                        <td>{!objEmployeeDetail.conLastName}</td>
+                        <td>{!objEmployeeDetail.conEmail}</td>
+                        <td>{!objEmployeeDetail.conJobTitle}</td>
+                        <td>{!objEmployeeDetail.conSponsor}</td>
+                        <td style="text-align:left;">{!objEmployeeDetail.conPassportNumber}</td>
+                        <td>{!objEmployeeDetail.conEmpStatus}</td>
+                        <td>{!objEmployeeDetail.conNationality}</td>
+                        <td style="text-align:left;"> 
+                            <apex:outputText value="{0, date, dd'/'MM'/'yyyy}">
+                                <apex:param value="{!objEmployeeDetail.conEmpWPExpiry}" />
+                            </apex:outputText>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+            
+            <br/> <br/> 
+            <h3>Transferred Employees</h3>
+            <table cellpadding="1" cellspacing="0" border="1" style="border: 1px solid black;border-collapse: collapse;margin-top: 20px;width:100%;font-size: 9;">
+                <tr height="25">
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Name</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Email</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Job Title</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Passport Number</th>
+                    <!-- <th >Nationality (Arabic)</th> -->
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Visa Number</th>
+                    <th style="background-color:#adcccf; color: black;border: 1px solid black;text-align:left;">Nationality</th>
+                </tr>
+                
+                <apex:repeat value="{!TransferredEmployeeDetails}" var="objEmployeeDetail">
+                    <tr>
+                        <td>{!objEmployeeDetail.conName}</td>
+                        <td>{!objEmployeeDetail.conEmail}</td>
+                        <td>{!objEmployeeDetail.conJobTitle}</td>
+                        <td style="text-align:left;">{!objEmployeeDetail.conPassportNumber}</td>
+                        <td>{!objEmployeeDetail.conResidenceVisaNumber}</td>
+                        <td style="text-align:left;"> 
+                            <apex:outputText value="{0, date, dd'/'MM'/'yyyy}">
+                                <apex:param value="{!objEmployeeDetail.conEmpWPExpiry}" />
+                            </apex:outputText>
+                        </td>
+                        
+                    </tr>
+                </apex:repeat>
+            </table>
+            <apex:outputPanel style="text-align:center;width:33.33%;" rendered="{!TransferredEmployeeDetails.size == 0}">
+                No data found
+            </apex:outputPanel>
+            <br/>
+        </body >
+    </html>
+</apex:page>

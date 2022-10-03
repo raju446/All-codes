@@ -1,0 +1,42 @@
+.THIS .nextEmailButton {
+    left: 578px;
+}
+.THIS .backButton {
+    left: 353px;
+}
+.THIS .nextButton {
+    float : right;
+    right: 18px;
+}
+.THIS .cancelButton {
+    float: right;
+    right: 10px;
+}
+.THIS .customColor {
+    
+}
+.THIS .viewSelect {
+    width: 154px;
+}
+.THIS .noborder {
+    border: none;
+    padding: 0;
+    background: none;
+    
+}
+.THIS .headerCss {
+    padding: 0.5rem 0rem !important;
+}
+
+.THIS .lastPageBut .slds-button__icon_left{
+    transform: rotate(90deg);
+}
+.THIS .noDataFoundCss {
+    padding-left: 500px;
+}
+.THIS .customCheckBox {
+    margin-left: 51px;
+}
+.THIS .cloneBtn {
+    color: rgb(0, 109, 204);
+}

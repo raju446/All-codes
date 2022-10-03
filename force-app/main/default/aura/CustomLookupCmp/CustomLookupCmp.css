@@ -1,0 +1,17 @@
+.THIS .slds-leftpad{
+	padding-left: 2rem;
+}
+.THIS .iconheight{
+    /* top: 65%; */
+}
+.THIS .sp-icon{
+    top: 12px;
+    margin-left: 10px;
+}
+
+.THIS .leftspace input {
+    padding-left:2rem;
+}
+.THIS .slds-modal__content{
+    overflow: initial;
+}

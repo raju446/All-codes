@@ -1,0 +1,21 @@
+<template>
+    <div class="container slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none">
+        <lightning-layout multiple-rows>
+             <lightning-layout-item size="12" padding="around-small">
+                 <p class="greet">{greetingMessage}</P>
+             </lightning-layout-item>
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    <p>Temperature</p>
+                    <p class="temp">45°</p>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    <p>Time</p>
+                    <p class="time">{timeHolder}</p>
+                </div>
+            </lightning-layout-item>
+          </lightning-layout>
+    </div>
+</template>

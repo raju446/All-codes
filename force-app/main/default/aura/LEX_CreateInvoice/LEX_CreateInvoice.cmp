@@ -1,0 +1,647 @@
+<!--
+  @File Name          : LEX_CreateInvoice.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 11-11-2020
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/1/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global" controller="BillingManagementController">
+    <aura:attribute name="entityId" type="String" />
+    <aura:attribute name="entityOU" type="String" />
+    <aura:attribute name="todaysDate" type="String" />
+    <aura:attribute name="accSiteId" type="String" />
+    <aura:attribute name="newInvoiceObject" type="Invoice__c"
+        default="{ 'sobjectType': 'Invoice__c', 'Payment_Currency__c' : 'USD'}" />
+    <aura:attribute name="invoiceLineItems" type="Invoice_Line_Item__c[]" />
+    <aura:attribute name="receiptId" type="String" default="" />
+    <aura:attribute name="isReview" type="Boolean" default="false" />
+    <aura:attribute name="isRecordSaved" type="Boolean" default="false" />
+    <aura:attribute name="showInvoiceCreateTable" type="Boolean" default="false" />
+    <aura:attribute name="selectedLookUpRecords" type="sObject[]" default="[]" />
+    <aura:handler name="change" value="{!v.selectedLookUpRecords}" action="{!c.calculateAmount}" />
+    <aura:attribute name="valueChanged" type="Boolean" default="false" />
+    <aura:handler name="change" value="{!v.valueChanged}" action="{!c.setAmountToZero}" />
+    <aura:attribute name="invoiceTypes" type="string[]" />
+    <aura:attribute name="invoiceItemTypes" type="string[]" />
+    <aura:attribute name="taxValues" type="List" />
+    <aura:attribute name="totalAmount" type="decimal" default="0.0" />
+    <aura:attribute name="isCreditMemo" type="boolean" default="false" />
+    <aura:attribute name="objcreditMemoLineItem" type="Invoice_Line_Item__c[]" />
+    <aura:attribute name="isSourceInvoiceId" type="Boolean" default="false" />
+    <aura:attribute name="objCreditMemo" type="Invoice__c" default="{'sobjectType': 'Invoice__c',
+                                                              'Oracle_Invoice_Type__c': '',
+                                                              'Status__c': 'Draft',
+                                                              'Entity__c': '',
+                                                              'Payment_Currency__c' : 'USD',
+                                                              'Source_System__c' : ''
+                                                              }" />
+    <!--   <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> -->
+    <aura:attribute name="uploadedFiles" type="Object[]"
+        default="[{'fileName':'No File Selected...','isUploaded':false}]" />
+    <aura:attribute name="disableConfirm" type="Boolean" default="false" />
+    <aura:attribute name="schools" type="List" />
+    <aura:attribute name="courses" type="List" />
+    <aura:attribute name="defDept" type="String" default=""/>
+    <aura:attribute name="roomRates" type="List" />
+    <aura:method name="initInvoice" action="{!c.doAction}" access="PUBLIC">
+        <aura:attribute name="accountId" type="String" />
+        <aura:attribute name="siteId" type="String" />
+        <aura:attribute name="oldInvoiceObject" type="Invoice__c" />
+        <aura:attribute name="oldInvoiceLineItems" type="Invoice_Line_Item__c[]" />
+        <aura:attribute name="oldselectedLookUpRecords" type="sObject[]" />
+        <aura:attribute name="creditMemo" type="Boolean" />
+        <aura:attribute name="sourceSys" type="string" />
+    </aura:method>
+
+    <aura:attribute name="revenueMappingObj" type="Object" />
+    <aura:attribute name="lineItemList" type="List" />
+    <aura:attribute name="paymentTermList" type="List" />
+    <aura:attribute name="taxCodeList" type="List" />
+    <aura:attribute name="currencyToDisplayList" type="List" />
+    <aura:attribute name="operatingUnitObj" type="Object" />
+    <aura:attribute name="selectedDept" type="String" />
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <div class="slds-is-relative">
+        
+
+        <aura:If isTrue="{!v.showInvoiceCreateTable}">
+            <!-- ###### MODAL BOX Start###### -->
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large"
+                aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                <div class="slds-modal__container">
+                    
+                    <!-- Spinner code start -->
+                    <aura:if isTrue="{!v.Spinner}">
+                        <div aura:id="spinnerId" class="slds-spinner_container">
+                            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop" id="backdrop"></div>
+                    </aura:if>
+                    
+                    <header class="slds-modal__header">
+                        <lightning:layout class="slds-page-header slds-page-header--object-home">
+                            <lightning:layoutItem>
+                                <lightning:icon iconName="standard:account" alternativeText="Entity" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium">
+                                <div class="page-section page-header">
+                                    <h2 class="slds-text-heading--label customHeading">
+                                        <aura:if isTrue="{!v.isCreditMemo}">
+                                            <b>Create Credit Memo</b>
+                                            <aura:set attribute="else">
+                                                <b>Create Invoice</b>
+                                            </aura:set>
+                                        </aura:if>
+                                    </h2>
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>
+                            <form>
+                                <lightning:layout multipleRows="true">
+                                    <aura:if isTrue="{! !v.isCreditMemo}">
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                               <!-- <lightning:input label="Document Reference" disabled="{!v.isReview}"
+                                                    name="tranRef"
+                                                    value="{!v.newInvoiceObject.Transaction_Reference__c}"
+                                                    aura:id="tranRef" required="false"
+                                                    messageWhenValueMissing="Complete this field" /> -->
+                                            </div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem padding="around-small" size="2">
+                                            <div class="slds-truncate" title="Description">
+                                                <lightning:input type="checkbox" label="Is Source Invoice"
+                                                    variant="label-stacked"
+                                                    checked="{!v.newInvoiceObject.Is_Source_Invoice__c}"
+                                                    value="{!v.newInvoiceObject.Is_Source_Invoice__c}"
+                                                    onchange="{!c.onCheck}" />
+                                            </div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem padding="around-small" size="4">
+                                            <div class="custom-box">
+                                                <lightning:input label="Invoice Number"
+                                                    disabled="{!if(or(v.isReview, !v.isSourceInvoiceId) ,true,false)}"
+                                                    name="tranRef" value="{!v.newInvoiceObject.Source_Invoice_Id__c}"
+                                                    aura:id="tranRef" required="false"
+                                                    messageWhenValueMissing="Complete this field" />
+                                            </div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:input type="date" max="{!v.todaysDate}" label="Invoice Date"
+                                                    disabled="{!v.isReview}" name="InvDate"
+                                                    value="{!v.newInvoiceObject.Invoice_Date__c}" aura:id="InvDate"
+                                                    required="true" messageWhenValueMissing="Complete this field" />
+                                            </div>
+                                        </lightning:layoutItem>
+
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:input type="date" label="GL Date" disabled="{!v.isReview}"
+                                                    name="glDate" value="{!v.newInvoiceObject.GL_Date__c}"
+                                                    aura:id="glDate" required="true"
+                                                    messageWhenValueMissing="Complete this field" />
+                                            </div>
+                                        </lightning:layoutItem>
+
+                                        <!--<lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input label="Invoice Class" name="recAmount" disabled="{!v.isReview}" value="{!v.newInvoiceObject.Invoice_Class__c}" aura:id="RecAmount" required="false" messageWhenValueMissing="Complete this field"/> 
+                                        </div>
+                                    </lightning:layoutItem>-->
+										 
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <!-- <lightning:input label="Payment Term" name="recAmount" value="{!v.newInvoiceObject.Source_Receipt_Id__c}" aura:id="RecAmount" required="true" />  -->
+                                                <lightning:select disabled="{!v.isReview}" aura:id="payTerm"
+                                                    name="payTerm" label="Payment Term" required="true"
+                                                    value="{!v.newInvoiceObject.Payment_Term__c}"
+                                                    messageWhenValueMissing="Complete this field">
+                                                    
+                                                    <option text="--None--" value=""></option>
+                                                    <aura:iteration items="{!v.paymentTermList}" var="groupVal" indexVar="key">
+                                                        <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == v.newInvoiceObject.Payment_Term__c}"/>
+                                                    </aura:iteration>                                                  
+                                                </lightning:select>
+                                            </div>
+                                        </lightning:layoutItem>
+                                    </aura:if>
+
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <!--<lightning:input label="Payment Currency" name="recAmount" value="{!v.newInvoiceObject.Source_Receipt_Id__c}" aura:id="RecAmount" required="true" /> -->
+                                            <lightning:select disabled="{!v.isReview}" aura:id="invCurrency"
+                                                name="invCurrency" label="Payment Currency" required="true"
+                                                value="{!v.newInvoiceObject.Payment_Currency__c}"
+                                                              messageWhenValueMissing="Complete this field">
+                                               <option text="--None--" value=""></option>
+                                                <aura:iteration items="{!v.currencyToDisplayList}" var="groupVal" indexVar="key">
+                                                    <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == v.newInvoiceObject.Payment_Currency__c}"/>
+                                                </aura:iteration>                                               
+                                            </lightning:select>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:input
+                                                label="{!if(v.isCreditMemo,'Credit Memo Type','Invoice Type')}"
+                                                value="{!v.newInvoiceObject.Oracle_Invoice_Type__c}" disabled="true" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                    <aura:if isTrue="{!v.isCreditMemo}">
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:input type="date" disabled="{!v.isReview}" label="GL Date" name="glDate"
+                                                                 value="{!v.newInvoiceObject.GL_Date__c}" aura:id="desc"
+                                                                 required="false" messageWhenValueMissing="Complete this field" />
+                                            </div>
+                                        </lightning:layoutItem>
+                                    </aura:if>
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <aura:if isTrue="{!v.operatingUnitObj.Show_Department__c}">
+                                            <lightning:select disabled="{!v.isReview}" required="true"
+                                                aura:id="dept"
+                                                label="Department"
+                                                value="{!v.selectedDept}"
+                                                messageWhenValueMissing="Complete this field">
+                                                <option text="--None--" value=""></option>
+                                                <aura:iteration items="{!v.revenueMappingObj.departments}" var="groupVal" indexVar="key">
+                                                    <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == v.selectedDept}"/>
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </aura:if>
+                                    </lightning:layoutItem>
+
+                                    <!--only if ou is academy-->
+                                    <!--<aura:if isTrue="{! and(!v.isCreditMemo, if(v.entityOU == '501', true, false) )}">
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:select disabled="{!v.isReview}" aura:id="crstype"
+                                                    name="invCurrency" label="Course Type" required="true"
+                                                    value="{!v.newInvoiceObject.Course_Type__c}"
+                                                    messageWhenValueMissing="Complete this field">
+                                                    <option text="-None-" value=""></option>
+                                                    <aura:iteration items="{!v.courses}" var="groupVal">
+                                                        <option value="{!groupVal.picklistVal}"
+                                                            text="{!groupVal.picklistLabel}"
+                                                            selected="{!groupVal.picklistVal == v.newInvoiceObject.Course_Type__c}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                        </lightning:layoutItem>
+
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:select disabled="{!v.isReview}" aura:id="schl"
+                                                    name="invCurrency" label="Schools" required="true"
+                                                    value="{!v.newInvoiceObject.Schools__c}"
+                                                    messageWhenValueMissing="Complete this field">
+                                                    <option text="-None-" value=""></option>
+                                                    <aura:iteration items="{!v.schools}" var="groupVal">
+                                                        <option value="{!groupVal.picklistVal}"
+                                                            text="{!groupVal.picklistLabel}"
+                                                            selected="{!groupVal.picklistVal == v.newInvoiceObject.Schools__c}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                        </lightning:layoutItem>
+                                    </aura:if> -->
+
+                                    <!--only if ou is academy-->
+
+                                    
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:textarea disabled="{!v.isReview}" label="Description" name="desc"
+                                                value="{!v.newInvoiceObject.Description__c}" aura:id="desc"
+                                                required="false" messageWhenValueMissing="Complete this field" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                    
+                                    
+                                    <aura:if isTrue="{!v.isCreditMemo}">
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            &nbsp;
+                                        </lightning:layoutItem>
+                                    </aura:if>
+
+                                   <!-- <aura:if isTrue="{!v.isCreditMemo}">
+                                        <lightning:layoutItem padding="around-small" size="6"></lightning:layoutItem>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!v.isCreditMemo}">
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <div class="custom-box">
+                                            <lightning:select disabled="{!v.isReview}" aura:id="cmType" name="cmType" label="Type" required="true" value="{!v.newInvoiceObject.Credit_Memo_Type__c}"  messageWhenValueMissing="Complete this field">
+
+                                                <option text="Credit" value="Credit" selected="true"></option>
+
+                                            </lightning:select> 
+                                        </div>
+                                    </lightning:layoutItem>
+                                </aura:if>-->
+                                    <aura:if isTrue="{! !v.isCreditMemo}">
+                                        <!--<lightning:layoutItem padding="around-small" size="6">
+                                            <c:reUsableMultiSelectLookup objectAPIName="Receipt__c"
+                                                queryFields="{!'id, Name, Remaning_Amount__c'}"
+                                                filter="{!'AND Remaning_Amount__c > 0 AND Journal_Created__c = true AND Payment_Currency__c = \''+v.newInvoiceObject.Payment_Currency__c+'\' AND Entity__c =\''+ v.entityId+'\''}"
+                                                IconName="standard:account"
+                                                lstSelectedRecords="{!v.selectedLookUpRecords}" label="Related Receipts"
+                                                isDisabled="{!v.isReview}" valChanged="{!v.valueChanged}" />
+                                        </lightning:layoutItem>
+
+                                        <lightning:layoutItem padding="around-small" size="6">
+                                            <div class="custom-box">
+                                                <lightning:input label="Total Receipts Amount" disabled="true"
+                                                    name="totalAmount" value="{!v.totalAmount}" aura:id="totalAmount" />
+                                            </div>
+                                        </lightning:layoutItem>-->
+
+                                        <lightning:layoutItem padding="around-small" size="3">
+                                            <div class="custom-box">
+                                                <lightning:input disabled="{!v.isReview}" name="otherFiles" type="file"
+                                                    label="Other Document" required="false"
+                                                    onchange="{!c.onFileChange}" />
+                                                <div class="slds-text-body_small slds-text-color_error">
+                                                    {!v.uploadedFiles[0].fileName}</div>
+                                            </div>
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem padding="around-small" size="9"></lightning:layoutItem>
+                                    </aura:if>
+
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                        <aura:if isTrue="{! !v.isReview}">
+                                            <aura:if isTrue="{! !v.isCreditMemo}">
+                                                <lightning:button variant="brand" label="Add Invoice Line Item"
+                                                    title="Add Invoice Line Item" onclick="{! c.doAddInvoiceLine }" />
+                                            </aura:if>
+                                            <aura:if isTrue="{! v.isCreditMemo}">
+                                                <lightning:button variant="brand" label="Add Credit Memo Line Item"
+                                                    title="Add Credit Memo Line Item"
+                                                    onclick="{! c.doAddInvoiceLine }" />
+                                            </aura:if>
+                                        </aura:if>
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+
+                                <aura:if isTrue="{!not(empty(v.invoiceLineItems))}">
+                                    <lightning:layout>
+                                        <table
+                                            class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered tableClass">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <aura:if isTrue="{! if(v.entityOU == '501', true, false)}">
+                                                        <th class="trainingschoolclass" scope="col">
+                                                            <div class="slds-truncate" title="Training Type">Training Type
+                                                            </div>
+                                                        </th>
+                                                        
+                                                        <th class="trainingschoolclass" scope="col">
+                                                            <div class="slds-truncate" title="School and Initiative Type">School &amp; Initiative Type
+                                                            </div>
+                                                        </th>
+                                                    </aura:if>
+                                                    
+                                                    <th class="serviceTypeClass" scope="col">
+                                                        <div class="slds-truncate" title="Item Description">Service Type</div>
+                                                    </th>
+                                                    
+                                                    <aura:if isTrue="{!v.operatingUnitObj.Show_Service_Class__c}">
+                                                        <th class="serclass" scope="col">
+                                                            <div class="slds-truncate" title="Item Description">Service Class</div>
+                                                        </th>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!v.operatingUnitObj.Show_Item_Type__c}">
+                                                        <th class="itemTypeClass" scope="col">
+                                                            <div class="slds-truncate" title="Item Description">{! if(v.entityOU == '103', 'Fee Description', 'Service Description')} </div>
+                                                        </th>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.operatingUnitObj.Show_Description__c}">
+                                                    <th class="" scope="col">
+                                                        
+                                                            <div class="slds-truncate" title="Item Reference">{! if(v.entityOU == '103', 'Fee Type', 'Description')}</div>
+                                                        
+                                                    </th>
+                                                    </aura:if>
+                                                    
+                                                    
+                                                    <!--<th class="" scope="col">
+                                                    <div class="slds-truncate" title="Item Reference">Item Reference</div>
+                                                </th>-->
+                                                    
+                                                    <th class="amountclass" scope="col">
+                                                        <div class="slds-truncate" title="Amount">{! if(or(v.newInvoiceObject.Oracle_Invoice_Type__c == 'ARC Invoice', v.newInvoiceObject.Oracle_Invoice_Type__c == 'ARC CM'),'Rate','Amount')} </div>
+                                                    </th>
+                                                    
+                                                    <aura:if isTrue="{! !v.isCreditMemo}">
+                                                        <aura:if isTrue="{!v.operatingUnitObj.Show_Quantity__c}">
+                                                            <th class="quantityclass" scope="col">
+                                                                <div class="slds-truncate" title="Quantity">{!v.operatingUnitObj.Quantity_Label__c}</div>
+                                                            </th>
+                                                        </aura:if>
+                                                        <th class="discAmnt" scope="col">
+                                                            <div class="slds-truncate discountamtclass" title="Discount Amount">Discount
+                                                                Amount</div>
+                                                        </th>
+                                                    </aura:if>
+                                                    <th class="taxamntclass" scope="col">
+                                                        <div class="slds-truncate" title="Tax Amount">Tax Amount</div>
+                                                    </th>
+                                                    
+                                                    <th class="totalamtclass" scope="col">
+                                                        <div class="slds-truncate" title="Close Date">Total Amount</div>
+                                                    </th>
+                                                    <aura:if isTrue="{! !v.isCreditMemo}">
+                                                        <th class="discDescClass" scope="col">
+                                                            <div class="slds-truncate" title="Discount Amount">Discount Description</div>
+                                                        </th>
+                                                    </aura:if>
+                                                        <!--<th class="" scope="col">
+                                                        <div class="slds-truncate" title="Discount Tax Amount">Discount Tax Amount</div>
+                                                    </th>-->
+                                                    
+                                                    
+                                                    
+
+                                                    <th class="actClass" scope="col">
+                                                        <div class="slds-truncate actionclass" title="Remove"><!--Action--></div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <aura:iteration items="{!v.invoiceLineItems}" var="invoiceLineObj" indexVar="tableIndex">
+                                                    <tr class="slds-hint-parent">
+                                                        <aura:if isTrue="{! if(v.entityOU == '501', true, false)}">
+                                                            <td data-label="Course Type">
+                                                                <lightning:select disabled="{!v.isReview}"
+                                                                    aura:id="lineItemDesc" class="label-hidden"
+                                                                    variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Course_Type__c}" messageWhenValueMissing="Complete this field">
+                                                                    <option text="--None--" value=""></option>
+                                                                    <aura:iteration items="{!v.courses}" var="groupVal" indexVar="key">
+                                                                        <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}" selected="{! invoiceLineObj.Course_Type__c == groupVal.picklistVal}"/>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </td>
+                                                            
+                                                            <td data-label="Schools">
+                                                                <lightning:select disabled="{!v.isReview}"
+                                                                    aura:id="lineItemDesc" class="label-hidden"
+                                                                    variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Schools__c}"
+                                                                    messageWhenValueMissing="Complete this field">
+                                                                    <!--<option text="-None-" value=""></option>-->
+
+                                                                    <aura:iteration items="{!v.schools}" var="groupVal" indexVar="key">
+                                                                        <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}" selected="{! invoiceLineObj.Schools__c == groupVal.picklistVal}"/>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </td>
+                                                        </aura:if>
+                                                        
+                                                        <td data-label="Item Description">
+                                                            <lightning:select disabled="{!v.isReview}"
+                                                                onchange="{!c.onServiceTypeChange}"
+                                                                aura:id="lineItemDesc" class="label-hidden"
+                                                                variant="label-hidden"
+                                                                value="{!invoiceLineObj.Service_Type__c}"
+                                                                name="{!tableIndex}"
+                                                                messageWhenValueMissing="Complete this field">
+                                                                <option text="--None--" value=""></option>
+                                                                <aura:iteration
+                                                                    items="{!v.revenueMappingObj.invRevenueMap}"
+                                                                    var="groupVal" indexVar="key">
+                                                                    <option value="{!groupVal.serType}"
+                                                                        text="{!groupVal.serType}" selected="{!groupVal.serType == invoiceLineObj.Service_Type__c}"/>
+                                                                </aura:iteration>
+                                                            </lightning:select>
+                                                        </td>
+                                                        <aura:if isTrue="{!v.operatingUnitObj.Show_Service_Class__c}">
+                                                            <td data-label="Item Description">
+                                                                <lightning:select disabled="{!v.isReview}"
+                                                                    aura:id="lineItemDesc" class="label-hidden"
+                                                                    variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Service_Class__c}"
+                                                                    name="{!tableIndex}"
+                                                                    messageWhenValueMissing="Complete this field">
+                                                                    <option text="--None--" value=""></option>
+                                                                    <aura:iteration
+                                                                        items="{! invoiceLineObj.itemTypes}"
+                                                                        var="groupVal" indexVar="key">
+                                                                        <option value="{!groupVal}"
+                                                                            text="{!groupVal}" selected="{!groupVal == invoiceLineObj.Service_Class__c}"/>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </td>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!v.operatingUnitObj.Show_Item_Type__c}">
+                                                            <td data-label="Item Description">
+                                                            
+                                                                <lightning:select disabled="{!v.isReview}"
+                                                                    aura:id="lineItemDesc" class="label-hidden"
+                                                                    variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Item_Description__c}"
+                                                                    name="{!tableIndex}"
+                                                                    messageWhenValueMissing="Complete this field" onchange="{!c.onItemChange}">
+                                                                    <option text="--None--" value=""></option>
+                                                                    <!--<aura:iteration items="{!v.invoiceItemTypes}" var="groupVal">
+                                                                    <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == invoiceLineObj.Item_Description__c}"/> 
+                                                                </aura:iteration>-->
+                                                                    <aura:iteration items="{! invoiceLineObj.itemTypes}" var="groupVal"
+                                                                        indexVar="key">
+                                                                        <option value="{!groupVal}" text="{!groupVal}" selected="{!groupVal == invoiceLineObj.Item_Description__c}"/>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            
+                                                            </td>
+                                                        </aura:if>
+                                                        <!--<td data-label="Item Reference">
+                                                        <lightning:input disabled="{!v.isReview}" aura:id="LineItemRef" variant = "label-hidden" value="{!invoiceLineObj.Item_Reference__c}" messageWhenValueMissing="Complete this field"></lightning:input>
+                                                    </td>-->
+                                                        <aura:if isTrue="{!v.operatingUnitObj.Show_Description__c}">
+                                                        <td data-label="Item Reference">
+                                                            
+                                                                <lightning:input disabled="{!v.isReview}"
+                                                                    aura:id="LineItemDiscription" variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Line_Description__c}"
+                                                                    messageWhenValueMissing="Complete this field">
+                                                                </lightning:input>
+                                                            
+                                                        </td>
+                                                        </aura:if>
+                                                        
+                                                        
+                                                        <td data-label="Amount">
+                                                            <lightning:input type="number" aura:id="lineAmt"
+                                                                required="true" disabled="{!v.isReview}" onblur="{!c.calculateLineTotal}" name="{!tableIndex}"
+                                                                variant="label-hidden"
+                                                                value="{!invoiceLineObj.Amount__c}" step="0.01"
+                                                                messageWhenValueMissing="Complete this field">
+                                                            </lightning:input>
+                                                        </td>
+                                                        
+                                                        <aura:if isTrue="{! !v.isCreditMemo}">
+                                                            <aura:if isTrue="{!v.operatingUnitObj.Show_Quantity__c}">
+                                                                <td data-label="Quantity">
+                                                                    <lightning:input type="number" aura:id="Quantity" onblur="{!c.calculateLineTotal}" name="{!tableIndex}"
+                                                                        disabled="{!v.isReview}" variant="label-hidden"
+                                                                        value="{!invoiceLineObj.Quantity__c}" min=".001"
+                                                                        step="0.001"
+                                                                        messageWhenValueMissing="Complete this field">
+                                                                    </lightning:input>
+                                                                </td>
+                                                            </aura:if>
+                                                            <td data-label="Discount Amount">
+                                                                <lightning:input type="number" aura:id="lineDiscAmt" onblur="{!c.calculateLineTotal}" name="{!tableIndex}"
+                                                                    disabled="{!v.isReview}" variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Discount_Amount__c}"
+                                                                    step="0.01"
+                                                                    messageWhenValueMissing="Complete this field">
+                                                                </lightning:input>
+                                                            </td>
+                                                        </aura:if>
+                                                        <td data-label="Tax Amount">
+                                                            <!--<lightning:input type="number" aura:id="lineTaxAmt" disabled="{!v.isReview}" variant = "label-hidden" value="{!invoiceLineObj.Tax_Amount__c}" step="0.01" messageWhenValueMissing="Complete this field"></lightning:input>-->
+                                                            <lightning:select disabled="{!v.isReview}"
+                                                                aura:id="selLineTaxAmt" class="label-hidden" onchange="{!c.calculateLineTotal}" name="{!tableIndex}"
+                                                                variant="label-hidden" value="{!invoiceLineObj.Tax__c}"
+                                                                messageWhenValueMissing="Complete this field">
+                                                                <!--<option text="-None-" value=""></option>-->
+                                                                <aura:iteration items="{!v.taxCodeList}" var="groupVal">
+                                                                    <option value="{!groupVal}"
+                                                                        text="{!groupVal}"
+                                                                        selected="{!groupVal == invoiceLineObj.Tax__c}" />
+                                                                </aura:iteration>
+                                                            </lightning:select>
+                                                        </td>
+                                                        <td data-label="Prospecting">
+                                                            <ui:outputNumber value="{!invoiceLineObj.LineTotal}"/>
+                                                        </td>
+                                                        <aura:if isTrue="{! !v.isCreditMemo}">
+                                                            <td data-label="Discount Description">
+                                                                <lightning:input aura:id="lineDiscAmt"
+                                                                    disabled="{!or(v.isReview, !invoiceLineObj.EnableDiscountDesc)}" variant="label-hidden"
+                                                                    value="{!invoiceLineObj.Discount_Description__c}"
+                                                                    messageWhenValueMissing="Complete this field">
+                                                                </lightning:input>
+                                                            </td>
+                                                        </aura:if>
+                                                            <!--
+                                                        <td data-label="Discount Tax Amount">
+                                                            <lightning:input type="number" aura:id="lineTaxableDiscAmt" disabled="{!v.isReview}" variant = "label-hidden" value="{!invoiceLineObj.Taxable_Discount_Amount__c}" step="0.01" messageWhenValueMissing="Complete this field"></lightning:input>
+                                                        </td> -->
+                                                        
+
+                                                        
+                                                        
+                                                        <td data-label="Prospecting">
+                                                            <a onclick="{!c.removeRow}" data-record="{!tableIndex}">
+                                                                <lightning:icon iconName="utility:delete" size="small"
+                                                                    alternativeText="Delete" />
+                                                                <span class="slds-assistive-text">Delete</span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                        
+                                        
+                                    </lightning:layout>
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6">
+                                            <aura:if isTrue="{! !v.isReview}">
+                                                <aura:if isTrue="{! !v.isCreditMemo}">
+                                                    <lightning:button variant="brand" label="Add Invoice Line Item"
+                                                        title="Add Invoice Line Item" onclick="{! c.doAddInvoiceLine }" />
+                                                </aura:if>
+                                                <aura:if isTrue="{! v.isCreditMemo}">
+                                                    <lightning:button variant="brand" label="Add Credit Memo Line Item"
+                                                        title="Add Credit Memo Line Item"
+                                                        onclick="{! c.doAddInvoiceLine }" />
+                                                </aura:if>
+                                            </aura:if>
+                                        </lightning:layoutItem>
+                                </aura:if>
+                            </form>
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <aura:if isTrue="{!v.isReview}">
+                            <lightning:button variant="neutral" label="Edit" title="Edit" onclick="{! c.toggleReview }"
+                                disabled="{!v.disableConfirm}" />
+                            <lightning:button variant="brand" label="Confirm" title="Confirm"
+                                onclick="{! c.doSaveInvoice }" disabled="{!v.disableConfirm}" />
+                            <aura:set attribute="else">
+                                <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                                    onclick="{! c.closeModel }" />
+                                <lightning:button variant="brand" label="Review and Save" title="Save"
+                                    onclick="{! c.toggleReview }" />
+                            </aura:set>
+                        </aura:if>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!-- ###### MODAL BOX Part END Here ######-->
+        </aura:If>
+    </div>
+</aura:component>

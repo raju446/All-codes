@@ -1,0 +1,605 @@
+<apex:page docType="html-5.0"  applyHtmlTag="false"  applyBodyTag="false" title="Login" showHeader="false" standardStylesheets="false"
+    controller="CustomLoginController">
+
+    <head>
+        <title>Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+        <script charset='UTF-8'>
+              window['adrum-start-time'] = new Date().getTime();
+              (function(config){
+                    config.appKey = '{!$Label.App_Dynamics_Track_Code}';
+                    config.adrumExtUrlHttp = 'http://cdn.appdynamics.com';
+                    config.adrumExtUrlHttps = 'https://cdn.appdynamics.com';
+                    config.beaconUrlHttp = 'http://col.eum-appdynamics.com';
+                    config.beaconUrlHttps = 'https://col.eum-appdynamics.com';
+                    config.xd = {enable : false};
+              })(window['adrum-config'] || (window['adrum-config'] = {}));
+
+        </script>
+        <script src="https://cdn.appdynamics.com/adrum/adrum-latest.js"></script>
+        <apex:stylesheet value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/main.css')}" />
+        <apex:includeScript value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/js/jquery.min.js')}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                overflow:hidden;
+            }
+
+            body {
+                font-family: Raleway_Regular;
+                background-color: #fff;
+            }
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+
+            .login-top {
+                margin-bottom: 1%;
+            }
+
+            .login-text .welcome-line {
+                font-family: Raleway_Bold;
+                font-size: 17px;
+                color: #44939C;
+                padding-bottom: 10px;
+            }
+
+            .login-text .welcome-label {
+                font-family: Calibri_Custom, san-serif;
+                font-weight: 700;
+                font-size: 28px;
+                color: #44939C;
+            }
+
+            .login-box .login-label {
+                color: #fff;
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+
+            .login-text {
+                margin-top: 13%;
+                text-align: center;
+            }
+            .adgmlogo{
+                text-align: center;
+            }
+            input{
+                -webkit-border-radius: 0px;
+                -moz-border-radius: 0px;
+                border-radius: 0px;
+            }
+            input[type="submit"] {
+                background-color: #44939C;
+                padding: 0px;
+                border: 0px;
+                color: #fff;
+                -webkit-border-radius: 2px;
+                -moz-border-radius: 2px;
+                border-radius: 2px;
+                font-size: 1.1em !important;
+                font-family: Raleway_Bold;
+                cursor: pointer;
+                -webkit-appearance: none;
+            }
+
+            input[type="submit"]:hover {
+                background-color: #335562 !important;
+            }
+            .login-top .adgmlogo {
+                height: 100%;
+                position: relative;
+            }
+
+            .login-top .adgmlogo img {
+                position: absolute;
+                bottom: 24px;
+                width: 200px;
+                right: 37%;
+            }
+
+            .sub-login-text {
+                color: #44939C;
+                font-size: 14px;
+                margin-top: 10px;
+                font-family: Raleway_Medium;
+            }
+
+            .new-user {
+                color: #44939C;
+                font-size: 14px;
+                font-family: Raleway_Bold;
+            }
+
+            a.sub-login-text,
+            a.new-user {
+                text-decoration: none;
+            }
+
+            .myCustomMessage {
+                color: #cc0000;
+                font-size: 12px;
+            }
+
+            .login-box {
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+
+            .tab {
+                display: table;
+            }
+
+            .reg .icon-adgm-register,
+            .reg .label-reg,
+            .tab-cell {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            .reg .icon-adgm-register {
+                font-size: 13px;
+                color: #44939C;
+                padding-right: 5px;
+                padding-top: 3px;
+            }
+            
+            /*For the two additional hyperlinks*/
+            .reg{
+                width: 100%;
+                display: table;
+            }
+            .reg .new-user{
+               /* display: table-cell;*/
+                float: left;
+                width: 100%;
+            }
+            .company-user-label{
+                float: right;
+            }
+            /**/
+            
+            /* New Styles */
+
+            .bg-login {
+                width: 53%;
+            }
+
+            .login-box {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                width: 70%;
+                height: 390px;
+            }
+
+            .adgmlogo img {
+                width: 70%;
+            }
+
+            .main-login-box {
+                width: 47%;
+                padding-top: 3%;
+                padding-bottom: 5%;
+            }
+
+            .main-login-box .login-block {
+                padding-left: 32%;
+                padding-right: 32%;
+            }
+            .main-login-box input{
+                width: 100%;
+                height: 32px;
+                padding: 0px 10px;
+                box-sizing: border-box;
+            }
+            .login-label{
+                margin-top: 18px;
+                margin-bottom: 5px;
+                font-family: Raleway_Medium;
+                font-size: 14px;
+                color: #505050;
+            }
+            .new-user-block{
+                margin-top: 15px;
+            }
+            .main-login-box input[type=text]{
+                color: #002A3A;
+            }
+            .video-demo{
+                margin-top: 15px;
+                cursor: pointer;
+            }
+            .video-demo:hover .vid-bl{
+                background-color: #335562 !important;
+            }
+            .video-demo .vid-bl{
+                /*border: 1px solid #022A3A;*/
+                height: 32px;
+                width: 100%;
+                background-color: #44939C;
+            }
+            .video-demo .vid-bl .demo-text{
+                font-family: Raleway_Bold;
+                color: #fff;
+                padding: 10px;
+                font-size: 0.8em;
+                text-align: center;
+                
+                /*line-height: 70px;*/
+            }
+            .video-demo .vid-bl .vid-link{
+                width: 34%;
+                /*height: 70px;*/
+                cursor:pointer;
+            }
+            .left-box{
+                float: left;
+            }
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                padding-top: 100px; /* Location of the box */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            /* Modal Content */
+            .modal-content {
+                position: relative;
+                background-color: #fefefe;
+                margin: auto;
+                padding: 0;
+                width: 40%;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+                -webkit-animation-name: animatetop;
+                -webkit-animation-duration: 0.4s;
+                animation-name: animatetop;
+                animation-duration: 0.4s
+            }
+
+            /* Add Animation */
+            @-webkit-keyframes animatetop {
+                from {top:-300px; opacity:0} 
+                to {top:0; opacity:1}
+            }
+
+            @keyframes animatetop {
+                from {top:-300px; opacity:0}
+                to {top:0; opacity:1}
+            }
+
+            /* The Close Button */
+            .close {
+                color: #022A3A;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .modal-header {
+                padding: 2px 16px;
+            }
+
+            .modal-body {padding: 2px 16px;}
+
+            .modal-footer {
+                padding: 13px 16px;
+                color: white;
+            }
+            /*
+            .embed-container {
+              position: relative;
+              padding-bottom: 41.66666667%;
+              height: 0;
+              overflow: hidden;
+              max-width: 100%;
+              height: auto;
+            }
+             */       
+            .embed-container iframe,
+            .embed-container object,
+            .embed-container embed {
+                width: 100%;
+                height: 294px;
+                margin: 0;
+                padding: 0;
+                display:block; /* Add this */
+            }
+            @media only screen and (max-width: 1190px) {
+                .bg-login{
+                    display:none;
+                }
+                .main-login-box {
+                    width: 100%;
+                    padding-top: 1%;
+                }
+                .main-login-box .login-block {
+                    padding-left: 20%;
+                    padding-right: 20%;
+                    margin: auto;
+                    width: 38%;
+                }
+            }
+            .vid-link{
+                width: 100%;
+                height: 100%;
+                background: url("{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/play_thumb.png')}") no-repeat center center fixed;
+                background-size: cover;
+                opacity: 0.8;
+            }
+            .vid-link:hover{
+                opacity: 1;
+            }
+            .login-name-prefix{
+                position: absolute;
+                right: 9px;
+                top: 40%;
+                transform: translateY(-50%);
+                font-size:14px;
+            }
+            .u-block{
+                white-space:nowrap;
+                position: relative;
+            }
+            .uname{
+                padding-right:39% !important;
+            }
+            .login-form{
+                margin-top: 20px;
+            }
+            .myCustomMessage h4{
+                display:none !important;
+            }
+            @media only screen and (max-width: 1024px) {
+              body {
+                    overflow:scroll;
+                }  
+            }
+            @media only screen and (max-width: 800px) {
+                body {
+                    overflow:scroll;
+                }
+                .uname {
+                    padding-right: 51% !important;
+                }
+                .login-name-prefix{
+                    font-size: 11px;
+                }
+                .modal-content{
+                    width: 98%;
+                }
+                .modal{
+                    padding-top:50px;
+                }
+            }
+            .w-acs{
+                color: #46949d;
+                font-family: Calibri_Light;
+                letter-spacing: -0.09em;
+            }
+            .adgm-sp{
+                color: #002a3a;
+                font-size: 29px;
+            }
+            .bg { 
+                /* The image used */
+                background-image: url("{!URLFOR($Resource.LoginBg, '/LoginBg/BG_Login.png')}");
+            
+                /* Full height */
+                height: 100%; 
+            
+                /* Center and scale the image nicely */
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                width: 100%;
+            }
+            @media only screen and (max-width: 600px) {
+                .main-login-box .login-block {
+                    padding-left: 5%;
+                    padding-right: 5%;
+                    margin: auto;
+                    width: 80%;
+                }
+            }
+            #loading {
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                position: fixed;
+                display: block;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+                text-align: center;
+            }
+            
+            #loading-image {
+                position: absolute;
+                top: 100px;
+                left: 240px;
+                z-index: 100;
+            }
+            button.close {
+                -webkit-appearance: none;
+                padding: 0;
+                cursor: pointer;
+                background: 0 0;
+                border: 0;
+            }
+            .logo-label img{ margin-top:10px;}
+            .adgm-logo{
+                margin-left: -3.2%;
+            }
+            .fa-play { margin-left:2px}
+            .vid-link img{ display:block}
+        </style>
+    </head>
+
+    <body>
+        <div id="loading">
+          <div id="loading-image" >...</div>
+        </div>
+        <div>
+            <!-- The Modal -->
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <!--
+                    <span class="close">&times;</span>
+                    <span>&nbsp;</span>
+                    -->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    </div>
+                    <div class='embed-container'>
+                        <iframe id="demoIframe" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen="true"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-login left-box">
+                <div class="bg" id="bgImage"></div>
+                <!--<img src="{!URLFOR($Resource.LoginBg, '/LoginBg/BG_Login.png')}" />-->
+            </div>
+            <div class="main-login-box left-box">
+                <div class="login-block">
+                    <div class="adgmlogo">
+                        <img src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/New_ADGM_Logo.png')}" />
+                    </div>
+                    <div class="login-text">
+                        <span class="welcome-line">WELCOME TO</span>
+                        <br/>
+                        <span class="logo-label"><img class="access-logo" style="width:27%" src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/access.svg')}" /></span>
+                        <span class="logo-label"><img class="adgm-logo" style="width:30%" src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/adgm.svg')}" /></span>
+                    </div>
+                    <div class="login-form">
+                        <apex:form >
+                            <div class="login-label">Username</div>
+                            <div class="u-block"><apex:inputText id="username" value="{!username}" styleClass="uname" /><span class="login-name-prefix" >{!$Label.Login_Name_Prefix}</span></div>
+                            <div class="login-label">Password</div>
+                            <div><apex:inputSecret id="password" value="{!password}" /></div>
+                            <div class="sub-login-text">
+                                <a class="sub-login-text" href="/forgotpassword">Forgot your password </a>
+                            </div>
+                            <apex:outputPanel styleClass="myCustomMessage">
+                                <apex:pageMessages id="showmsg" ></apex:pageMessages>
+                            </apex:outputPanel>
+                            <div class="login-label">
+                            <apex:commandButton value="LOGIN" action="{!login}" />
+                            </div>
+                        </apex:form>
+                    </div>
+                    <div class="new-user-block">
+                        <!-- <div class="left-box sub-login-text">
+                            <input class="styled-checkbox" id="remember_me" type="checkbox" value="value1" />
+                            <label for="remember_me">Remember me</label>
+                        </div> -->
+                        <div class="reg">
+                            <a class="new-user" href="{!$Label.Guest_User_Registration_Link}" style="margin-bottom: 5px">
+                                <span class="icon-adgm-register"></span>
+                                <span class="label-reg">Register As Guest User </span>
+                            </a>
+                            <a class="new-user company-user-label" href="{!$Label.Company_User_Registration_Link}">
+                                <span class="icon-adgm-register"></span>
+                                <span class="label-reg">Register As Company User </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="video-demo">
+                        <div class="vid-bl tab" onclick="openVideo();">
+                            <!-- <div class="vid-link tab-cell" id="myBtn">
+                                 <img src="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/ACCESSADGM_Video1_login_thumbnail.png')}" /> 
+                            </div> -->
+                            <div class="center demo-text tab-cell">
+                                <span>Watch our introduction video</span>
+                                <span><i class="fa fa-play"></i></span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(window).load(function() {
+                $('#loading').hide();
+            });
+            $(window).resize(function (e) {
+                var win = $(window);
+                document.getElementById("bgImage").style.height = win.height() + "px";
+            });
+            // Get the modal
+            var modal = document.getElementById('myModal');
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // When the user clicks the button, open the modal 
+            
+            function openVideo() {
+                modal.style.display = "block";
+                document.getElementById('demoIframe').src = "https://player.vimeo.com/video/264067717";
+            }
+            
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+            //Setting the height of bg image
+            var height = window.innerHeight;
+            document.getElementById("bgImage").style.height = height + "px";
+            
+            //Erase all cookies on page unload
+            /*
+            function eraseCookieFromAllPaths(){
+                var cookies = document.cookie.split("; ");
+                for (var c = 0; c < cookies.length; c++) {
+                    var d = window.location.hostname.split(".");
+                    while (d.length > 0) {
+                        var cookieBase = encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) + '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=' + d.join('.') + ' ;path=';
+                        var p = location.pathname.split('/');
+                        document.cookie = cookieBase + '/';
+                        while (p.length > 0) {
+                            document.cookie = cookieBase + p.join('/');
+                            p.pop();
+                        };
+                        d.shift();
+                    }
+                }
+            }
+            */
+        </script>
+    </body>
+</apex:page>

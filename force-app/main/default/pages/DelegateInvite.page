@@ -1,0 +1,476 @@
+<apex:page docType="html-5.0" controller="DelegateInviteController" standardstylesheets="true" showheader="false"
+           cache="false">
+    <link rel="stylesheet" type="text/css" href="{!$Site.Prefix}/apex/FZPortalCSSMain" />
+    <apex:composition template="UserRegistrationHeaderProtocol" /> 
+    
+    
+    <style>
+        @media only screen and (max-width: 768px) {
+            .lbl-bl{
+                    text-align:left !important;
+            }
+            input[type="text"], select, textarea, input[type="email"]{
+                width: 95% !important;
+            }
+            .countrycodeCss{
+                margin-bottom: 10px;
+            }
+            .consentCSS{
+                padding-right: 15px;
+                padding-left: 15px;
+            }
+        }
+        .page-title.row h4,
+        .page-title.row h5,
+        h3 {
+        color: #44939C !important;
+        }
+        
+        .pbSubheader {
+        background-color: #44939C !important;
+        }
+        .countrycodeCss{
+        width: 85px;
+        }
+        .bPageBlock {
+        border-top: #ac975e !important;
+        width: 80%;
+        background-color: #fff !important;
+        text-align: left !important;
+        background-color: #fff !important;
+        }
+        
+        .pageSpanContainer {
+        background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+        background-repeat: no-repeat;
+        width: 100%;
+        padding-bottom: 17%;
+        background-size: cover;
+        position: relative;
+        }
+        
+        .pBlockTable {
+        margin-left: 8px;
+        }
+        
+        .pageSpanContainer h1 {
+        font-size: 24px;
+        line-height: 36px;
+        color: #fff;
+        margin-bottom: 10px;
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        }
+        
+        body button,
+        body .x-btn,
+        body .btn,
+        body .btnDisabled,
+        body .btnCancel,
+        body .menuButton .menuButtonButton {
+        color: #fff !important;
+        }
+        
+        .pBockSection .data2Col {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        }
+        
+        .btnCheckAvail {
+        color: #AD9961 !important;
+        font-size: 13px !important;
+        font-weight: bold !important;
+        text-decoration: underline;
+        }
+        
+        .pageDesc {
+        font-size: 12px;
+        margin-bottom: 0px;
+        color: #505050;
+        margin-left: 13px;
+        }
+        
+        .pBockSection td.data2Col {
+        padding-left: 18px !important;
+        }
+        
+        .p-notes {
+        padding-left: 16px;
+        padding-right: 16px;
+        font-size: 12px;
+        }
+        
+        body {
+        background-color: #F5F5F5 !important;
+        position: relative;
+        
+        }
+        
+        .left-spacer {
+        margin-left: 20px;
+        }
+        
+        .pBold {
+        font-weight: bold;
+        }
+        
+        .t-spacer {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        
+        .pBockSection td.data2Col {
+        font-size: 1.1em;
+        }
+        
+        body .pbBody table.list tr.headerRow td,
+        body .pbBody table.list tr.headerRow th,
+        body .pbBody table.list tr td,
+        .bPageTitle .ptBody .links,
+        .listHoverLinks,
+        .modal-body,
+        .bPageBlock .pbHeader select,
+        .bPageBlock .pbBottomButtons select,
+        body .pbBody table.list tr th {
+        font-size: 1em;
+        }
+        
+        .vfHelpText a {
+        position: relative;
+        }
+        
+        .vfHelpText a span {
+        display: none;
+        }
+        
+        .vfHelpText a:hover span {
+        display: block;
+        position: absolute;
+        top: 1.25em;
+        padding: 5px 5px;
+        /*left:-15em; width:16em;*/
+        left: -10em;
+        width: 10%;
+        z-index: 100;
+        min-width: 11em;
+        border: 1px solid orange;
+        background-color: #FEFDB9;
+        color: black;
+        }
+        
+        table {
+        //width: 100%;
+        }
+        
+        /*Changes */
+        input[type="text"],
+        select,
+        textarea,input[type="email"] {
+        width: 50%;
+        font-size: 12px;
+        }
+        
+        .top-sp {
+        margin-top: 10px;
+        }
+        
+        .lbl-bl {
+        font-weight: 700;
+        font-size: 12px;
+        }
+        
+        .txt-left {
+        text-align: left;
+        }
+        
+        .txt-right {
+        text-align: right;
+        }
+        
+        .btn-bl {
+        padding-top: 40px;
+        padding-bottom: 20px;
+        text-align: center;
+        }
+        
+        .top-sp .row {
+        margin-top: 5px;
+        }
+        
+        html .section-header {
+        background-color: #44939C !important;
+        padding-left: 15px;
+        }
+        
+        .dBlock {
+        padding-bottom: 20px;
+        }
+        
+        .lbl-msg-block {
+        min-height: 180px;
+        }
+        
+        h4 {
+        color: #44939C;
+        }
+        
+        html,
+        body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        }
+        
+        #container {
+        min-height: 100%;
+        position: relative;
+        }
+        
+        #header {
+        background: #ff0;
+        padding: 10px;
+        }
+        
+        #body {
+        padding-bottom: 60px;
+        /* Height of the footer */
+        }
+        
+        #footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+        /* Height of the footer */
+        }
+        .result-block{
+        background-color: #fff;
+        padding-left:5px;
+        font-size:12px;
+        font-weight:bold;
+        }
+        .content-block{
+        padding-left:10%;
+        padding-right:10%;
+        }
+        .lbl-bl{
+        text-align:right;
+        }
+        .pbButtonb{
+        padding:5px 100px 20px 20px !important;
+        }
+        .mobileCSS {
+        width: 163px !important;
+        }
+        .row{
+        margin-bottom : 25px;
+        }
+        .LabelSpan{
+        position: relative;
+        top: -18px;
+        }
+        .LabelRequired{
+        color:rgb(194, 57, 52);
+        font-size:25px;
+        font-weight:normal;
+        position: relative;  
+        top: -10px;
+        }
+        .searchBtn {
+            margin-bottom: 8px !important;
+        }
+        body .pbBody {
+            margin: 0px 0px 0px 0px !important;
+        }
+        .consentCSS {
+            text-align: left;
+            padding-left: 33px;
+            padding-right: 33px;
+            }
+    </style>
+    
+    <div id="container">
+        <div id="body">
+            <apex:form id="theform">
+                <div class="pageSpanContainer">
+                    <div id="header-content">
+                        <h1>Delegate {!eventType} Invitation</h1>
+                    </div>
+                </div>
+                <br/>
+                
+                <div class="content-block">
+                    <center>
+                        
+                        <apex:outputPanel rendered="{!alreadyDelegatedMsg != ''}">
+                            <h4>{!alreadyDelegatedMsg}</h4>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="theOuter" rendered="{!!isInternalCon && alreadyDelegatedMsg == ''}">    
+                            <div class="dBlock content">
+                                <apex:pageBlock id="thePBlk">
+                                    <apex:pageMessages id="themsg"/>
+                                    <div class="section-header brandTertiaryBgr txt-left">
+                                        New Attendee Details (Please delegate your Invite.) 
+                                    </div>
+                                    <div class="container top-sp">
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">First Name</span><span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputText value="{!first_Name}" required="true"/>
+                                            </div>
+                                        </div>
+                                         <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Middle Name</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputText value="{!middle_Name}" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Last Name</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputText value="{!last_Name}" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Email</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:input type="email" id="theEmail" value="{!email_id}" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Mobile</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:selectList value="{!mobileCode}" size="1" styleClass="countrycodeCss">
+                                                    <apex:selectOptions value="{!countryPicklist}"></apex:selectOptions>
+                                                </apex:selectList>
+                                                &nbsp;<apex:inputText value="{!contactMobile}" id="phone" required="true" styleClass="mobileCSS" />
+                                                <apex:outputPanel style="color:red;padding-left: 1%;font-weight: bold;" rendered="{!errorMSG != null && errorMSG != ''}">
+                                                    <br/>{!errorMSG}
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Job Title</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputText value="{!jobTitle}" required="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span class="LabelSpan">Company Name</span> <span class="LabelRequired">*</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputText value="{!company_Name}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 lbl-bl"><span>Comments</span></div>
+                                            <div class="col-sm-8">
+                                                <apex:inputTextarea value="{!comments}"/>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="consentCSS" >
+                                        <apex:inputCheckbox value="{!isIAgree}" style="vertical-align: bottom;" onclick="toggleDisplay(this);"/> &nbsp;&nbsp;
+                                            {!disclimerMsg}
+                                            <br/>
+                                        <div style="height:10px"/>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <apex:outputPanel style="color:red;padding-left: 1%;font-weight: bold;" id="msgPanel">
+                                            {!errorConsentMSG}
+                                        </apex:outputPanel>
+                                    </div>
+                                    <apex:pageblockbuttons location="bottom">
+                                        <apex:commandbutton value="Delegate" styleclass="btnSubmit" rerender="theOuter,themsg" action="{!doSelectExternal}"/>
+                                    </apex:pageblockbuttons>
+                                </apex:pageBlock>
+                            </div>
+                        </apex:outputPanel> 
+                        
+                        <apex:outputPanel id="theTop" layout="block" rendered="{!isInternalCon && alreadyDelegatedMsg == ''}"> 
+                            <div class="dBlock content">
+                                <apex:pageBlock >
+                                    
+                                    <div class="section-header brandTertiaryBgr txt-left">
+                                        Internal Delegation
+                                    </div>
+                                                          
+                                    <apex:outputPanel id="thePB" layout="block" styleClass="txt-left" style="margin-top:10px;">
+                                        &nbsp;&nbsp;<apex:inputText value="{!searchKey}" label="Input" html-placeholder="Type person name..."/>
+                                        &nbsp;<apex:commandButton styleClass="searchBtn" value="Search" action="{!doSearch}" reRender="theTop, theInternalMSG"/><br/>
+                                        <apex:pageMessages id="themsg"/>
+                                        <apex:outputPanel style="color:red;padding-left: 1%;font-weight: bold;" rendered="{!errorMSG != null && errorMSG != ''}">
+                                        &nbsp;&nbsp;{!errorMSG}
+                                    </apex:outputPanel> 
+                                        
+                                        <apex:outputPanel rendered="{!gotRecord}"> 
+                                            <table class="customTbl">
+                                                
+                                                <thead>
+                                                    <th style="width:10%">Action</th>
+                                                    <th>Name</th>
+                                                    <!-- <th>Email</th> -->
+                                                    <th>Job Title</th>
+                                                </thead>
+                                                <tbody>
+                                                    <apex:repeat value="{!contactWrapperLst}" var="v">
+                                                        <tr>
+                                                            <td><apex:inputCheckbox value="{!v.isSelected}" disabled="{!v.isDelegated}"/></td>
+                                                            <td>{!v.conName}</td>
+                                                            <!-- <td>{!v.conEmail }</td> -->
+                                                            <td>{!v.conJob }</td>
+                                                        </tr>
+                                                    </apex:repeat>  
+                                                </tbody>
+                                            </table>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!gotRecord}" id="btnpnl">
+                                        <div class="btn-bl">
+                                            <apex:commandbutton value="Delegate" styleclass="btnSubmit" action="{!doSelect}" rerender="theTop,thePB"/>
+                                        </div>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!!gotRecord}" >
+                                    <div class="btn-bl"></div></apex:outputPanel>
+                                </apex:pageBlock>
+                            </div>
+                        </apex:outputPanel> 
+                    </center>
+                </div>
+            </apex:form>
+            
+        </div>
+    </div> 
+    <div class="footer-block">
+        <div class="left">
+            <div class="footer-text">
+                <span class="footer-line"><a href="https://www.adgm.com/privacypolicy/" target="_blank">Privacy Policy</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/terms-conditions/" target="_blank">Terms and
+                    Conditions</a></span>
+                <span class="footer-gap">|</span>
+                <span class="footer-line"><a href="https://www.adgm.com/disclaimer/" target="_blank">Disclaimer</a></span>
+            </div>
+            <div class="footer-note">
+                © 2021 Abu Dhabi Global Market. All rights Reserved.
+            </div>
+        </div>
+        <div class="right">
+            <div class="footer-icons">
+                <a href="https://www.linkedin.com/company/abu-dhabi-global-market-adgm-" target="_blank"><span class="linked-in-icon icon-adgm-group-820"></span></a>
+                <!--<a href="https://m.facebook.com/abudhabiglobalmarket/" target="_blank"><span class="fb-icon icon-adgm-facebook"</span></a>-->
+                <a href="https://twitter.com/adglobalmarket?lang=en" target="_blank"><span class="twitter-icon icon-adgm-twitter-circular-button"></span></a>
+                <!--<a href="https://www.youtube.com/watch?v=Lhx9lJVxVZw" target="_blank"><span class="youtube-icon icon-adgm-youtube"></span></a>-->
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    
+    function toggleDisplay(chk) {
+        if(chk.checked){
+            document.getElementById('{!$Component.theForm.InfoPB.msgPanel}').style.display = "none";
+        } else {
+            document.getElementById('{!$Component.theForm.InfoPB.msgPanel}').style.display = "block";
+        }
+    }
+    </script>        
+</apex:page>

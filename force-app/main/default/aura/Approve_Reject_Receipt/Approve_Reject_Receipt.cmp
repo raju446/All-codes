@@ -1,0 +1,93 @@
+<!--
+  @description       : 
+  @author            : Jayanta Karmakar
+  @group             : 
+  @last modified on  : 02-14-2021
+  @last modified by  : Jayanta Karmakar
+  Modifications Log 
+  Ver   Date         Author             Modification
+  1.0   12-27-2020   Jayanta Karmakar   Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="ApproveRejectReceiptController">
+    <aura:attribute name="showError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="showSucess" type="Boolean" default="false" />
+    <aura:attribute name="sucessMessage" type="String" />
+    
+    <aura:attribute name="selectedPicklistVal" type="String" />
+    <aura:attribute name="picklistVals" type="List" />
+    <aura:attribute name="amnt" type="Decimal" />
+    <aura:attribute name="originalAmnt" type="Decimal" />
+    <aura:attribute name="payeesName" type="String" />
+    <aura:attribute name="rejectionMsg" type="String" />
+    <!-- Handler Start -->
+    
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+           </div>
+        </div>
+     </aura:if>
+    
+    <!--<aura:if isTrue="{!v.showError}"> 
+        <div class="slds-notify slds-notify_toast slds-theme_error">
+            <span class="slds-assistive-text">error</span>
+            <div class="slds-notify__content">
+                <h5 class="slds-text-heading_small ">Error!</h5>
+                <p class="slds-align_absolute-center">{!v.errorMessage}</p>                
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showSucess}"> 
+        <div class="slds-notify slds-notify_toast slds-theme_success">
+            <span class="slds-assistive-text">success</span>
+            <div class="slds-notify__content">
+                <h5 class="slds-text-heading_small ">Success!</h5>
+                <p class="slds-align_absolute-center">{!v.sucessMessage}</p>                
+            </div>
+        </div>
+    </aura:if> -->
+    
+    
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+              <span class="slds-icon_container " title="account">
+                <lightning:icon iconName="utility:approval" alternativeText="Warning!" title="Warning" />
+                <span class="slds-assistive-text">Approve or Reject</span>
+              </span>
+            </div>
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                Approve/Reject Receipt
+              </h2>
+            </div>
+            <div class="slds-no-flex">
+              
+            </div>
+          </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning:select name="colorId" label="Payment Status" aura:id="colorId" value="{!v.selectedPicklistVal}" required="true">
+                <aura:iteration items="{!v.picklistVals}" var="option">
+                    <option text="{!option.txt}" value="{!option.val}" selected="{!v.selectedPicklistVal == option.val}"/>
+                </aura:iteration>
+            </lightning:select>
+            <lightning:input type="number" step=".01" name="amountinp" max="{!v.originalAmnt}" label="Receipt Amount" value="{! v.amnt}" required="true"/>
+            <lightning:input name="input1" label="Payee Name" value="{! v.payeesName}"/>
+            <lightning:textarea name="input2" label="Rejection Comments" value="{! v.rejectionMsg}"/>
+        </div>
+        <footer class="slds-card__footer">
+            <lightning:button variant="brand" label="Approve" onclick="{! c.acceptReceipt}"/>      
+            <lightning:button variant="Neutral" label="Reject" onclick="{! c.rejectReceipt}"/>
+        </footer>
+    </article>
+    
+</aura:component>

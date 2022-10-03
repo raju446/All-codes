@@ -1,0 +1,56 @@
+<template>
+    <div class="all">
+        <br><br>
+    <lightning-layout>
+        <lightning-layout-item>
+            <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                <a href="/ADGMMOBILE/s/services-help"><span style="color: #000; font-size:15px;">&#8592;</span></a></div>
+            <p class="text">Company B</P>
+        </lightning-layout-item>
+    </lightning-layout>
+    <div>
+        <br>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="container slds-box slds-p-around_medium slds-text-align_center">
+                     Status<br><span style="color:#000;font-size:25px;font-weight:700;">Active</span>
+                    </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="container slds-box slds-p-around_medium slds-text-align_center">
+                    Branch<br><span style="color:#000;font-size:25px;font-weight:700;">Fintech</span>
+                    </div>
+            </lightning-layout-item>
+            </lightning-layout>
+       </div>
+     </div>
+     <div>
+        <lightning-button-stateful  label-when-off="Follow this company" label-when-on="Following company" label-when-hover="Unfollow this company" icon-name-when-off="utility:add" icon-name-when-on="utility:check" icon-name-when-hover="utility:close" selected={isSelected}
+        onclick={handleClick} class="button "> 
+        Follow this company
+    </lightning-button-stateful>
+     </div>
+     <br>
+     <div class="information">
+         <p>Financial Services<br>
+            Permission Number<span style="float: right;">210027</span>
+               <br><br>
+            Date of Financial Services<br>
+            Permission<span style="float: right;">11 October 2021</span>
+            <br><br>
+            Legal Status<span style="float: right;"> Private Company Limited by Shares</span>
+            <br><br>
+            Address<span style="float: right;">  Unit 8 Floor 6, Al Sila Tower, Abu Dhabi <br>Global Market Square, Al Maryah Island,<br> Abu Dhabi, PO Box 764661, UEA</span>
+            <br><br><br><br>
+            Phone<span style="float: right;"> 02 886 9610</span>
+            <br><br>
+            Email<span style="float: right;"> contact@8f-am.com</span></p>
+            <br><br>
+            <lightning-layout multiple-rows>
+                 <a href='tel:028869610' title="Call" onclick={handleClick} class="slds-m-left_x-small"><button class="button1">Call</button></a>
+                 <a href="mailto:contact@8f-am.com" title="Email" onclick={handleClick} class="button2 slds-m-left_x-small"><button class="button2">Email</button></a>
+                <button title="Copy address" onclick={handleClick} class="button3 slds-m-left_x-small">Copy address</button>
+            </lightning-layout>
+     </div>
+     <br><br>
+</template>

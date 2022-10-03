@@ -1,0 +1,124 @@
+<apex:page controller="PaymentStepController" id="pg" tabstyle="HexaBPM__Service_Request__c" action="{!CheckAccess}" sidebar="false">
+     <style>
+        .pricing-table{
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        .message table td {padding: 0;}
+        .message {margin: 8px 0px;}
+    </style>
+    <div style="width:100%;float:left;">
+        <apex:sectionheader title="Service Request" subtitle="{!ServiceRequest.Name} for {!ServiceRequest.HexaBPM__Ultimate_SR_Menu_Text__c}"/>
+        <apex:form id="frm">
+            <apex:pagemessages id="msg"/>
+            <apex:pageblock id="pb" title="Service Request Details">
+                <apex:pageblockbuttons id="pbbtns" location="top">
+                    <apex:commandbutton id="btnback" value="Cancel" onclick="disableButtons();" action="{!CancelPayment}" rerender="msg,pb"/>
+                    <!--<apex:commandbutton id="btncnf" value="Confirm and Pay" action="{!ConfirmPayment}" onclick="disableButtons();" rerender="msg,pb" rendered="{!IF(PaymentPending==true,true,false)}"/>-->
+                    <apex:commandbutton id="btncnf" value="Confirm and Pay" action="{!ConfirmPayment}" onclick="disableButtons();" rerender="msg,pb" rendered="{!IF(PaymentPending==true,IF(DefBalStr=='',true,false),false)}"/>
+                    <apex:commandbutton id="btntopUp" value="Topup Balance" onclick="openWindow();return false;"  rerender="msg,pb" rendered="{!IF(DefBalStr<>'',true,false)}"/>
+                </apex:pageblockbuttons>
+                <apex:pageblocksection columns="2">
+                    <apex:outputfield value="{!ServiceRequest.Name}"/>
+                    <apex:outputfield value="{!ServiceRequest.HexaBPM__Customer__c}"/> 
+                    <apex:outputfield label="Status" value="{!ServiceRequest.HexaBPM__External_SR_Status__c}"/>
+                    <apex:outputfield value="{!ServiceRequest.CreatedDate}"/>
+                </apex:pageblocksection>
+            </apex:pageblock>
+            <apex:pageblock id="SRPriceItemPB" title="SR Price Items" rendered="{!IF(lstSRPriceItems!=null && lstSRPriceItems.size>0,true,false)}">
+                <apex:pageblocktable id="pbt" value="{!lstSRPriceItems}" var="PI">
+                    <!--
+                    <apex:column headervalue="Item Number" value="{!PI.Name}"/>
+                    <apex:column headervalue="Price in AED" value="{!PI.HexaBPM__Price__c}"/>
+                    <apex:column headervalue="Item Name" value="{!PI.HexaBPM__Product__c}"/>
+                    <apex:column headervalue="Item Line" value="{!PI.HexaBPM__Pricing_Line__c}"/>
+                    <apex:column headervalue="Item Status" value="{!PI.HexaBPM__Status__c}"/>
+                    -->
+                    <apex:column headervalue="Item Number" value="{!PI.Name}"/>
+                    <apex:column headervalue="Item Name" value="{!PI.HexaBPM__Product__r.Name}"/>
+                    <!-- <apex:column headervalue="Item Line" value="{!PI.HexaBPM__Pricing_Line__c}"/> 
+                    <apex:column headervalue="Item Status" value="{!PI.HexaBPM__Status__c}"/>-->
+                    <apex:column headervalue="Fee (AED)" value="{!PI.Fee__c}"/>
+                    <apex:column headervalue="Tax (AED)" value="{!PI.Tax_Amount__c}"/>
+                 
+                </apex:pageblocktable>
+            </apex:pageblock>
+            
+            <apex:outputpanel id="AmountPnl">
+                    <div style="overflow: hidden;">
+                        <apex:pageblock id="TotalValues" title="Summary" >
+                            <apex:pageblocktable id="pbtTotalAmount" value="{!ServiceRequest.Name}" var="a" >
+                                <apex:column headervalue="Available Balance (AED)" >
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!AvailablePortalBalance}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(AvailablePortalBalance)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((AvailablePortalBalance * 100)),2)=='0','00',RIGHT(TEXT((AvailablePortalBalance * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </apex:column>
+                                <apex:column headervalue="Total Amount (AED)" >
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!TotalPriceItemVal}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(TotalPriceItemVal)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((TotalPriceItemVal * 100)),2)=='0','00',RIGHT(TEXT((TotalPriceItemVal * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </apex:column>
+                            </apex:pageblocktable>
+                        </apex:pageblock>
+                        <!--
+                        <table class="list" style="width:160px;float:left;margin-left:1%;" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <th style="font-weight:bold;background: #f2f3f3;">Available Account Balance</th>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!AvailablePortalBalance}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(AvailablePortalBalance)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((AvailablePortalBalance * 100)),2)=='0','00',RIGHT(TEXT((AvailablePortalBalance * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="list total-amount" style="width:160px;float:right;margin-right:1%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <th style="font-weight:bold;background: #f2f3f3;">Total Amount</th>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">
+                                    <apex:outputText value=" {0,number,###,###,###,##0.00}" >
+                                        <apex:param value="{!TotalPriceItemVal}"/>
+                                        <apex:param value="{!SUBSTITUTE(TEXT(FLOOR(TotalPriceItemVal)), ',', '.' )}" />
+                                        <apex:param value="{!SUBSTITUTE(if(RIGHT(TEXT((TotalPriceItemVal * 100)),2)=='0','00',RIGHT(TEXT((TotalPriceItemVal * 100)),2)),'.','0')}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                        -->
+                    </div>
+            </apex:outputpanel>
+        </apex:form>
+    </div>
+    <script>
+        function disableButtons(){
+            if(document.getElementById('pg:frm:pb:pbbtns:btncnf')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btncnf').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btncnf').value = 'Processing..';
+            }
+            if(document.getElementById('pg:frm:pb:pbbtns:btnback')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btnback').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btnback').value = 'Processing..';
+            }
+            if(document.getElementById('pg:frm:pb:pbbtns:btntopUp')!=null){
+                document.getElementById('pg:frm:pb:pbbtns:btntopUp').className = 'btnDisabled';
+                document.getElementById('pg:frm:pb:pbbtns:btntopUp').value = 'Processing..';
+            }
+        }
+        function openWindow(){
+            var balStr = "{!DefBalStr}";
+            var srIdStr = "{!strSRID}";
+            var stepIdStr = "{!strStepID}";
+            //window.open("apex/PaymentFormTopUp?amount="+balStr+"&srId="+srIdStr, '_blank');
+            window.open("apex/PaymentFormTopUp?amount="+balStr+"&srId="+srIdStr+"&topUpReturnUrl=payment"+"&stepId="+stepIdStr, '_parent');
+        }
+    </script>
+</apex:page>

@@ -1,0 +1,54 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" StandardController="Case" extensions="CaseSelectionController">
+<head>
+</head>
+<body>
+     <div class="main-block">
+        <div class="pageTopic">RAISE A NEW CASE</div>
+        <div class="pageDesc">
+            Before raising a new case please ensure that you have read the Knowledge articles shared by ADGM.  You can access the knowledge articles by clicking on the "Knowledge Center" Tab.  Also available are tutorial videos that provide guidance on how to access the portal, please reference them.          </div>
+        <div class="detail">
+            <div class="case-type-title">Select a Case Type</div>
+            <div class="case-block">
+                <div class="container-fluid">
+                    <div class="row">
+                        <apex:repeat value="{!lstCaseRecordTypes}" var="caseType">
+                            <div class="col-sm-3 col-box">
+                                <a data-href="{!$Site.Prefix}{!caseType.CaseUrl}" onclick="confirmCaseCreation(this);">
+                                    <div class="case-box">
+                                        <div class="type-block tabular">
+                                            <span class="type-logo {!caseType.IconName} tabular-cell"></span>
+                                            <span class="type-title tabular-cell">{!caseType.Title}</span>
+                                        </div>
+                                        <div class="title-detail">
+                                            {!caseType.Description}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var hrefURL;
+    function confirmCaseCreation(obj){
+        if($(obj).attr("data-href"))
+            hrefURL = $(obj).attr("data-href"); 
+        clearModalContent();  
+        $("#modalBox").modal();
+        document.getElementById('modal-adgmload').style.visibility="hidden";
+        $("#modalBox .modal-title").html("Confirm");
+        $("#modalBox .modal-main-content").html('<div class="stat_block">Have you read the articles in the Knowledge Center prior to raising a case?</div><div class="confirm-btn-area" ><input type="submit" value="Yes" onclick="proceedCaseCreation();"/><input type="submit" value="No" onclick="cancelCaseCreation();"/></div>');
+    }
+    function proceedCaseCreation(){
+       window.location = hrefURL; 
+       
+    }
+    function cancelCaseCreation(){
+        window.location = "{!$Site.Prefix}/_ui/knowledge/ui/KnowledgeHome";
+    }
+</script>
+</apex:page>

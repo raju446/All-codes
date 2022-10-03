@@ -1,0 +1,68 @@
+<apex:page docType="html-5.0" applyBodyTag="false" standardStylesheets="false" controller="AnnouncementListController">
+<head>
+</head>
+<style>
+    .td_link{ width: 10%; }
+    .td_text{ width: 90% }
+    
+</style>
+<body>
+    <div class="alert-block">
+        <div class="pageTopic">Announcement</div>
+        <div class="pageDescriptionArea">List of Announcements</div>
+        <div class="alert-detail">
+            <div class="close-area">
+                
+            </div>
+            <apex:form id="table-form">
+                <div class="alert-detail-area">
+                    <div class="table-header-block">Announcement</div>
+                    
+                        <table class="customTbl">
+                            <thead>
+                                <th>Name</th>
+                                <th>Title</th>
+                            </thead>
+                            <tbody>
+                                <apex:repeat var="a" value="{!Announcement}">
+                                    <tr>
+                                        <td class="td_link"><a href="announcementdetail?id={!a.Id}" class="dec-none">{!a.Name}</a></td>
+                                        <td class="td_text"> <apex:outputText value="{!a.Title__c}" escape="false" /></td>
+                                    </tr>
+                                </apex:repeat>
+                                <!-- <td>test</td>
+                                <td>This is to inform you.!</td>-->
+                            </tbody>
+                        </table>
+                </div> <!--Detail Area Ends here -->
+                <div class="page-footer text-center"> <!---Pagination Area-->
+                    <span class="first-arrow" disabled="{!!setCon.hasPrevious}">
+                        <apex:commandLink styleClass="dec-none" reRender="table-form"  action="{!setCon.first}"  title="First Page">
+                            <span class="icon icon-adgm-arrow-left-1"></span><span class="icon icon-adgm-arrow-left-1 double-left-arrow"></span>
+                        </apex:commandLink>
+                    </span>
+                    <span class="prev-arrow" disabled="{!!setCon.hasPrevious}">
+                        <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.previous}" title="Previous Page">
+                            <span class="icon icon-adgm-arrow-left-1"></span>
+                        </apex:commandLink>
+                    </span>
+                    <span class="page-num"><apex:outputText >Page {!setCon.PageNumber} of {!TotalPages} </apex:outputText></span>
+                    <span class="next-arrow" disabled="{!!setCon.hasNext}">
+                        <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.next}"  title="Next Page">
+                            <span class="icon icon-adgm-arrow-right-1"></span>
+                        </apex:commandLink>
+                    </span>
+                    <span class="last-arrow" disabled="{!!setCon.hasNext}">
+                        <apex:commandLink styleClass="dec-none" reRender="table-form" action="{!setCon.last}"  title="Last Page">
+                            <span class="icon icon-adgm-arrow-right-1"></span><span class="icon icon-adgm-arrow-right-1 double-left-arrow"></span>
+                        </apex:commandLink>
+                    </span>
+                </div>
+            </apex:form>
+        </div>
+    </div>
+</body>
+<script>
+  
+</script>
+</apex:page>

@@ -1,0 +1,307 @@
+<apex:page Id="TransPg" StandardController="HexaBPM__Service_Request__c" Extensions="QuickStepTransitionController" action="{!CheckAccess}">
+    <style>
+        /* This is for the full screen DIV */ 
+        .overlay {
+           background-color: black; 
+           /*cursor: wait;*/
+           opacity: 0.6;
+           /* Generic for Major browsers */ 
+           -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; 
+           /* IE 5-7 */
+           filter: alpha(opacity = 60);
+           /* Netscape */
+           -moz-opacity: 0.6;
+           /* Safari 1.x */
+           -khtml-opacity: 0.6;
+           position: fixed;
+           width: 100%; 
+           height: 100%;
+           top: 0;
+           left: 0;
+           z-index: 101;
+           zIndex: 101;
+        }
+        /* This is for the message DIV */
+        .contentDiv{
+            position: absolute; 
+            z-index: 102; 
+            top: 0px;
+            left: 50%;
+            margin-left: -300px;
+            <!--margin-left: 8%;-->
+            <!--margin-top:5%;-->
+            <!--//width:500px;-->
+            <!--//min-height:300px;-->
+            <!--//margin-right: 10%;-->
+        }
+        #pbdiv {
+            width: 600px;
+        }
+        .pageTitleIcon {
+            background-image: url(/img/sprites/master.png);
+            background-position: 0 -1202px;
+            width: 32px;
+            height: 32px;
+        }
+        #pbdiv .bPageBlock {
+           min-height:250px !important;
+           margin-bottom:0 !important;
+           max-width:610px;
+           /*
+           border:none !important;
+           background-color: transparent !important;
+           */
+        }
+        .Step_pageTitleIcon {
+            background-image: url(/img/icon/custom51_100/presenter32.png);
+            background-position: 0 0;
+            width: 32px;
+            height: 32px;
+        }
+        .ActnHeaderCol{
+            text-align:center;
+        }
+        .bEditBlock .pbHeader > table > tbody > tr > td, .bPageBlock .pbHeader > table > tbody > tr > td, .bLayoutBlock .pbHeader > table > tbody > tr > td, .bEditBlock .pbBottomButtons > table > tbody > tr > td, .bPageBlock .pbBottomButtons > table > tbody > tr > td, .bLayoutBlock .pbBottomButtons > table > tbody > tr > td{
+            padding: 15px 12px;
+        }
+        .spacer-qs{
+            margin-top:10px;
+        }
+    </style>
+    <style type="text/css">
+        * {font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px;opacity: 1; }
+        a:hover {background:#ffffff; text-decoration:none;opacity: 1;} /*BG color is a must for IE6*/
+        a.tooltip span {display:none; padding:2px 3px; margin-left:8px; width:130px;opacity: 1;}
+        a.tooltip:hover span{display:inline; position:absolute; border:1px solid #cccccc; background:#ffffff; color:#6c6c6c;opacity: 1;}
+    </style>
+    
+    
+    <apex:detail subject="{!SRId}" relatedList="false"/>
+    <apex:form id="frm">
+        <div class="overlay"></div>
+        <apex:inputhidden value="{!iListSize}" id="hdnlstSize"/>
+        <apex:inputhidden value="{!selTransition}" id="hdnStatus"/>
+        <apex:inputhidden value="{!StepNotes}" id="hdnNotes"/>
+        <apex:inputhidden value="{!RejReason}" id="hdnReason"/>
+        <apex:actionfunction name="ChangeStatus" action="{!SaveChanges}" rerender="msg,pbt,pbtns" oncomplete="EnableLinks();"/>
+        <apex:actionfunction name="AcceptReleaseAction" action="{!CheckAction}" rerender="frm" oncomplete="EnableLinks();"/>
+        <apex:outputPanel styleClass="contentDiv">
+            <div id="pbdiv">
+                <apex:pageblock Id="pb">
+                    <apex:actionStatus id="pleasewait" stopText="">
+                      <apex:facet name="start">
+                          <div>
+                              <div class="popupBackground"></div>
+                              <div class="PopupPanel">
+                                  <img src="{!$Resource.Hexabpm__LoadingImage}"/>
+                              </div>
+                          </div>
+                      </apex:facet>
+                    </apex:actionStatus>
+                    <div class="content">
+                        <table>
+                            <tr>
+                                <td>
+                                    <img src="/s.gif" alt="Step" class="Step_pageTitleIcon" title="Step"/>
+                                </td>
+                                <td>
+                                    <h1 class="pageType" style="margin-top:5px;">{!step.Name}<span class="titleSeparatingColon">:</span></h1>
+                                    <br/>
+                                    <h2 style="font-size:15px;">{!step.HexaBPM__Summary__c}</h2>
+                                    <div class="blank">&nbsp;</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <apex:pageBlockButtons id="pbtns" location="bottom"> 
+                        <apex:commandButton id="CancelLink" action="{!CancelAction}" styleClass="btn" style="padding: 4px;text-decoration: none;" value="Cancel"/>
+                        <apex:commandButton rendered="{!IF(hasAccess,userType=='salesforce',false)}" id="AcceptReleaseLink" onclick="checkAcceptRelease();return false;" styleClass="btn" style="padding: 4px;text-decoration: none;" value="{!IF((isStepOwnedByQueue==true),'Accept','Release')}" reRender="pbtns,msg"/>
+                        <apex:commandButton rendered="{!!hasAccess}" id="AcceptReleaseLinkDsbl" styleClass="btnDisabled" style="padding: 4px;text-decoration: none;" value="{!IF((isStepOwnedByQueue==true),'Accept','Release')}"/>
+                        <apex:commandButton rendered="{!hasAccess}" id="ProceedLink" styleClass="btn" style="padding: 4px;text-decoration: none;" value="Proceed" onclick="goValue();return false;"/>
+                        <apex:commandButton rendered="{!!hasAccess}" id="ProceedLinkDsbl" styleClass="btnDisabled" style="padding: 4px;text-decoration: none;" value="Proceed"/>
+                    </apex:pageBlockButtons>
+                    <apex:pageMessage summary="Applicant with Passport Number {!step.HexaBPM__SR__r.Passport_Number__c} is already exists in the system. Please verify and then close the step." strength="1" severity="Info" rendered="{!isPPExists}"/>
+                    <table>
+                        
+                        <tr>
+                            <td style="vertical-align:middle;font-weight:bold;">Comments</td>
+                            <td><apex:inputTextArea id="reason"  style="resize:none;width:500px;height:auto;"/></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <label id="errorMsg" style="color:red;display:none;">Please add rejection reason in the Comments for the step.</label>
+                                <label id="NotesErrorMsg" style="color:red;display:none;">Please add Notes in the Comments for the step.</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <apex:outputpanel layout="block" rendered="{!DocumentValidityCheck}">
+                        <div style="margin-top:5px;margin-bottom:5px;">
+                            <table>
+                                <tr>
+                                    <apex:outputpanel rendered="{!isWorkPermitSR}" layout="none">
+                                        <td style="Iertical-align:middle;font-weight:bold;">Work Permit Issue Date</td>
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!!isWorkPermitSR}" layout="none">
+                                        <td style="Iertical-align:middle;font-weight:bold;">Document Valid From</td>
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!isPOBoxSR}" layout="none">
+                                        <td style="Iertical-align:middle;font-weight:bold;">PO Box Issue Date</td>
+                                    </apex:outputpanel>
+                                    <td>
+                                        <apex:inputfield value="{!objSRTBU.Valid_From__c}" rendered="{!!isWorkPermitSR}"/>
+                                        <apex:inputfield value="{!objSRTBU.Work_Permit_Issue_Date__c}" rendered="{!isWorkPermitSR}"/>
+                                        <apex:inputfield value="{!objSRTBU.Issue_Date__c}" rendered="{!isPOBoxSR}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <apex:outputpanel rendered="{!isWorkPermitSR}" layout="none">
+                                        <td style="Iertical-align:middle;font-weight:bold;">Work Permit Expiry Date</td>
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!!isWorkPermitSR}" layout="none">
+                                        <td style="vertical-align:middle;font-weight:bold;">Document Valid To</td>
+                                    </apex:outputpanel>
+                                    <apex:outputpanel rendered="{!isPOBoxSR}" layout="none">
+                                        <td style="vertical-align:middle;font-weight:bold;">PO Box Expiry Date</td>
+                                    </apex:outputpanel>
+                                    
+                                    <td>
+                                        <apex:inputfield value="{!objSRTBU.Valid_To__c}" rendered="{!!isWorkPermitSR}"/>
+                                        <apex:inputfield value="{!objSRTBU.Work_Permit_Expiry_Date__c}" rendered="{!isWorkPermitSR}"/>
+                                        <apex:inputfield value="{!objSRTBU.Expiry_Date__c}" rendered="{!isPOBoxSR}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>                        
+                    </apex:outputpanel>
+                    <apex:outputPanel rendered="{!isPOBoxSR}">
+                        <div style="margin-top:5px;margin-bottom:5px;">
+                            <table>
+                                <tr>
+                                    <apex:outputpanel rendered="{!isPOBoxSR}" layout="none">
+                                        <td style="Iertical-align:middle;font-weight:bold;">PO Box Issue Date</td>
+                                    </apex:outputpanel>
+                                    <td>
+                                        <apex:inputfield value="{!objSRTBU.Issue_Date__c}" rendered="{!isPOBoxSR}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <apex:outputpanel rendered="{!isPOBoxSR}" layout="none">
+                                        <td style="vertical-align:middle;font-weight:bold;">PO Box Expiry Date</td>
+                                    </apex:outputpanel>
+                                    
+                                    <td>
+                                        <apex:inputfield value="{!objSRTBU.Expiry_Date__c}" rendered="{!isPOBoxSR}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </apex:outputPanel>
+                    <div class="spacer-qs">
+                        <apex:pageMessages id="msg"/>
+                    </div>
+                    <div class="spacer-qs">
+                        <apex:pageblocktable value="{!lstTrnsWrap}" var="st" id="pbt">    
+                            <apex:column headerClass="ActnHeaderCol" headerValue="Select" id="ActCol" style="width:50px;text-align:center;">
+                                <apex:outputpanel layout="block" rendered="{!!hasAccess}">
+                                    <input type="radio" name="StatusDisabled" disabled="{!!hasAccess}" style="cursor:pointer;"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel layout="block" rendered="{!hasAccess}">
+                                    <input type="radio" name="Status" style="cursor:pointer;" onclick="SelectStatus('{!JSENCODE(st.objStatus.Id)}','{!st.ReasonRequired}','{!JSENCODE(st.objStatus.HexaBPM__Code__c)}');"/>
+                                </apex:outputpanel>
+                            </apex:column>
+                            <apex:column headerValue="Status Name" id="NameCol">
+                                <apex:outputfield value="{!st.objStatus.Name}" id="statusOutputFld"/>
+                            </apex:column>
+                        </apex:pageblocktable>
+                    </div>
+                </apex:pageblock>
+            </div>
+        </apex:outputpanel>
+        <script>
+            var isNotesRequired;
+            var isSelStatusRej;
+            function goValue(){
+                DisableLinks();
+                var selStatusId = document.getElementById('TransPg:frm:hdnStatus').value;
+                document.getElementById('TransPg:frm:hdnReason').value = '';
+                document.getElementById('TransPg:frm:hdnNotes').value = '';
+                if(selStatusId!=null && selStatusId!=''){
+                    console.log('--'+document.getElementById('TransPg:frm:hdnReason').value);
+                    console.log('--'+isSelStatusRej);
+                    if(isSelStatusRej==true || isSelStatusRej=='true'){
+                        document.getElementById('NotesErrorMsg').style.display = 'none';
+                        if(document.getElementById('TransPg:frm:pb:reason').value!=null && document.getElementById('TransPg:frm:pb:reason').value!='' && document.getElementById('TransPg:frm:pb:reason').value.trim()!=''){
+                            document.getElementById('NotesErrorMsg').style.display = 'none';
+                            document.getElementById('TransPg:frm:hdnReason').value = document.getElementById('TransPg:frm:pb:reason').value;
+                            console.log('--'+document.getElementById('TransPg:frm:hdnReason').value);
+                            ChangeStatus();
+                        }else{
+                            document.getElementById('NotesErrorMsg').style.display = '';
+                            document.getElementById('TransPg:frm:pb:reason').focus();
+                            EnableLinks();
+                        }
+                    }else if(isNotesRequired==true){
+                        document.getElementById('NotesErrorMsg').style.display = 'none';
+                        if(document.getElementById('TransPg:frm:pb:reason').value!=null && document.getElementById('TransPg:frm:pb:reason').value!='' && document.getElementById('TransPg:frm:pb:reason').value.trim()!=''){
+                            document.getElementById('NotesErrorMsg').style.display = 'none';
+                            document.getElementById('TransPg:frm:hdnNotes').value = document.getElementById('TransPg:frm:pb:reason').value;
+                            ChangeStatus();
+                        }else{
+                            document.getElementById('NotesErrorMsg').style.display = '';
+                            document.getElementById('TransPg:frm:pb:reason').focus();
+                            EnableLinks();
+                        }
+                    }else{
+                        ChangeStatus();
+                    }
+                }else{
+                    alert('please select the status to proceed');
+                    EnableLinks();
+                }
+            }
+            function checkAcceptRelease(){
+                document.getElementById('TransPg:frm:hdnStatus').value = null;
+                DisableLinks();
+                AcceptReleaseAction();
+            }
+            function DisableLinks(){
+                var userT = '{!userType}';
+                document.getElementById('TransPg:frm:pb:pbtns:ProceedLink').className = 'btnDisabled';
+                document.getElementById('TransPg:frm:pb:pbtns:ProceedLink').innerHTML = 'Processing..';
+                //document.getElementById('TransPg:frm:pb:pbtns:StepLink').className = 'btnDisabled';
+                //document.getElementById('TransPg:frm:pb:pbtns:StepLink').innerHTML = 'Processing..';
+                document.getElementById('TransPg:frm:pb:pbtns:CancelLink').className = 'btnDisabled';
+                document.getElementById('TransPg:frm:pb:pbtns:CancelLink').innerHTML = 'Processing..';
+                if(userT == 'salesforce'){
+                    document.getElementById('TransPg:frm:pb:pbtns:AcceptReleaseLink').className = 'btnDisabled';
+                    document.getElementById('TransPg:frm:pb:pbtns:AcceptReleaseLink').innerHTML = 'Processing..';
+                }
+            }
+            function EnableLinks(){
+                var userT = '{!userType}';
+                document.getElementById('TransPg:frm:pb:pbtns:ProceedLink').className = 'btn';
+                document.getElementById('TransPg:frm:pb:pbtns:ProceedLink').innerHTML = 'Proceed';
+                //document.getElementById('TransPg:frm:pb:pbtns:StepLink').className = 'btn';
+                //document.getElementById('TransPg:frm:pb:pbtns:StepLink').innerHTML = 'View Step';
+                document.getElementById('TransPg:frm:pb:pbtns:CancelLink').className = 'btn';
+                document.getElementById('TransPg:frm:pb:pbtns:CancelLink').innerHTML = 'Cancel';
+                if(userT == 'salesforce'){
+                    document.getElementById('TransPg:frm:pb:pbtns:AcceptReleaseLink').className = 'btn';
+                    document.getElementById('TransPg:frm:pb:pbtns:AcceptReleaseLink').innerHTML = 'Cancel';
+                }
+            }
+            function SelectStatus(StatusId,isRejStat,statCode){
+                console.log('StatusId:'+StatusId);
+                console.log('isRejStat:'+isRejStat);
+                document.getElementById('TransPg:frm:hdnStatus').value = StatusId;
+                isNotesRequired = false;
+                isSelStatusRej = isRejStat;
+                if(statCode!=null && (statCode=='REQUIRED_INFO_UPDATED' || statCode=='RETURN_FOR_MORE_INFO')){
+                    isNotesRequired = true;
+                }
+            }
+            
+        </script>
+    </apex:form>
+</apex:page>

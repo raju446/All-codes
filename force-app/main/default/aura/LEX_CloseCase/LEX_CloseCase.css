@@ -1,0 +1,7 @@
+.THIS textarea {
+  height: 9rem;
+}
+
+.THIS .errorFld textarea{
+    border: 1px solid red;
+}

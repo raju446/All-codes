@@ -1,0 +1,89 @@
+<!--
+  @File Name          : LEX_View_InvoiceLineItem.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 3/3/2020, 9:26:18 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/2/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component>
+    <aura:attribute name="InvoiceLineItemId" type="String"/>
+    <aura:attribute name="showModal" type="Boolean" default="false" />
+    <aura:method name="initInvoiceLine" action="{!c.doAction}" access="PUBLIC"> 
+        <aura:attribute name="invLineId" type="String" /> 
+    </aura:method>
+
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.closeModal}">
+                    <lightning:icon class="xbtn" iconName="utility:close" size="small" alternativeText="Close"/>
+                </button>
+                <!--<h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Modal Header</h2>-->
+                <lightning:layout class="slds-page-header slds-page-header--object-home">
+                    <lightning:layoutItem>
+                        <lightning:icon iconName="standard:lead_list" alternativeText="Entity"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="horizontal-medium">
+                        <div class="page-section page-header"> 
+                            <h2 class="slds-text-heading--label customHeading"><b>Invoice Line Item Details</b> </h2>                            
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+              </header>
+    
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+    
+                <lightning:recordViewForm recordId="{!v.InvoiceLineItemId}" objectApiName="Invoice_Line_Item__c">
+    
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Amount__c" />
+                            </div>
+                        </lightning:layoutItem>
+    
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Tax_Amount__c" />
+                            </div>
+                        </lightning:layoutItem>
+    
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Discount_Amount__c" />
+                            </div>
+                        </lightning:layoutItem>
+    
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Taxable_Discount_Amount_Converted__c" />
+                            </div>
+                        </lightning:layoutItem>
+    
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Item_Reference__c" />
+                            </div>
+                        </lightning:layoutItem>
+    
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="custom-box">
+                                <lightning:outputField fieldName="Item_Description__c" />
+                            </div>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                </lightning:recordViewForm>
+    
+              </div>
+            </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+</aura:component>

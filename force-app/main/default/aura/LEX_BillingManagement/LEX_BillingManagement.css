@@ -1,0 +1,49 @@
+.THIS .clearbutton {
+    float : right;
+    right: 16px;
+}
+.THIS .clearbutton1 {
+    float : right;
+    right: 25px;
+}
+.THIS .mergeButton {
+    float : right;
+    right: 18px;
+}
+.THIS .searchButton {
+    float : right;
+    right: 30px;
+}
+.THIS .createEntityBtn{
+    float: right;
+    right: 11px;
+}
+
+.THIS .createPersonEntityBtn{
+    float: right;
+    right: 20px;
+}
+
+.THIS .entityTable {
+    padding: 0 0.7%;
+    padding-top: 2%;
+}
+
+.THIS .errorFld input, .THIS .errorFld select{
+    border: 1px solid red;
+}
+
+.THIS .slds-table th .slds-truncate{
+    text-transform: capitalize;
+}
+
+
+.THIS .tbl-custom th, .THIS .tbl-custom td{
+    border-top: none;
+    background-color: rgb(243, 242, 242);
+    box-shadow: none important;
+ }
+
+ .THIS .tbl-custom tr:hover>td {
+    box-shadow: none important; 
+ }

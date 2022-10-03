@@ -1,0 +1,243 @@
+/*!
+ * Bootstrap v3.3.4 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+body,
+td {
+  font-family: 'MuseoSans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
+.sidebarCollapsible {
+  padding: 9px 0 0 5px;
+}
+.sidebarCell,
+#sidebarDiv {
+  width: 280px !important;
+}
+#handlebarContainer {
+  left: 284px;
+}
+.container {
+  width: 100% !important;
+}
+div#AppBodyHeader .zen {
+  position: absolute;
+  top: 70px;
+}
+.zen #tabContainer {
+  background: transparent !important;
+  border-radius: 0;
+  box-shadow: none !important;
+}
+/*
+	Top-bar
+*/
+#portalheader nav,
+#portalheader input,
+#portalheader button {
+  border-radius: 0;
+
+  colo: #fff;
+}
+#portalheader nav {
+  background: #006496;
+}
+#portalheader nav .navbar-brand {
+  display: table-cell;
+  float: none;
+  padding: 0;
+  vertical-align: middle;
+}
+#portalheader nav form input.form-control {
+  min-width: 160px;
+  height: 25px;
+  font-size: 12px;
+}
+#portalheader nav form button {
+  height: 25px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 25px;
+  color: #fff;
+  background: #61bae4;
+  border: 0;
+}
+.navbar-form .form-group {
+  float: left;
+}
+div.primary-nav {
+  height: 50px;
+  background: #61bae4;
+}
+.nav.navbar-nav i.icon-Phone,
+.nav.navbar-nav i.icon-User {
+  float: left;
+  margin-right: 10px;
+  font-size: 20px;
+}
+.stripe {
+  height: 30px;
+  padding-left: .8777em;
+  overflow: hidden;
+  line-height: 30px;
+  color: #fff;
+  background-color: #006496;
+}
+/*
+Announcement sectino 
+*/
+.announcment {
+  padding: 1em;
+}
+.announcement .description,
+.announcement .left-section {
+  display: table-cell;
+  vertical-align: top;
+}
+.announcement .left-section {
+  padding: .5em 0 0 .5em;
+}
+.announcement .description {
+  padding: 1.5877em 0 1.5877em .875em;
+}
+/*
+Service Requests Section 	
+*/
+.service-request {
+  height: 180px;
+  padding: 15px;
+  background: #f1f1f1;
+}
+.service-request .sr-box {
+  display: table;
+  float: left;
+  width: 20%;
+  height: 150px;
+  cursor: default;
+  border-right: 1px;
+}
+.service-request .sr-box:last-child {
+  border: none;
+}
+.service-request .sr-box .box-sections {
+  display: table-cell;
+  padding: 0 15px;
+  text-align: center;
+  vertical-align: middle;
+  border-left: 1px solid #006496;
+}
+.serivceBox:hover {
+  color: #fff;
+  cursor: pointer;
+  background: #61bae4 !important;
+}
+.serviceBox:hover [class*='icon-']:before,
+.serivceBox:hover * {
+  font-weight: bold;
+  color: #fff;
+}
+.icon-Notifications:before,
+.icon-Alert:before {
+  margin-top: 20px;
+  font-size: 30px;
+  color: #006496;
+}
+.icon-Notifications:before {
+  font-size: 80px;
+}
+.icon-Settings:before {
+  font-size: 20px;
+  line-height: 26px !important;
+}
+.charts img,
+.tutroials img {
+  width: 100%;
+}
+.charts img {
+  height: 385px;
+}
+.contact {
+  display: table;
+  height: 132px;
+  margin-top: 5px !important;
+}
+.contactBox {
+  display: table-cell;
+  float: none;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #e8f2fb;
+  border-right: 5px solid #fff;
+}
+.contactBox:last-child {
+  border: 0;
+}
+.contactBox i {
+  font-size: 30px;
+}
+.sidebar {
+  width: 100%;
+}
+.sidebar .serivceBox {
+  display: table-cell;
+  float: none;
+  width: 33.333333%;
+  height: 90px;
+  padding-right: 8px;
+  padding-left: 8px;
+  text-align: center;
+  vertical-align: middle;
+  background: #e8f2fb;
+  border-right: 5px solid #fff;
+}
+.sidebar .serivceBox:last-child {
+  border: 0;
+}
+.sidebar .serivceBox i {
+  font-size: 2.0em;
+  line-height: 1.5;
+}
+.sidebar .serivceBox i + * {
+  margin: 0;
+  font-size: .877em;
+  line-height: 1.15em;
+}
+.services {
+  margin-top: 5px;
+}
+.company-glance table td {
+  font-size: 11px;
+  font-weight: bold;
+  color: #030b0f;
+  vertical-align: middle !important;
+}
+span.currencyCode {
+  position: absolute;
+  right: 5px;
+  float: right;
+  color: #006496;
+}
+/*
+Utility classes
+*/
+.nopadding {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.border {
+  display: block;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+.bottom-space-5 {
+  margin-bottom: 5px;
+}
+.bottom-space-10 {
+  margin-bottom: 10px;
+}
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}

@@ -1,0 +1,168 @@
+<apex:page standardController="HexaBPM__Service_Request__c" extensions="PortalProgressIndicatorController" id="IPage">
+        <apex:stylesheet value="{!URLFOR($Resource.HexaBPM__SLDS_BPM_Resource, 'SLDS_BPM_Resource/SLDS_BPM_Res/css/font-awesome.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.HexaBPM__SLDS_BPM_Resource, 'SLDS_BPM_Resource/SLDS_BPM_Res/js/jquery.min.js')}"/>
+        <style>
+            .htimeline {
+                display: table;
+                //min-height: 140px;
+                min-height: 50px;
+                list-style: none;
+                padding: 0 0 0 0;
+                /* Padding left  right */
+                position: relative;
+                width: 100%;
+                padding-top:20px;
+                margin-bottom: 0;
+            }
+            .htimeline>li {
+                display: table-cell;
+                margin-left: 0px !important;
+                position: relative;
+                //float: left;
+                top: 0px;
+                /*padding-bottom: 5px;*/
+                //min-height: 140px;
+                -moz-transition: all 0.5s ease-in;
+                -webkit-transition: all 0.5s ease-in;
+                -ms-transition: all 0.5s ease-in;
+                transition: all 0.5s ease-in;
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                /* Firefox */
+                border-bottom: 1px solid #efefef;
+            }
+            
+            .htimeline>li:before {
+                content: "  ";
+                display: block;
+                width: 100%;
+                height: 3px;
+                background-color: #cccccc;
+            }
+            
+            .htimeline>li>.timeline-badge {
+                color: #fff;
+                width: 26px;
+                height: 26px;
+                line-height: 26px;
+                font-size: 1.2em;
+                text-align: center;
+                position: absolute;
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+                background-color: #999999;
+                z-index: 100;
+                font-family: HelveticaNeue, Arial, sans-serif;
+            }
+            
+            .htimeline>li>.timeline-badge {
+                top: -12px;
+                -moz-transition: all 1s ease-in;
+                -webkit-transition: all 1s ease-in;
+                -ms-transition: all 1s ease-in;
+                transition: all 1s ease-in;
+            }
+            
+            ul.htimeline>li>.timeline-descr {
+                //margin-left: 25%;
+                text-align:center;
+                margin-top: 20px;
+                font-size: 1.0em;
+                width: 100%;
+                <!--text-align: center;-->
+                font-family: HelveticaNeue, Arial, sans-serif;
+                font-weight:bold;
+                /* font-weight added for all the groups apart from selected */
+            }
+            
+            .timeline-badge.selected {
+                background-color: #e4c97e !important;
+            }
+            
+            .timeline-badge.before {
+                background-color: #44939c !important;
+            }
+            
+            .timeline-descr.selected {
+                font-weight: bold;
+            }
+            iframe[Attributes Style] {
+                border-top-width: 0px;
+                border-right-width: 0px;
+                border-bottom-width: 0px;
+                border-left-width: 0px;
+                height: auto !important;
+                width: 100%;
+            }
+            div.timeline-icon {
+                display: inline !important;
+            }
+            
+            td.td-timeline-descr {
+                width: 30%;
+            }
+            .clear-dec {
+                text-decoration: none !important;
+            }
+            td.data2col{
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .body.sfdcBody.apexPageInline{
+                background:none !important;
+            }
+            html .brandQuaternaryBgr{
+                background : none !important;
+            }
+            .htimeline>li:first-child:before{
+                content: "";
+                display: block;
+                right: -50%;
+                width: 100%;
+                position: relative;
+                height: 3px;
+            }
+            .htimeline>li:last-child:before{
+                content: "";
+                display: block;
+                left: -50%;
+                width: 100%;
+                position: relative;
+                height: 3px;
+            }
+            .fineError{
+                text-align: center;
+                font-size: 1.1em;
+                color: red;
+                font-weight: bold;
+            }
+        </style>
+        <apex:form id="IFrm">
+            <apex:outputPanel rendered="{!fineAmount > 0}" layout="none">
+                <div class="fineError" >You have incurred a fine, once confirmed by ADGM you will be notified with the next step</div>
+            </apex:outputPanel>
+            <ul class="htimeline">
+                <apex:repeat value="{!lstStatusGroupWrap}" var="grp">
+                    <li style="width: {!GroupWidth};"><!-- background-color: rgb(243, 245, 246);" -->
+                        <div class="{!IF(grp.CurrentGroup,'timeline-badge selected',IF(grp.PassedGroup,'timeline-badge before','timeline-badge'))}">{!grp.GroupShortLabel}</div>
+                        <div class="{!IF(grp.CurrentGroup,'timeline-descr selected',IF(grp.PassedGroup,'timeline-descr before','timeline-descr'))}">{!grp.GroupLabel}</div>
+                    </li>
+                </apex:repeat>
+            </ul>
+            <script>
+                $(document).ready(function () {
+                    // Rotate effect for Current Step
+                    $("li")
+                    setTimeout(function () {
+                        $(".timeline-badge.selected").css({
+                            transform: 'rotateY(360deg)'
+                        });
+                    }, 0);
+
+                });
+            </script>
+        </apex:form>
+
+</apex:page>

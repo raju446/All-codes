@@ -1,0 +1,125 @@
+<!--
+  @File Name          : LEX_Show_Receipt.cmp
+  @Description        : 
+  @Author             : Jayanta Karmakar
+  @Group              : 
+  @Last Modified By   : Jayanta Karmakar
+  @Last Modified On   : 5/14/2020, 12:05:58 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    3/4/2020   Jayanta Karmakar     Initial Version
+-->
+<aura:component controller="BillingManagementController" >
+    <!-- attributes Start  -->
+    <aura:attribute name="selectedEntityId" type="String" default="null"/>
+    <aura:attribute name="entitySiteId" type="String" default="null"/>
+    <aura:attribute name="dynamicName" type="String" default="null"/>
+    <aura:attribute name="isReceiptSaved" type="Boolean" default="false"/>
+    <aura:attribute name="isRecPushed" type="Boolean" default="false"/>
+    <aura:attribute name="currentProfileName" type="String" default=""/>
+    <aura:attribute name="dynamicBtnName" type="String" default="Submit To Finance"/>
+    <aura:attribute name="listReceiptsWrapper" type="object[]"/>
+    <aura:attribute name="selectedEntityName" type="String"/>
+    <aura:handler name="change" value="{!v.isReceiptSaved}" action="{!c.refetchRecord}"/>
+    <aura:method name="fetchReceipt" action="{!c.doAction}" description="Sample method with parameters" access="PUBLIC"> 
+        <aura:attribute name="param1" type="String" /> 
+        <aura:attribute name="param2" type="String" />
+        <aura:attribute name="param3" type="String" />
+        <aura:attribute name="siteId" type="String" />
+    </aura:method>
+    
+    <!-- <aura:handler name="init" value="{! this }" action="{! c.init }"/> -->
+    <c:LEX_CreateReceipt aura:id="receiptCreateComp" isRecordSaved="{!v.isReceiptSaved}"/>
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" id="backdrop"></div>
+    </aura:if>
+
+    <h3 class="slds-section-title--divider headerCss">Create Receipts for - {!v.selectedEntityName}</h3>
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr class="slds-text-title--caps">
+                <!--<th scope="col"><div class="slds-truncate" title="Action">Action</div></th>-->                
+                <th scope="col"><div class="slds-truncate" title="Payment Currency">Payment Currency</div></th>
+                <th scope="col"><div class="slds-truncate" title="Amount">Amount</div></th>
+                <th scope="col"><div class="slds-truncate" title="Amount">Receipt Balance</div></th>
+                <th scope="col"><div class="slds-truncate" title="Mode of Payment">Payment Method</div></th>
+                <th scope="col"><div class="slds-truncate" title="Transaction Reference">Document Reference</div></th>
+                <th scope="col"><div class="slds-truncate" title="Transaction Reference">Transaction Reference</div></th>
+                <th scope="col"><div class="slds-truncate" title="Transaction Reference">Receipt No</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.listReceiptsWrapper}" var="objReceiptsWrapper" indexVar="tableIndex">
+                
+                <!-- Child Lightning Component --> 
+                <tr class="slds-text-title--caps">
+                    <aura:if isTrue="false">
+                    <td scope="col" width="20%">
+                        <div class="slds-truncate" title="Action">
+                            <aura:if isTrue="{! if(objReceiptsWrapper.receiptRec.Pushed_to_Oracle__c,false,true)}">
+                            <lightning:button name="{!tableIndex}" variant="base" label="Edit" title="Edit" onclick="{!c.onEditReceiptRec}" />
+                            <aura:if isTrue="{! and(and(or(objReceiptsWrapper.receiptRec.Status__c == 'Draft', objReceiptsWrapper.receiptRec.Status__c == 'Success'),objReceiptsWrapper.receiptRec.Status__c != 'Rejected'), or(objReceiptsWrapper.Oracle_Receipt_Id__c == '', objReceiptsWrapper.Oracle_Receipt_Id__c == null))}">
+                               
+                                <lightning:button name="{!tableIndex}" variant="base" label="{!' | ' +v.dynamicName}" title="Edit" onclick="{!c.onSubmitClick}" />
+                                
+                            </aura:if>
+                            </aura:if>
+                           <!-- <lightning:button name="{!tableIndex}" variant="base" label="Remove" title="Remove" onclick="{!c.removeReceiptElement}" disabled="{!objReceiptsWrapper.isRemoveEnable}"/> -->                                     
+                        </div>
+                    </td>  
+                    </aura:if>                                      
+                    <td scope="col" width="10%">
+                        <div class="slds-truncate" title="Payment Currency">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Payment_Currency__c}"/>                            
+                        </div>
+                    </td>
+                    <td scope="col" width="10%">
+                        <div class="slds-truncate" title="Amount">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Amount__c}"/>
+                        </div>
+                    </td>
+                    <td scope="col" width="10%">
+                        <div class="slds-truncate" title="Amount">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Remaning_Amount__c}"/>
+                        </div>
+                    </td>
+                    <td scope="col" width="10%">
+                        <div class="slds-truncate" title="Mode of Payment">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Payment_Method__c}"/>
+                        </div>
+                    </td>
+                    
+                    <td scope="col" width="20%">
+                        <div class="slds-truncate" title="Transaction Reference">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Transaction_Reference__c}"/>
+                        </div>
+                    </td>  
+                    
+                    <td scope="col" width="20%">
+                        <div class="slds-truncate" title="Receipt Reference">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Receipt_Reference__c}"/>
+                        </div>
+                    </td>  
+                    
+                    <td scope="col" width="10%">
+                        <div class="slds-truncate" title="Receipt No">
+                            <a href="{!'/one/one.app?#/sObject/'+ objReceiptsWrapper.receiptRec.Id + '/view'}" target="_blank">
+                            <ui:outputText value="{!objReceiptsWrapper.receiptRec.Name}"/>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+</aura:component>

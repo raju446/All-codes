@@ -1,0 +1,62 @@
+<aura:component controller="EscalateReasonController" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:attribute name="hasAccess" type="boolean" />
+    <aura:attribute name="caseMessage" type="list" />
+    <aura:attribute  name="EscReason" type="string" />
+    <aura:attribute name="checkbox" type="boolean" default ="False" />
+    <div class="slds">
+        <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }       
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium" >Escalate Case</h4>
+    </div>
+                    
+           <!-- ###### MODAL BOX BODY Start ######-->
+         <div class="slds-modal__content slds-p-around_large  slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+        <form class="slds-form--stacked">
+             <aura:if isTrue="{!v.hasAccess}">
+                 
+                 <label class="slds-form-element__label" for="text-input-id-1">
+                 <abbr class="slds-required" title="required">* </abbr>Enter Escalation Reason</label>
+                
+                 
+                 <lightning:input type="text"                            
+                                                    
+                         name="EscReason"                         
+                         value="{!v.EscReason}" />
+                <!--<lightning:input type="checkbox"  label="Send email to client"   class="slds-p-vertical_small"  value="{!c.checkbox}" onchange="{!c.TurnTrue}"/>-->
+                 
+             <aura:set attribute="else">
+                 <div class="slds-text-heading_small slds-text-color_weak slds-text-align_center ">
+                 <aura:iteration items="{!v.caseMessage}" var="cus" indexVar="key">
+                     <div class="slds-text-heading_small slds-text-color_weak slds-text-align_center ">{!cus.value}</div>
+                     
+                 </aura:iteration>
+                 </div>
+              </aura:set>
+             </aura:if> 
+             </form>
+        </div>
+              <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+            <div class="forceChangeRecordTypeFooter">
+                <ui:button class="slds-button slds-button_neutral" label="Cancel" press="{! c.closeAction}" /> 
+                 <aura:if isTrue="{!v.hasAccess}" > 
+                    <ui:button class="slds-button slds-button--brand" label="Save" press="{!c.escCase}"/>
+                </aura:if>
+           
+            </div>
+       </div>          
+    </div>
+
+</aura:component>

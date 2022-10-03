@@ -1,0 +1,11 @@
+<apex:page standardController="Opportunity" extensions="Delete_OpportunityRec" lightningStylesheets="true">
+  <apex:form >
+      <apex:pageMessages ></apex:pageMessages>
+      <apex:pageBlock >
+      <p> Are you sure you want to delete the record?</p>
+          
+              <apex:commandButton value="Delete" action="{!deleteRec}"/>
+              <apex:commandButton value="Cancel" action="{!Cancel}"/>
+      </apex:pageBlock>
+  </apex:form>
+</apex:page>

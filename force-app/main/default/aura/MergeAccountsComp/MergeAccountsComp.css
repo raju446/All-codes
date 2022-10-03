@@ -1,0 +1,34 @@
+.THIS .slds-modal__container{
+    max-width: 60rem !important;
+    width:100% !important;
+}
+.THIS .singleRecordClass .slds-button_icon-bare{
+    display: none;
+}
+.THIS .mergeButton {
+    float : right;
+    right: 10px;
+    bottom: 10px;
+}
+.THIS .clearbutton {
+    float : right;
+    right: 15px;
+}
+.THIS .searchbutton {
+    float : right;
+    right: 10px;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+.THIS .slds-modal__container{ 
+    max-width: 70rem !important; width:80% !important; 
+}
+
+.THIS .noDataFoundCss {
+    padding-left: 45%;
+}
+.THIS .customNoteCss {
+    color: red;
+}

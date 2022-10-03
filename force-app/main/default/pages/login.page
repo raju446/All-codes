@@ -1,0 +1,26 @@
+<apex:page docType="html-5.0" applyHtmlTag="false" applyBodyTag="false" title="Login" showHeader="false" standardStylesheets="false">
+<head>
+<apex:stylesheet value="{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/main.css')}" />
+<style>
+    .login-top
+    {
+        height: 35%
+    }
+    .login-bottom
+    {
+        height:65%;
+        background: url("{!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/img/BG_Login.png')}") no-repeat center center fixed;
+        background-size: cover;
+    }
+</style>
+</head>
+<body>
+    <div>
+        <div class="login-top">
+        </div>
+        <div class="login-bottom">
+        </div>
+        
+    </div>
+</body>
+</apex:page>

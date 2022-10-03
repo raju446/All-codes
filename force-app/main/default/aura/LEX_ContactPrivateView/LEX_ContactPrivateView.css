@@ -1,0 +1,21 @@
+.THIS .customPadding {
+    padding-left: 31px;
+}
+.THIS .customHeading {
+    text-transform: none!important; 
+    font-style: inherit;
+    font-size: 1rem;
+    font-weight: inherit;
+    color: currentColor;
+    line-height: 1.875rem;
+}
+.THIS .privateTextView {
+    position: relative;
+    top: 4px;
+}
+.THIS .customHRStyle {
+    margin: 0rem 0 !important;
+}
+.THIS .privateInfoDisclaimer {
+    font-size: 12px;
+}

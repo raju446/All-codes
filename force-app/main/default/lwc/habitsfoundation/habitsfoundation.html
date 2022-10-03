@@ -1,0 +1,64 @@
+<template>
+    <h2 class="slds-text-heading_small slds-m-bottom_small">
+        Courses in our Academy:
+    </h2>
+    <div>
+        <lightning-button label="Banking & Finance" title="Banking & Finance" onclick={handleClick}
+            class="buttons slds-m-left_x-small"></lightning-button>
+        <lightning-button label="Digital & FinTech" title="Digital & FinTech" onclick={handleChange}
+            class="button slds-m-left_x-small"></lightning-button>
+    </div>
+    <template if:true={showbank}>
+        <lightning-layout-item size="12" padding="around-small">
+            <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                <div class="foundation">
+                    7 Habits Foundation
+                    <div class="text">
+                        For any satff member
+                        <div class="seedetails">
+                            <a
+                                href="/ADGMMOBILE/s/members"><span style="color: #000; font-size:18px;">see details →</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" padding="around-small">
+            <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                <div class="foundation">
+                    ADCB Foundations <br>Programme
+                    <div class="text">
+                        Mahara Track(Week 2)
+                        <br>
+                        <div class="seedetails">
+                            <a
+                                href="/ADGMMOBILE/s/members"><span style="color: #000; font-size:18px;">see details →</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+    </template>
+    <template if:true={showbankoptions}>
+        <lightning-layout-item size="12" padding="around-small">
+            <div class="custom-box slds-box slds-p-around_medium slds-text-align_center">
+                <div class="foundation">
+                    Bank Valuation
+                    <div class="text">
+                        Intermediate level <br>Programme
+                        <div class="seedetails">
+                            <a
+                                href="/ADGMMOBILE/s/members"><span style="color: #000; font-size:18px;">see details →</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-layout-item>
+    </template>
+    <div class="seeall">
+        <a href="/ADGMMOBILE/s/services"><span>See all</span></a>
+    </div>
+    <br>
+    <br>
+    <br>
+</template>

@@ -1,0 +1,20 @@
+<apex:page applyBodyTag="false" standardStylesheets="false" showHeader="false" readOnly="true" controller="SRStepsController">
+<head>
+   
+</head>
+<apex:pageBlock >
+      <div class="stepList">
+          <div class="no-rec-msg {!IF(lstSRSteps.size > 0 ,'hide','show')}" > No Steps Available.</div>
+              <div class="{!IF(lstSRSteps.size > 0 ,'show','hide')}">
+                  <apex:pageBlockTable value="{!lstSRSteps}" var="srStep" >
+                     <apex:column value="{!srStep.Name}"/>
+                     <apex:column value="{!srStep.HexaBPM__Summary__c}"/>
+                     <apex:column value="{!srStep.HexaBPM__Step_Notes__c}"/>
+                     <apex:column value="{!srStep.Current_Step_Status__c}"/>
+                     
+                  </apex:pageBlockTable>
+              </div>
+     </div>
+   </apex:pageBlock>
+   
+</apex:page>

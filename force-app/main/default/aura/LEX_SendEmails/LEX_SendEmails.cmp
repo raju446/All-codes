@@ -1,0 +1,257 @@
+<aura:component controller="SendEmailController" implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" >
+    <!-- Spinner attributes-->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    
+    <aura:attribute name="campaignName" type="String" />
+    
+    <!-- No Data Available attributes -->
+    <aura:attribute name="showNoDataSection" type="Boolean" default="false"/>
+    <aura:attribute name="showPagination" type="Boolean" default="false"/>
+    <!-- showRecipientsTable data table attributes -->
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="selectAll" type="Boolean" default="false"/>
+    <aura:attribute name="selectAllInternal" type="Boolean" default="false"/>
+    <aura:attribute name="selectAllExternal" type="Boolean" default="false"/>
+    <aura:attribute name="showRecipientsTable" type="Boolean" default="false"/>
+    <aura:attribute name="listCampaignMemberWrapper" type="object[]"/>
+    <aura:attribute name="listCampaignMemberInternal" type="object[]"/>
+    <aura:attribute name="listCampaignMemberExternal" type="object[]"/>
+    <aura:attribute type="Integer" name="startIndex" default="0" />   
+    <aura:attribute type="Integer" name="endIndex" default="0" />   
+    <aura:attribute type="Integer" name="pageNumber" default="1" />
+    <aura:attribute type="Integer" name="maxPage" default="1" />
+    <aura:attribute name="groupPicklist" type="object[]" />
+    <aura:attribute name="selectedRecipientCount" type="Integer" default="0"/>
+    <aura:attribute name="totalSelectedInternal" type="Integer" default="0"/>
+    <aura:attribute name="totalSelectedExternal" type="Integer" default="0"/>
+    <aura:attribute name="totalInvitee" type="Integer" default="0"/>
+    <aura:attribute name="inviteType" type="String" default="Internal Invite"/>
+    
+    <!-- Processing Options -->
+    <aura:attribute name="isBcc" type="Boolean" default="false"/>
+    <!-- Org Wide List -->
+    <aura:attribute name="orgWidePicklist" type="object[]" />
+    <aura:attribute name="selectedOrgId" type="String" />
+    <!-- Campaign attachments data table attributes -->
+    <aura:attribute name="attachmentData" type="Object"></aura:attribute>
+    <aura:attribute name="attachmentColumns" type="List"></aura:attribute>
+    <aura:attribute name="selectedAttachmentId" type="List"></aura:attribute>
+    <aura:attribute name="totalSelectedSize" type="Decimal"></aura:attribute>
+    <aura:attribute name="selectedRows" type="List"/>
+    <!-- showEmailTemplateTable data table attributes -->
+    <aura:attribute name="selectedIndex" type="Integer"/>
+    <aura:attribute name="showEmailTemplateTable" type="Boolean" default="false"/>
+    <aura:attribute name="emailTemplateData" type="Object"/>
+    <aura:attribute name="selectedEmailTempletes" type="List" />
+    <aura:attribute name="isBack" type="Boolean" default="false"/>
+    
+    <!-- Handler Start -->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler name="change"	value="{!v.pageNumber}"	action="{!c.renderPage}" />
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChanged}" />
+    
+    <!-- Spinner code start -->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open" id="backdrop"></div>
+    </aura:if>
+    
+    <lightning:card variant="Narrow" title="{! 'Send Email - ' + v.campaignName}" iconName="standard:account">
+        
+        <hr/>
+        <p class="slds-p-horizontal_small">
+            
+            <aura:if isTrue="{!v.showNoDataSection}">
+                <h1><b>No Campaign Member Data Avaliable </b></h1>
+            </aura:if>
+            
+            <!-- Show Send Email to list all Camp. Memeber of camp. -->
+            <aura:if isTrue="{!v.showRecipientsTable}">
+                <h3 class="slds-section-title--divider headerCss">STEP 1. SPECIFY THE RECIPIENTS TO INCLUDE</h3>
+                <br/>
+                <lightning:button variant="brand" label="Cancel" iconName="utility:close" onclick="{!c.cancelButton}" iconPosition="right" class="cancelButton" />
+                <lightning:button variant="brand" label="Next" iconName="utility:chevronright" onclick="{!c.nextRecipientsProcess}" iconPosition="right" class="nextButton" />
+                
+                Select a view below that contains the recipients to be included in this email:
+                <lightning:select aura:id="select" value="{!v.inviteType}" onchange="{!c.onInviteTypeChange}" class="viewSelect">
+                    <option value="Internal Invite" >Internal Invitee</option>
+                    <option value="External Invite">External Invitee</option>
+                </lightning:select>
+                <br/>
+                <b>(Total Invitee: {!v.totalInvitee}) Selected Invitee Internal: {!v.totalSelectedInternal} - External: {!v.totalSelectedExternal}</b>
+                <br/>
+                <!-- all RECIPIENTS table start -->
+                
+                <div >
+                    <!--Data Table-->     
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th scope="col"><div class="slds-truncate" title="Action"><ui:inputCheckbox aura:id="checkbox" value="{! v.selectAll }" change="{!c.onSelectAll}"/></div></th>
+                                <th scope="col"><div class="slds-truncate" title="Name">NAME</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Email">EMAIL</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Mode of Payment">GROUP</div></th>
+                                <aura:if isTrue="{!v.inviteType == 'Internal Invite'}">
+                                    <th scope="col"><div class="slds-truncate" title="Mode of Payment">Send Feedback</div></th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        
+                        <aura:if isTrue="{!v.showPagination}">
+                            <tbody>
+                                <aura:iteration items="{!v.listCampaignMemberWrapper}" var="objCampaignMemberWrapper" start="{!v.startIndex}" end="{!v.endIndex}">
+                                    <!-- Child Lightning Component --> 
+                                    <tr>
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Action">
+                                                <ui:inputCheckbox aura:id="checkboxCampaign" value="{! objCampaignMemberWrapper.isSelected }" change="{!c.checkBoxAction}"/>
+                                            </div>
+                                        </td>
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Name">
+                                                <ui:outputText value="{!objCampaignMemberWrapper.campaignMemberRec.Name}"/> 
+                                            </div>
+                                        </td>
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Email">
+                                                <ui:outputText value="{!objCampaignMemberWrapper.campaignMemberRec.Email}"/> 
+                                            </div>
+                                        </td>
+                                        <td scope="col">
+                                            <div class="slds-truncate" title="Event Group">
+                                                <lightning:select aura:id="select" value="{!objCampaignMemberWrapper.campaignMemberRec.CRM_Group__c}" onchange="{!c.onPicklistChange}">
+                                                    <aura:iteration items="{!v.groupPicklist}" var="groupVal">
+                                                        <option value="{!groupVal.picklistVal}" text="{!groupVal.picklistLabel}"/> 
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                        </td> 
+                                        <aura:if isTrue="{!v.inviteType == 'Internal Invite'}">
+                                            <td scope="col">
+                                                <div class="slds-truncate customCheckBox" title="Action">
+                                                    <ui:inputCheckbox aura:id="checkboxCampaign" value="{! objCampaignMemberWrapper.campaignMemberRec.CRM_Send_Feedback_Email__c}" disabled="{!!objCampaignMemberWrapper.isFeedbackRequired}" />
+                                                </div>
+                                            </td>
+                                        </aura:if>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </aura:if>
+                    </table>
+                    
+                    <aura:if isTrue="{!!v.showPagination}">
+                        <br/>
+                        <h1><b class="noDataFoundCss">No Records Found </b></h1>
+                    </aura:if>
+                    <aura:if isTrue="{!v.showPagination}">
+                        <c:LEX_Pagination currentPageNumber="{!v.pageNumber}" 
+                                          maxPageNumber="{!v.maxPage}"  />
+                        
+                        <!-- <hr/> -->
+                    </aura:if>
+                    <br/>
+                    <lightning:button variant="brand" label="Cancel" iconName="utility:close" onclick="{!c.cancelButton}" iconPosition="right" class="cancelButton" />
+                    <lightning:button variant="brand" label="Next" iconName="utility:chevronright" onclick="{!c.nextRecipientsProcess}" iconPosition="right" class="nextButton" />
+                    
+                </div>
+                <!-- the container element determine the height of the datatable -->
+                <br/><br/>
+            </aura:if>
+            
+            <!-- Show All Email Templates -->
+            <aura:if isTrue="{!v.showEmailTemplateTable}">
+                <!-- Processing Options -->
+                <div>
+                    <h3 class="slds-section-title--divider headerCss">STEP 2. PROCESSING OPTIONS</h3>
+                    <br/>
+                    <!-- <ui:inputCheckbox label="BCC me on message" aura:id="checkbox" value="{! v.isBcc }"/> -->
+                    <lightning:select aura:id="select" label="Select Email From Name" value="{!v.selectedOrgId}">
+                        <option value="None" text="--None--"/>
+                        <aura:iteration items="{!v.orgWidePicklist}" var="objOrgWide">
+                            <option value="{!objOrgWide.Id}" text="{!objOrgWide.Address}"/> 
+                        </aura:iteration>
+                    </lightning:select>
+                    
+                </div>
+                <br/>
+                <!-- email template selection table start -->
+                <div >
+                    <h1><b>STEP 3. SELECT AN ATTACHMENT</b></h1>
+                    <!-- the container element determine the height of the datatable -->
+                    <lightning:datatable aura:id="partnerTable" keyField="Id"
+                                         data="{! v.attachmentData }"
+                                         columns="{! v.attachmentColumns }"
+                                         selectedRows="{!v.selectedRows}" 
+                                         onrowselection="{! c.updateSelectedAttachment }"
+                                         sortable="false"></lightning:datatable>
+                    <aura:if isTrue="{!v.attachmentData.length == 0}">
+                        <h1><b class="noDataFoundCss">No Records Found </b></h1>
+                    </aura:if> 
+                    <br/>
+                    <!--Data Table-->  
+                    <h1><b>STEP 4. SELECT AN EMAIL TEMPLATE</b></h1>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th scope="col"><div class="slds-truncate" title="Preview">PREVIEW</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Name">NAME</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Type">TYPE</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Description">DESCRIPTION</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.emailTemplateData}" var="objEmailTemplate" indexVar="tableIndex">
+                                <!-- Child Lightning Component --> 
+                                <tr>
+                                    <td width="20%" scope="col">
+                                        <div class="slds-truncate" title="Action">
+                                            <a href="{!'/'+objEmailTemplate.Id+'/s?id='+objEmailTemplate.Id}" title="{!'/'+objEmailTemplate.id+'/s?id='+objEmailTemplate.id}" target="_blank" tabindex="-1">Preview</a>
+                                            | <a href="{!'/'+objEmailTemplate.Id+'/e?id='+objEmailTemplate.Id+'&amp;cancelURL=/'+v.recordId}" title="{!'/'+objEmailTemplate.id+'/e?id='+objEmailTemplate.id}" target="_blank" tabindex="-1">Edit</a>
+                                            | <lightning:button variant="base" value="{!objEmailTemplate.Id}" label="Clone" title="Base action" onclick="{! c.onTemplateClone }" class="cloneBtn"/>
+                                        </div>
+                                    </td>
+                                    <td width="30%" scope="col">
+                                        <div class="slds-truncate" title="Name">
+                                            <ui:inputRadio aura:id="checkbox + {!tableIndex}" name="{!tableIndex}" value="{! tableIndex == v.selectedIndex}" change="{!c.onRadionButtonSelection}"/>
+                                            &nbsp;<ui:outputText value="{!objEmailTemplate.Name}"/> 
+                                        </div>
+                                    </td>
+                                    <td width="20%" scope="col">
+                                        <div class="slds-truncate" title="Type">
+                                            <ui:outputText value="{!objEmailTemplate.TemplateType}"/> 
+                                        </div>
+                                    </td>
+                                    <td width="30%" scope="col">
+                                        <div class="slds-truncate" title="Event Group">
+                                            
+                                        </div>
+                                    </td>
+                                    
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    
+                    <br/>
+                    <br/><br/>
+                    <lightning:button variant="brand" label="Send Email" iconName="utility:email" onclick="{!c.sendEmailProcess}" iconPosition="right" class="nextEmailButton" />
+                    <lightning:button variant="brand" label="Back" iconName="utility:chevronleft" onclick="{!c.backProcess}" iconPosition="right" class="backButton" />
+                </div>
+            </aura:if>
+        </p>
+        <br/><br/>
+        <br/><br/>
+        
+        
+        
+    </lightning:card>
+</aura:component>

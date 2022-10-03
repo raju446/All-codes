@@ -1,0 +1,284 @@
+<apex:page sidebar="false" language="en_GB" standardstylesheets="true" showheader="false"
+    controller="ShowAttendeeListController" cache="false">
+    <link rel="stylesheet" type="text/css" href="/FZPortalCSSMain" />
+
+    <style>
+        .page-title.row h4,
+        .page-title.row h5,
+        h3 {
+            color: #fff !important;
+        }
+
+        .pbSubheader {
+            background-color: #44939C !important;
+        }
+
+        .bPageBlock {
+            border-top: #ac975e !important;
+            width: 80%;
+            background-color: #fff !important;
+            text-align: left !important;
+            background-color: #fff !important;
+        }
+
+        .pageSpanContainer {
+            background-image: url('{!URLFOR($Resource.banner_images, '/img.png')}');
+            background-repeat: no-repeat;
+            width: 100%;
+            padding-bottom: 17%;
+            background-size: cover;
+            position: relative;
+        }
+
+        .pBlockTable {
+            margin-left: 8px;
+        }
+
+        .pageSpanContainer h1 {
+            font-size: 24px;
+            line-height: 36px;
+            color: #fff;
+            margin-bottom: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+        }
+
+        body button,
+        body .x-btn,
+        body .btn,
+        body .btnDisabled,
+        body .btnCancel,
+        body .menuButton .menuButtonButton {
+            color: #fff !important;
+        }
+
+        .pBockSection .data2Col {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+        }
+
+        .btnCheckAvail {
+            color: #AD9961 !important;
+            font-size: 13px !important;
+            font-weight: bold !important;
+            text-decoration: underline;
+        }
+
+        .pageDesc {
+            font-size: 12px;
+            margin-bottom: 0px;
+            color: #505050;
+            margin-left: 13px;
+        }
+
+        .pBockSection td.data2Col {
+            padding-left: 18px !important;
+        }
+
+        .p-notes {
+            padding-left: 16px;
+            padding-right: 16px;
+            font-size: 12px;
+        }
+
+        body {
+            background-color: #F5F5F5 !important;
+            position: relative;
+
+        }
+
+        #page-container {
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #content-wrap {
+            padding-bottom: 6.5rem;
+            /* Footer height */
+
+        }
+
+        #footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 6.5rem;
+            /* Footer height */
+        }
+
+        .left-spacer {
+            margin-left: 20px;
+        }
+
+        .pBold {
+            font-weight: bold;
+        }
+
+        .t-spacer {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .pBockSection td.data2Col {
+            font-size: 1.1em;
+        }
+
+        body .pbBody table.list tr.headerRow td,
+        body .pbBody table.list tr.headerRow th,
+        body .pbBody table.list tr td,
+        .bPageTitle .ptBody .links,
+        .listHoverLinks,
+        .modal-body,
+        .bPageBlock .pbHeader select,
+        .bPageBlock .pbBottomButtons select,
+        body .pbBody table.list tr th {
+            font-size: 1em;
+        }
+
+        .vfHelpText a {
+            position: relative;
+        }
+
+        .vfHelpText a span {
+            display: none;
+        }
+
+        .vfHelpText a:hover span {
+            display: block;
+            position: absolute;
+            top: 1.25em;
+            padding: 5px 5px;
+            /*left:-15em; width:16em;*/
+            left: -10em;
+            width: 10%;
+            z-index: 100;
+            min-width: 11em;
+            border: 1px solid orange;
+            background-color: #FEFDB9;
+            color: black;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        .paddt table {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
+
+    <body>
+        <div id="page-container">
+            <div id="content-wrap">
+                <apex:form id="UserRegFrm">
+                    <apex:composition template="UserRegistrationHeaderProtocol" />
+                    <div class="pageSpanContainer">
+                        <div id="header-content">
+                            <h1>{!objEvent.Name}</h1>
+                        </div>
+                    </div>
+                    <br />
+                    <center>
+
+                        <apex:pageBlock id="InfoPB" mode="maindetail" rendered="{!isInternal}">
+                            <apex:outputPanel layout="block" styleClass="paddt">
+                                <apex:pageblocksection title="Event Details" collapsible="false" columns="2">
+                                    <apex:pageblocksectionitem >
+                                        <apex:outputlabel value="Start Date" />
+                                        <apex:outputpanel layout="block">
+                                            <apex:outputText value="{0, date, MMMM d',' yyyy hh:mm a}"
+                                                label="Start Date">
+                                                <apex:param value="{!objEvent.MeetingDateTime}" />
+                                            </apex:outputText>
+                                        </apex:outputpanel>
+                                    </apex:pageblocksectionitem>
+                                    <apex:pageblocksectionitem >
+                                        <apex:outputlabel value="End Date" />
+                                        <apex:outputpanel layout="block">
+                                            <apex:outputText value="{0, date, MMMM d',' yyyy hh:mm a}" label="End Date">
+                                                <apex:param value="{!objEvent.EndDateTime}" />
+                                            </apex:outputText>
+                                        </apex:outputpanel>
+                                    </apex:pageblocksectionitem>
+                                    <apex:pageblocksectionitem >
+                                        <apex:outputlabel value="Agenda" />
+                                        <apex:outputpanel layout="block">
+                                            <apex:outputtext value="{!objEvent.CRMAgenda}" escape="false" />
+                                        </apex:outputpanel>
+                                    </apex:pageblocksectionitem>
+                                    <apex:pageblocksectionitem >
+                                        <apex:outputlabel value="Venue" />
+                                        <apex:outputpanel layout="block">
+                                            <apex:outputtext value="{!objEvent.Location}" />
+                                        </apex:outputpanel>
+                                    </apex:pageblocksectionitem>
+
+
+                                </apex:pageblocksection>
+                            </apex:outputPanel>
+                            <div class="pbSubheader brandTertiaryBgr first tertiaryPalette">
+                                <h3>Attendee List</h3>
+                            </div>
+                            <table class="customTbl" style="
+                                                margin-bottom: 20px;">
+                                <thead>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Entity</th>
+                                    <th>Phone</th>
+                                    <th>RSVP</th>
+                                </thead>
+                                <tbody>
+                                    <apex:repeat value="{!objEvent.lstMembers}" var="EM">
+                                        <tr>
+                                            <td class="td_text">{!EM.Name}</td>
+                                            <td class="td_text">{!EM.Email}</td>
+                                            <td class="td_text">{!EM.accName}</td>
+                                            <td class="td_text">{!EM.Phone}</td>
+                                            <td class="td_text">{!EM.RSVP}</td>
+
+
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+
+                        </apex:pageBlock>
+
+                    </center>
+
+                </apex:form>
+                <div class="footer-block" id="footer">
+                    <div class="left">
+                        <div class="footer-text">
+                            <span class="footer-line"><a href="https://www.adgm.com/privacypolicy/"
+                                    target="_blank">Privacy Policy</a></span>
+                            <span class="footer-gap">|</span>
+                            <span class="footer-line"><a href="https://www.adgm.com/terms-conditions/"
+                                    target="_blank">Terms and
+                                    Conditions</a></span>
+                            <span class="footer-gap">|</span>
+                            <span class="footer-line"><a href="https://www.adgm.com/disclaimer/"
+                                    target="_blank">Disclaimer</a></span>
+                        </div>
+                        <div class="footer-note">
+                            © 2021 Abu Dhabi Global Market. All rights Reserved.
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="footer-icons">
+                            <a href="https://www.linkedin.com/company/abu-dhabi-global-market-adgm-"
+                                target="_blank"><span class="linked-in-icon icon-adgm-group-820"></span></a>
+                            <!--<a href="https://m.facebook.com/abudhabiglobalmarket/" target="_blank"><span class="fb-icon icon-adgm-facebook"</span></a>-->
+                            <a href="https://twitter.com/adglobalmarket?lang=en" target="_blank"><span
+                                    class="twitter-icon icon-adgm-twitter-circular-button"></span></a>
+                            <!--<a href="https://www.youtube.com/watch?v=Lhx9lJVxVZw" target="_blank"><span class="youtube-icon icon-adgm-youtube"></span></a>-->
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End of content-wrap -->
+        </div> <!-- End of page-container -->
+    </body>
+</apex:page>

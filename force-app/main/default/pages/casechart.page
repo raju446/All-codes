@@ -1,0 +1,82 @@
+<apex:page docType="html-5.0" showHeader="false" sidebar="false" standardStylesheets="false" controller="ChartController" action="{!prepareCaseChartData}">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+</head>
+<body>
+    <div id="bar-container"></div>
+</body>
+<script>
+    /*
+    (function() {
+    // your page initialization code here
+    // the DOM will be available here...
+      setTimeout(function () {
+            $(".case-load").hide();  //Hides the loader , a delay is given for the loader to hide since graph has to plot the points via google api
+        }, 1200);
+       
+    })();
+    */
+    //Invoke the draw chart to plot the points...
+    function drawChart() {
+        drawBarChart();
+    }
+    function drawBarChart()
+    {
+        var colorValues = [];
+        var month = new Array();
+        month[0] = "-";
+        month[1] = "Jan";
+        month[2] = "Feb";
+        month[3] = "Mar";
+        month[4] = "Apr";
+        month[5] = "May";
+        month[6] = "Jun";
+        month[7] = "Jul";
+        month[8] = "Aug";
+        month[9] = "Sep";
+        month[10] = "Oct";
+        month[11] = "Nov";
+        month[12] = "Dec";
+        colorValues.push('#FFC526');
+        colorValues.push('#ADCCCF');
+
+        var rows = new Array();
+        var caseDataJSONString = '{!caseDataJSON}' ;//'{"12":{"iOpen":5,"iClose":6}}';//'{!caseDataJSON}';
+        if(caseDataJSONString){
+            console.log(caseDataJSONString );
+            var caseDataJSON = JSON.parse(caseDataJSONString);
+            console.log(caseDataJSON );
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Month');
+            data.addColumn('number', 'Open');
+            data.addColumn('number', 'Closed');
+            for(var key in caseDataJSON){
+            if (caseDataJSON.hasOwnProperty(key)) {
+                rows.push([month[key], caseDataJSON[key].iOpen, caseDataJSON[key].iClose]);
+            }
+            }
+            data.addRows(rows);
+            var options = {
+                chart: {
+                    title: 'Case Performance'
+                },
+                legend: {
+                    position: 'bottom',
+                    alignment: 'center'
+                },
+                'height':'250',
+                colors: colorValues,
+                vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }}
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('bar-container'));
+
+            chart.draw(data, options);
+        }
+    }
+    google.charts.setOnLoadCallback(drawChart);
+</script>
+</apex:page>

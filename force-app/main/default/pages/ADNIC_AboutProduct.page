@@ -1,0 +1,114 @@
+<apex:page >
+ <style>
+    #adgmload .sp_loader .adgm_spinner,#modal-adgmload .sp_loader .adgm_spinner{
+        width: 40px;
+        height: 40px;
+        background: url("{!$Resource.adgm_spinner}") 100% no-repeat;
+        background-size: contain;
+        -ms-interpolation-mode: bicubic;
+    }
+    #adgmload .sp_loader, #modal-adgmload .sp_loader {
+        padding-left: 5%;
+        padding-right: 5%;
+        padding-bottom: 1%;
+        padding-top: 1%;
+        background-color: #fff;
+        position: absolute;
+        border-radius: 8px;
+        top: 40%;
+        left: 43%;
+    }
+    #adgmload, #modal-adgmload {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: 9999;
+        background: rgba(0,0,0,0.25);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    input[type=text]{
+        width:62% !important;
+    }
+    textarea{
+        width:62% !important;
+    }
+    .dateOnlyInput input{
+        width:35%;
+    }
+    .Custom55Tab .tertiaryPalette, .individualPalette .Custom55Block .tertiaryPalette, .layoutEdit .individualPalette .Custom55Block .tertiaryPalette{
+        border-color: #fff;
+    }
+    .margin-bottom-bl{
+        margin-bottom: 30px;
+    }
+    .vfHelpText a            {position:relative;}
+    .vfHelpText a span       {display: none;}
+    .vfHelpText a:hover span {display: block;
+                              position:absolute;
+                              top:1.25em;
+                              padding:5px 5px;
+                              /*left:-15em; width:16em;*/
+                              left:-10em; width:10%;
+                              z-index:100; min-width:11em;
+                              border:1px solid orange;
+                              background-color:#FEFDB9;
+                              color:black;
+                             }
+</style>
+   
+<div class="menu-services">
+<apex:outputPanel layout="none">
+           <img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.ADNIC_logo}'  width="120" height="40"/><!-- width="141" height="100" width="200" height="200" --> 
+        </apex:outputPanel>
+<div class="pageTopic"><!--  Anglo-Gulf Trade Bank(AGTB)--></div>
+    <br/>
+	<div class="pageDesc">
+        <h5 style="color:black;">
+            <b>About Abu Dhabi National Insurance Company (ADNIC)</b>
+        </h5><br/><br/>
+		<a href="https://adnic.ae" target="_blank">Abu Dhabi National Insurance Company (ADNIC)</a>
+        PJSC is one of the leading regional multi-line insurance providers for corporates and individuals. 
+        Founded in the United Arab Emirates (UAE), in 1972, ADNIC is headquartered in Abu Dhabi, licensed by UAE Central Bank and listed on the Abu Dhabi Securities Exchange (ADX).<br/><br/>
+        The company transacts both life and non-life Insurance and offers a wide range of general,
+        health and life insurance products and solutions for individuals, small, mid-sized 
+        and large companies and multi-national corporations in the United Arab Emirates. ADNIC is also one
+        of the leading providers of risk underwriting solutions across the Middle East and North Africa (MENA) region <br/><br/>
+	</div>
+	
+	<div id="container">
+	    <apex:outputPanel id="thePanel" layout="none">                   
+	       <apex:form id="theForm">
+               
+	        	<apex:pageBlock ><!-- title="About the product" -->
+	        	<!--img  src='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.AGTB_ProductLogo}' /-->
+                    <h4>Product Overview:</h4>
+	        	<apex:pageBlockbuttons location="bottom">
+	        		<apex:commandbutton value="Interested? Ask ADNIC to get in touch with you."  onclick="window.open('{!$Site.Prefix}/apex/ADNIC_Form','_self')" reRender="theForm"/>
+	     	</apex:pageBlockbuttons>
+	     	<br/><br/>
+	     	<div style="font-size: 12px;">
+	        	As Your Reliable Insurer, we strive on providing you with world-class medical insurance care
+                that offers both comprehensive local and international coverage, value-added services and
+                market-leading customer service. Our tailor-made health insurance plans for ADGM Registered Entities employees include a variety of coverages to suit your best needs
+                and give you piece of mind: <br/><br/>
+	        	<!--div ><span >With AGTB Essential, you get:<font face="Calibri,sans-serif" size="2">*</font></span></div><br/-->
+	        	<ul>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exclusive pricing for ADGM Registered Entities employees </li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No application form or medical declaration required</li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hassle-free policy issuance and quick claims tracking</li><br/>
+	        		<li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Administration through Emirates ID only (no health cards required)</li><br/>
+	        	</ul>
+                For more information on our full list of plans, please <a href='{!$Site.Prefix}/servlet/servlet.FileDownload?file={!$Label.ADNIC_PDF}'>click here</a>.
+	        	<br/>
+	        	
+	        	</div>
+	        	</apex:pageBlock>
+	       </apex:form>    
+	    </apex:outputPanel> 
+	    <div class="main-content services bottom-space-20">  
+	    </div>
+	</div>
+  </div>
+</apex:page>

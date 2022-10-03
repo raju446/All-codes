@@ -1,0 +1,143 @@
+.text{
+    color:#002C5E;
+    font-weight:900;
+}
+.text1{
+    color:#002C5E;
+    font-weight: 900;
+    margin-top: 91px;
+}
+.description{
+    text-align: left;
+    float:right;
+    margin-top: -65px;
+}
+.cll{
+  background-color: hsl(0deg 0% 85%);
+ 
+
+}
+.priview {
+    background-color: #ffff;
+    color:#D3AB5E;
+    width: 88px;
+    float: left;
+    height: 29px;
+    font-weight: 800;
+    border-color: lightgray;
+  }
+  .next {
+    background-color: #ffff;
+    color:white;
+   float: right;
+    margin-left: 492px;
+   width: 88px;
+   height: 29px;
+   background-color: lightgray;
+    font-weight: 800;
+    border-color: lightgray;
+  }
+  .button{
+      margin-top: 15px;
+  }
+  .border{
+    margin-right: -15px;
+    margin-left: -16px;
+  }
+  .border1{
+    margin-right: -15px;
+    margin-left: -16px;
+    margin-top: 150px;
+  }
+  .lables{
+    list-style-type: none;
+
+  } 
+  .custom-box {
+    background-color: #ffff;
+}
+.text{
+    font-weight: 600;
+    font-size: 20px;
+}
+.outer
+{
+    width:100%;
+    text-align: center;
+}
+.inner
+{
+  display: inline-block;
+  margin-right: 20px;
+  height: 30px;
+}
+.required{
+    color: red;
+
+}
+.lable{
+    float: right;
+}
+.search{
+    font-size:-20px;
+}
+.button1{
+    width: 100px;
+    height: 32px;
+    float:right;
+    margin-right:262px;
+    margin-top:24px;
+    background-color:#A9904D;
+    border-color: #A9904D;
+    border-bottom-color:#A9904D;
+    color:white;
+}
+.button2{
+    float: right;
+    margin-right:-100px;
+    margin-top:25px;
+    height: 30px;
+    width: 100px;
+     background-color:#A9904D;
+    border-color: #A9904D;
+    border-bottom-color:#A9904D;
+    color: white;
+}
+.input{
+  margin-left:20px;
+}
+.inner
+{
+  display: inline-block;
+  margin-right: 20px;
+  height: 30px;
+}
+.buttonfooter{
+ float: right;
+ margin-top: -28px;
+ width: -25px;
+}
+.text3{
+    color:#002C5E;
+    font-weight:900;
+    margin-left: 389px;
+    font-size: 20px;
+}
+.c-container {
+  border: 1px solid #d8dde6;
+  margin: 10px 0 20px 0;
+}
+.header-column {
+  padding: 0 2rem;
+}
+.field-title {
+  font-size: .75rem;
+  line-height: 1.25;
+  color: #54698d;
+  margin-bottom: .25rem;
+}
+.box-color{
+  background-color: hsl(0deg 0% 85%);
+  height: 102px;
+  width: 1107px;
+}

@@ -1,0 +1,62 @@
+<apex:page cache="false" showHeader="false" contentType="text/css">
+    @import url({!URLFOR($Resource.ADGMStaticResources, '/ADGMStaticResources/css/main.css')});
+    body, td {
+      font-family: Raleway_Regular;
+      font-size: 12px;
+    }
+    #editContactInfoCancelButton{
+        background: #8c9ca0 !important;
+        border: 1px solid #8c9ca0 !important;
+        text-transform: inherit;
+        color: #fff !important;
+        border-radius: 2px;
+        font-size: 12px !important;
+        font-family: Raleway_Bold !important;
+    }
+    .zen .zen-tabs .zen-tabControl a{
+        font-family: Raleway_Bold !important;
+        font-size: 12px !important;
+    }
+    .zen .zen-tabs .zen-tabControl .zen-current a{
+        border-bottom: 4px solid #46949D;
+    }
+    .zen .zen-tabs .zen-tabControl .zen-current
+    {
+        border-width: 0px !important;
+    }
+    .zen .zen-tabs .zen-tabControl li{
+        background: #fff !important;
+        text-transform: uppercase !important;
+    }
+    .zen .zen-tabControl li{
+        border: 0px !important;
+    }
+   input[value="Save All"] {
+        background-color: #46949D !important;
+        background: #46949D !important;
+        color: #fff !important;
+        padding: 4px 10px !important;
+        padding: 0px;
+        border: 0px;
+        color: #fff;
+        text-transform: inherit;
+        border-radius: 2px;
+        border: 1px solid #46949D;
+        font-size: 12px !important;
+        font-family: Raleway_Bold !important;
+    }
+    .zen .zen-tabs .zen-tabControl .zen-current:focus,.zen .zen-tabs .zen-tabControl .zen-current a:focus{
+        outline: none !important;
+    }
+    .zen-label{
+        font-family: Raleway_Bold !important;
+        font-size: 12px !important;
+    }
+    .zen .zen-inner{
+        padding: 8px;
+    }
+    .zen .zen-btn,input[type="submit"], input[type=button]:not(.refreshListButton){
+        min-width: 65px;
+        font-size:12px !important;
+    }
+</apex:page>
