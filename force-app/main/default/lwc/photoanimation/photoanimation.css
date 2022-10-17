@@ -4,8 +4,15 @@
 } 
 .bg { 
 /* The image used */ background-image: url("https://c4.wallpaperflare.com/wallpaper/82/204/3/keanu-reeves-john-wick-movies-john-wick-chapter-2-wallpaper-preview.jpg"); 
-height: 500px; 
+height: 838px; 
 background-position: center; 
 background-repeat: no-repeat; 
 background-size: cover; 
+}
+.text{
+    font-size: 39px;
+    font-family: cursive;
+    color: #c1c1c1;
+    text-shadow: 5px 1px #3d3d3d;
+
 }

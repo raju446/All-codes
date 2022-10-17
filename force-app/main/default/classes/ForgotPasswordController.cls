@@ -7,21 +7,13 @@ public with sharing class ForgotPasswordController {
     public ForgotPasswordController() {}
 	
   	public PageReference forgotPassword() {
-		if(string.isNotBlank(username)){
-			string customUsername = username + Label.Login_Name_Prefix;
-			boolean success = Site.forgotPassword(customUsername);
-			PageReference pr = Page.ForgotPasswordConfirm;
-			pr.setRedirect(true);
-			
-			if (success) {  			
-				return pr;
-			}
-		}
-		else{
-			ApexPages.Message myMsg = new ApexPages.Message(ApexPages.Severity.ERROR,'Please enter the username.');
-            ApexPages.addMessage(myMsg);
-		}
-			
+  		boolean success = Site.forgotPassword(username);
+  		PageReference pr = Page.ForgotPasswordConfirm;
+  		pr.setRedirect(true);
+  		
+  		if (success) {  			
+  			return pr;
+  		}
   		return null;
   	}
 }

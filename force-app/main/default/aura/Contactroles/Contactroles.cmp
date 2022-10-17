@@ -1,0 +1,17 @@
+<aura:component controller = "Contactrole" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ContactRole" type="OpportunityContactRole[]"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+        <lightning:card iconName="standard:person_account" title="Related Contacts Roles">
+        <aura:if isTrue="{!not(empty(v.ContactRole))}">
+            <lightning:datatable data="{!v.ContactRole}"
+                         columns="{!v.columns }" 
+                         keyField="Id"
+                         hideCheckboxColumn="true"/>
+            <aura:set attribute="else">
+                <div Style="text-align : center"> " There are no related ContactsRoles " </div>
+            </aura:set>
+        </aura:if>
+    </lightning:card>
+</aura:component>
