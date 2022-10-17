@@ -1,0 +1,4 @@
+<apex:page showHeader="false" sidebar="false">
+  <booker-widget business="appointmentapp" page="d4b2ec28-36f7-4d56-be67-8acfa9e09d95" auto="reservation" style="height:800px; width:600px; display: block; margin-left: auto; margin-right: auto; font-family: Helvetica;"></booker-widget>
+<script src="https://widget.booker25.com/js/widget25.js" async='async'></script>
+</apex:page>

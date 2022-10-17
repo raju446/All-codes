@@ -6,11 +6,6 @@
     <label>pdf</label>
     <packageVersions>
         <majorNumber>6</majorNumber>
-        <minorNumber>45</minorNumber>
-        <namespace>ChargentAnyObj</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>6</majorNumber>
         <minorNumber>46</minorNumber>
         <namespace>ChargentBase</namespace>
     </packageVersions>

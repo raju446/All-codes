@@ -1,73 +1,28 @@
-<apex:page id="communitiesSelfRegPage" showHeader="false" controller="CommunitiesSelfRegController" title="{!$Label.site.user_registration}">
-<head>
-<title>Communities Self Reg</title> 
-<link rel="stylesheet"  type="text/css" href="/css/sfdc_204.css"/>
-<style>
-.mainContentArea {
-    text-align: left;
-    min-width: 410px;
-    max-width: 390px;
-    margin: auto;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    position: relative;
-    font-weight: 300;
-    font-size: 14px;
-    color: #ffffff;
-    text-decoration: none;
-    vertical-align: middle;
-}
-.button {
-    padding: 12px 24px !important;
-    border-radius: 4px !important;
-    border: 0 !important;
-    font-size: 14px !important;
-    font-family: SFS, Arial, sans-serif !important;
-    color: white !important;
-    background-color: #D8DDE6 !important;
-    cursor: pointer !important;
-    background-image: none !important;
-}
-.primary, .primary:hover, .primary:focus {
-    background-color: #006496 !important;
-}
-</style>
-</head>
-<div class="mainContentArea">
-    <div style="text-align: center;margin-bottom: 40px;">
-        <img src="/adgm/servlet/servlet.ImageServer?id=01526000000Lrxx&oid=00D2600000096ir&lastMod=1502356505000" class="standardLogo" />
-    </div>
+<apex:page id="communitiesSelfRegPage" showHeader="true" controller="CommunitiesSelfRegController" title="{!$Label.site.user_registration}">
+     <apex:define name="body">  
+      <center>
 <apex:form id="theForm" forceSSL="true">
                     <apex:pageMessages id="error"/>
-                    <div>
-                      <apex:outputLabel value="First Name" for="firstName" styleClass="label" />
-                      <div>
-                          <apex:inputText required="true" id="firstName" value="{!firstName}" label="First Name" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
-                      <apex:outputLabel value="Last Name" for="lastName" styleClass="label"/>
-                      <div>
-                          <apex:inputText required="true" id="lastName" value="{!lastName}" label="Last Name" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
-                      <apex:outputLabel value="{!$Label.site.community_nickname}" for="communityNickname" styleClass="label"/>
-                      <div>
-                          <apex:inputText required="true" id="communityNickname" value="{!communityNickname}" label="{!$Label.site.community_nickname}" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
-                      <apex:outputLabel value="{!$Label.site.email}" for="email" styleClass="label"/>
-                      <div>
-                          <apex:inputText required="true" id="email" value="{!email}" label="{!$Label.site.email}" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
-                      <apex:outputLabel value="{!$Label.site.password}" for="password" styleClass="label"/>
-                      <div>
-                          <apex:inputSecret id="password" value="{!password}" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
-                      <apex:outputLabel value="{!$Label.site.confirm_password}" for="confirmPassword" styleClass="label"/>
-                      <div>
-                          <apex:inputSecret id="confirmPassword" value="{!confirmPassword}" styleClass="input r4 wide mb16 mt8"/>
-                      </div>
+                    <apex:panelGrid columns="2" style="margin-top:1em;">
+                      <apex:outputLabel value="First Name" for="firstName"/>
+                      <apex:inputText required="true" id="firstName" value="{!firstName}" label="First Name"/>
+                      <apex:outputLabel value="Last Name" for="lastName"/>
+                      <apex:inputText required="true" id="lastName" value="{!lastName}" label="Last Name"/>
+                      <apex:outputLabel value="{!$Label.site.community_nickname}" for="communityNickname"/>
+                      <apex:inputText required="true" id="communityNickname" value="{!communityNickname}" label="{!$Label.site.community_nickname}"/>
+                      <apex:outputLabel value="{!$Label.site.email}" for="email"/>
+                      <apex:inputText required="true" id="email" value="{!email}" label="{!$Label.site.email}"/>
+                      <apex:outputLabel value="{!$Label.site.password}" for="password"/>
+                      <apex:inputSecret id="password" value="{!password}"/>
+                      <apex:outputLabel value="{!$Label.site.confirm_password}" for="confirmPassword"/>
+                      <apex:inputSecret id="confirmPassword" value="{!confirmPassword}"/>
                       <apex:outputText value=""/>
-                      <apex:commandButton action="{!registerUser}" value="{!$Label.site.submit}" id="submit" styleClass="button r4 wide primary"/>
-                    </div> 
+                      <apex:commandButton action="{!registerUser}" value="{!$Label.site.submit}" id="submit"/>
+                    </apex:panelGrid> 
                   <br/>
 </apex:form>
-</div>
+     </center>
+      <br/>
+    </apex:define>
+
 </apex:page>
