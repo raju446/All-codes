@@ -1,0 +1,20 @@
+<template>      
+    <lightning-card title="Books Database" icon-name="custom:custom63">  
+        <div class="slds-m-around_medium">  
+            <lightning-input type="search" label="Search Book" placeholder="Search Book Or Author Here......" onchange={handleSearch}></lightning-input><br/><br/>
+            <template if:true={availableAccounts}>      
+                <lightning-datatable
+                   
+                    key-field="Id"
+                    data={availableAccounts}
+                    columns={columns}
+                    hide-checkbox-column="true"
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>  
+            </template>      
+            <template if:true={error}>  
+                {error}>                  
+            </template>  
+        </div>  
+    </lightning-card>
+</template>
