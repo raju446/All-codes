@@ -25,6 +25,6 @@
     </article>
     <div class="row">
         <lightning:textarea aura:id="myText" name="whatsappText" label="Message" placeholder="type here..." value="{!v.msg}"/>
-        <lightning:button label="Send" iconName="utility:comments" iconPosition="left"  variant="brand" onclick="{! c.sendWhatsApp }" />
-    </div>
+        <lightning-button class="button" <span class="text">submit</span><i class="ri-check-line icon"></i></lightning-button>
+        </div>
 </aura:component>
