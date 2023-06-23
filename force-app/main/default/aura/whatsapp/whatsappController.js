@@ -33,7 +33,7 @@
         var contact = component.get("v.con");
         var msg = component.find("myText").get("v.value");
         var url= "https://wa.me/91"+contact.MobilePhone+"?text="+msg;
-        window.open(url, '_blank');
+       window.open(url, '_blank');
         $A.get("e.force:closeQuickAction").fire();
     }
     
