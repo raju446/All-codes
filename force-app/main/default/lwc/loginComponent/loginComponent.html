@@ -1,0 +1,90 @@
+<template>
+    <div class="main">
+        <template if:true={showToastBar}>
+            <div class="slds-notify_container">
+                <div class={outerClass} role="status">
+                    <span class="slds-assistive-text">{type}</span>
+                    <span class={innerClass} title={message}>
+                        <lightning-icon icon-name={getIconName} alternative-text="icon" styleclass="slds-icon slds-icon_small" variant="inverse" size="small"></lightning-icon>
+                    </span>
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">{message}</h2>
+                    </div>
+                    <div class="slds-notify__close"> 
+                        <lightning-button-icon icon-name="utility:close" size="small" variant="border-filled" class="slds-button slds-button_icon slds-button_icon-inverse" alternative-text="next" onclick={closeModel} ></lightning-button-icon>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <input type="checkbox" id="chk" aria-hidden="true">
+
+        <div class="signup">
+            <form onsubmit={handleSignUp}>
+                <label for="chk" aria-hidden="true">Sign up</label>
+                <div>
+                    <input 
+                        type="tel" 
+                        pattern="[789][0-9]{9}"
+                        placeholder="Mobile Number Format: 123-45-678" 
+                        value={mobileNumber} 
+                        onchange={handleMobileNumberChange}
+                        required
+                        id="text-input-id-47">
+                    <input 
+                        type="text" 
+                        placeholder="Email Address (e.g., example@example.com)" 
+                        value={email} 
+                        onchange={handleEmailChange}
+                        required
+                        id="text-input-id-48">               
+                    </div>
+                    <template if:true={showotpinp}>
+                        <div class="container">
+                            <div class="inputs">
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                                <input class="input" type="password" inputmode="numeric" maxlength="1" oninput={handleInput} onkeyup={handleKeyUp} />
+                            </div>
+                            <div class="timer-container">
+                                <lightning-icon icon-name="utility:clock" alternative-text="Timer" size="x-small" class="timer-icon"></lightning-icon>
+                                <span>{remainingTime}s</span>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showverify}>
+                        <button type="button" onclick={handleVerifyOTP}>Verify with OTP</button>
+                    </template>
+                    <template if:true={resendoTp}>
+                        <button type="button" onclick={handleResendOTP}>Resend OTP</button>
+                    </template>
+                <div style="text-align: center; color:#fff">OR</div>
+                <button type="button" class="slds-button google-button" onclick={handleGoogleLogin}>
+                    <span>Sign up with</span>
+                    <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo"/>
+                </button>
+            </form>
+        </div>
+
+        <div class="login">
+            <form onsubmit={handleLogin}>
+                <label for="chk" aria-hidden="true">Login</label>
+                <input 
+                    type="tel" 
+                    placeholder="Mobile Number Format: 123-45-678" 
+                    value={loginmobileNumber} 
+                    onchange={handleloginMobileNumberChange}
+                    id="text-input-id-46"
+                    required>
+                <button type="submit" onclick={handlelogin}>Login</button>
+                <div style="text-align: center;">OR</div>
+                <button type="button" class="slds-button google-button" onclick={handleGoogleLogin}>
+                    <span>Login with</span>
+                    <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo"/>
+                </button>
+            </form>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,182 @@
+.main {
+    width: 350px;
+    height: 500px;
+    background: red;
+    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+    background-image: linear-gradient(rgb(15, 12, 41), rgb(48, 43, 99), rgb(36, 36, 62));
+    background-position-x: initial;
+    background-position-y: initial;
+    background-size: initial;
+    background-repeat: initial;
+    background-attachment: initial; 
+    background-origin: initial;
+    background-clip: initial;
+    background-color: initial;
+    box-shadow: 5px 20px 50px #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+.signup, .login {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.signup label, .login label {
+    color: #fff;
+    font-size: 2.3em;
+    display: flex;
+    justify-content: center;
+    margin: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+.signup input, .login input {
+    width: 60%;
+    margin: 20px auto;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: #e0dede;
+}
+
+button, .google-button {
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    display: block;
+    color: #fff;
+    background: #573b8a;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    transition: .2s ease-in;
+    cursor: pointer;
+}
+
+button:hover, .google-button:hover {
+    background: #6d44b8;
+}
+
+img.google-icon {
+    max-width: 8%;
+    margin-left: 5px;
+    margin-bottom: -2px;
+}
+
+.login {
+    background: #eee;
+    border-radius: 60% / 10%;
+    transform: translateY(-180px);
+    transition: .8s ease-in-out;
+}
+
+.login label {
+    color: #573b8a;
+    transform: scale(.6);
+}
+
+input[type="checkbox"]:checked ~ .login {
+    transform: translateY(-500px);
+}
+
+input[type="checkbox"]:checked ~ .login label {
+    transform: scale(1);    
+}
+
+input[type="checkbox"]:checked ~ .signup label {
+    transform: scale(.6);
+}
+input{
+	width: 60%;
+	background: #e0dede;
+	justify-content: center;
+	display: flex;
+	margin: 20px auto;
+	padding: 12px;
+	border: none;
+	outline: none;
+	border-radius: 5px;
+}
+.clear-input-button {
+    /* button position */
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    /* button appearance */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+    appearance: none;
+    border: none;
+    border-radius: 50%;
+    background: gray;
+    margin: 0;
+    padding: 2px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    /* hide the button initially */
+    display: none;
+  }
+  
+  .clear-input-button:hover {
+    background: darkgray;
+  }
+  
+  .clear-input--touched:focus + .clear-input-button,
+  .clear-input--touched:hover + .clear-input-button,
+  .clear-input--touched + .clear-input-button:hover {
+    display: flex;
+  }
+.otp-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 115%;
+    padding-left: 51px;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    width: 110px;
+    color: #555;
+}
+
+.timer-icon {
+    margin-right: 5px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.input {
+    width: 40px;
+    border: none;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.5);
+    margin: 0 10px;
+    text-align: center;
+    font-size: 36px;
+}
+
+.input:focus {
+    border-bottom: 3px solid rgb(157, 255, 0);
+    outline: none;
+}
